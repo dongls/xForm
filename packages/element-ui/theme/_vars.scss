@@ -1,0 +1,18 @@
+// from element-ui
+$--color-primary: #409EFF !default;
+$--border-color-base: #DCDFE6 !default;
+$--border-width-base: 1px !default;
+$--border-style-base: solid !default;
+$--border-base: $--border-width-base $--border-style-base $--border-color-base !default;
+$--input-border: $--border-base !default;
+
+$--border-radius-base: 4px !default;
+$--input-border-radius: $--border-radius-base !default;
+
+$--color-text-placeholder: #C0C4CC !default;
+$--input-placeholder-color: $--color-text-placeholder !default;
+
+// xform
+$--xform-el-input-border: $--input-border !default;
+$--xform-el-input-border-radius: $--input-border-radius !default;
+$--xform-el-input-placeholder-color: $--input-placeholder-color !default;

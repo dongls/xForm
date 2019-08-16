@@ -1,0 +1,14 @@
+.xform-builder{
+  display: flex;
+  flex-flow: row nowrap;
+  background-color: #fff;
+  
+  font-size: 14px;
+  color: #303133;
+}
+
+.xform-builder-main{
+  width: 640px;
+  margin: 0 auto;
+  padding: 0 10px;
+}

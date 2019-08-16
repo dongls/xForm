@@ -1,0 +1,26 @@
+.xform-viewer{
+  font-size: 14px;
+  color: #303133;
+  background-color: #fff;
+}
+
+.xform-viewer-main{
+  box-sizing: border-box;
+  width: 640px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.xform-item[data-behavior="viewer"].xform-is-required .xform-item-label > span:before{
+  content: none;
+}
+
+.xform-item[data-behavior="viewer"] .xform-item-content{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.xform-item[data-behavior="viewer"] .xform-item-label{
+  padding-left: 0;
+  padding-right: 0;
+}

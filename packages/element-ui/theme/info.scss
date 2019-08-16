@@ -1,0 +1,50 @@
+.xform-el-info-preview,
+.xform-el-info{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 0;
+}
+
+.xform-el-info-preview{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.xform-el-info{
+  position: relative;
+  white-space: pre-line;
+  word-break: break-all;
+
+  &.xform-el-info-collapse {
+    max-height: 54px;
+    overflow: hidden;
+
+    .xform-el-info-toolbar{
+      position: absolute;
+      bottom: 2px;
+      left: 0;
+      background-color: rgba(255, 255, 255, .90);
+    }
+  }
+}
+
+.xform-el-info-toolbar{
+  width: 100%;
+  text-align: center;
+  height: 24px;
+
+  & > button{
+    line-height: 24px;
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+    color: $--color-primary;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-weight: 700;
+  }
+}
+

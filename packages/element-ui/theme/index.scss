@@ -1,0 +1,138 @@
+@import './_vars.scss';
+
+@import './checkbox.scss';
+@import './date.scss';
+@import './divider.scss';
+@import './number.scss';
+@import './radio.scss';
+@import './select.scss';
+@import './text.scss';
+@import './textarea.scss';
+@import './info.scss';
+
+.xform-setting{
+  box-sizing: border-box;
+  width: 360px;
+  height: 100%;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.xform-setting-column{
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.xform-setting-column-flex{
+  height: 0;
+  flex: 1;
+}
+
+.xform-setting-head{
+  margin: 0;
+  line-height: 24px;
+  font-size: 16px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #ccc;
+}
+
+.xform-setting-group{
+  margin-top: 10px;
+}
+
+.xform-setting-group > header{
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 5px;
+}
+
+.xform-el-mock{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 3px 10px; 
+  line-height: 24px;
+  min-height: 32px;
+
+  color: $--xform-el-input-placeholder-color;
+  border: $--xform-el-input-border;
+  border-radius: $--xform-el-input-border-radius;
+
+  &::placeholder {
+    color: $--xform-el-input-placeholder-color;
+  }
+}
+
+.xform-el-input-group{
+  position: relative;
+
+  .xform-el-mock{
+    padding-right: 30px;
+  }
+
+  .xform-el-input-append{
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+  }
+}
+
+.xform-el-setting-options{
+  max-height: calc(100% - 25px);
+  overflow: auto;
+}
+
+.xform-el-setting-option{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  & + .xform-el-setting-option{
+    margin-top: 5px;
+  }
+
+  .el-input{
+    flex: 1;
+  }
+}
+
+.xform-el-setting-option-del{
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid #f56c6c;
+  border-radius: 50%;
+  background-color: #fef0f0;
+  margin-left: 10px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  transition: all ease .15s;
+
+  i{
+    color: #f56c6c;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  &:hover{
+    background-color: #f56c6c;
+    
+    i{
+      color: #fff;
+    }
+  }
+}
+
+.el-input--small:not(.el-input--prefix):not(.el-input--prefix),
+.el-input--mini:not(.el-input--prefix):not(.el-input--prefix){
+  .el-input__inner,
+  .el-textarea__inner{
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

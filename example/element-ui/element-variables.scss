@@ -1,0 +1,19 @@
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/base.scss";
+@import "~element-ui/packages/theme-chalk/src/button.scss";
+@import "~element-ui/packages/theme-chalk/src/input.scss";
+@import "~element-ui/packages/theme-chalk/src/input-number.scss";
+@import "~element-ui/packages/theme-chalk/src/select.scss";
+@import "~element-ui/packages/theme-chalk/src/option.scss";
+@import "~element-ui/packages/theme-chalk/src/checkbox.scss";
+@import "~element-ui/packages/theme-chalk/src/checkbox-button.scss";
+@import "~element-ui/packages/theme-chalk/src/checkbox-group.scss";
+@import "~element-ui/packages/theme-chalk/src/radio.scss";
+@import "~element-ui/packages/theme-chalk/src/radio-button.scss";
+@import "~element-ui/packages/theme-chalk/src/radio-group.scss";
+@import "~element-ui/packages/theme-chalk/src/date-picker.scss";
+@import "~element-ui/packages/theme-chalk/src/tooltip.scss";
+@import "~element-ui/packages/theme-chalk/src/slider.scss";
+
+@import "../../packages/element-ui/index.scss";

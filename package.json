@@ -1,0 +1,78 @@
+{
+  "name": "@dongls/xform",
+  "version": "0.4.0",
+  "description": "基于Vue2.x的自定义表单轮子。",
+  "main": "dist/xform.js",
+  "style": "dist/css/xform.css",
+  "scripts": {
+    "build:production": "node script/build.production.js",
+    "build:example": "node script/build.example.js",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.development.config.js",
+    "lint": "eslint --fix --ext .js,.vue .",
+    "release": "script/release.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dongls/xForm.git"
+  },
+  "homepage": "https://github.com/dongls/xForm",
+  "keywords": [
+    "vue",
+    "form"
+  ],
+  "author": {
+    "name": "dongls",
+    "email": "173110115@qq.com"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^2.5.17"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-syntax-jsx": "^7.2.0",
+    "@babel/preset-env": "^7.5.5",
+    "@vue/babel-preset-jsx": "^1.1.0",
+    "autoprefixer": "^9.6.1",
+    "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
+    "clean-webpack-plugin": "^3.0.0",
+    "cross-env": "^5.2.0",
+    "css-loader": "^3.2.0",
+    "element-ui": "^2.12.0",
+    "eslint": "^6.1.0",
+    "eslint-plugin-vue": "^5.2.3",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "postcss-custom-properties": "^9.0.2",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "sass": "^1.22.10",
+    "sass-loader": "^8.0.0",
+    "sass-resources-loader": "^2.0.1",
+    "url-loader": "^2.1.0",
+    "vue": "^2.6.10",
+    "vue-loader": "^15.7.1",
+    "vue-router": "^3.1.3",
+    "vue-template-compiler": "^2.6.10",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.8.0",
+    "webpack-merge": "^4.2.1"
+  },
+  "dependencies": {},
+  "browserslist": {
+    "development": [
+      "since 2018-06-01"
+    ],
+    "production": [
+      "> 1% in CN",
+      "ie >= 11",
+      "chrome >= 49"
+    ]
+  }
+}
