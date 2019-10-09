@@ -17,7 +17,7 @@ module.exports = merge(baseConfig, {
           'xform.element-ui.modern': './packages/element-ui/index.js'
         }
         : {
-          'xform': ['./src/index.js', './src/index.scss'],
+          'xform': ['./src/index.js', './src/index.css'],
           'xform.element-ui': ['./packages/element-ui/index.js', './packages/element-ui/index.scss']
         }
     )
