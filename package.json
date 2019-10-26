@@ -7,7 +7,9 @@
   "scripts": {
     "build:production": "node script/build.production.js",
     "build:example": "node script/build.example.js",
+    "build:docs": "vuepress build document",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.development.config.js",
+    "dev:docs": "vuepress dev document",
     "lint": "eslint --fix --ext .js,.vue .",
     "release": "script/release.sh"
   },
@@ -59,12 +61,12 @@
     "vue-loader": "^15.7.1",
     "vue-router": "^3.1.3",
     "vue-template-compiler": "^2.6.10",
+    "vuepress": "^1.2.0",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.8.0",
     "webpack-merge": "^4.2.1"
   },
-  "dependencies": {},
   "browserslist": {
     "development": [
       "since 2018-06-01"

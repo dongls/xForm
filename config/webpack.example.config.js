@@ -13,7 +13,8 @@ module.exports = merge(baseConfig, {
     'example': ['./example/index.js']
   },
   output: {
-    path: path.resolve(__dirname, '../docs'),
+    path: path.resolve(__dirname, '../docs/example'),
+    publicPath: '/example/',
     filename: '[name].[hash:8].js'
   },
   plugins: [
