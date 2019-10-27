@@ -1,7 +1,7 @@
 {
   "name": "@dongls/xform",
   "version": "0.4.0",
-  "description": "基于Vue2.x的自定义表单轮子。",
+  "description": "Vue驱动的自定义表单套件。",
   "main": "dist/xform.js",
   "style": "dist/css/xform.css",
   "scripts": {
@@ -11,7 +11,8 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.development.config.js",
     "dev:docs": "vuepress dev document",
     "lint": "eslint --fix --ext .js,.vue .",
-    "release": "script/release.sh"
+    "release": "script/release.sh",
+    "release:docs": "script/release.docs.sh"
   },
   "repository": {
     "type": "git",
@@ -48,6 +49,7 @@
     "html-webpack-plugin": "^3.2.0",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
+    "markdown-it-task-lists": "^2.1.1",
     "mini-css-extract-plugin": "^0.8.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-custom-properties": "^9.0.2",
