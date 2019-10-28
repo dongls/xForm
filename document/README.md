@@ -9,7 +9,7 @@ features:
 - title: 高灵活性
   details: 除核心组件外皆可自行替换
 - title: 内置多种字段
-  details: 内置多种常见字段，用户可根据需求自行更改
+  details: 内置多种常见字段
 - title: 集成流行库
   details: ElementUI
 - title: 可配置

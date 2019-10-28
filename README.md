@@ -18,20 +18,14 @@ Vue驱动的自定义表单套件。**当前处于早期开发阶段，所有`ap
 - XFormViewer     基于JSON的表单展示组件
 - XFormItem       提供验证和布局机制的表单项组件
 
-## 路线图
-- [ ] 字段类型
-  - [x] 说明文字(info)
-  - [ ] 附件(file)
-  - [ ] 开关(switch)
-  - [ ] 地址(address)
-  - [ ] 多级联动(cascader)
-  - [ ] 电话(phone)
-  - [ ] 邮箱(email)
-- [ ] XFormDesigner
-  - [x] 支持字段复制
-  - [ ] 对输出的字段进行验证
-- [ ] XFormBuilder
-  - [x] 添加实时验证的配置，关闭则只在提交时验证
+## 待办事项
+- [ ] **[新字段]** 附件(file)
+- [ ] **[新字段]** 开关(switch)
+- [ ] **[新字段]** 地址(address)
+- [ ] **[新字段]** 多级联动(cascader)
+- [ ] **[新字段]** 电话(phone)
+- [ ] **[新字段]** 邮箱(email)
+- [ ] **[FormDesigner]** 对输出的字段进行验证
 - [ ] 编写文档
 - [ ] 测试
 - [ ] 集成[`iView`](https://github.com/iview/iview)

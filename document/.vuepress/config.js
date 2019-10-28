@@ -27,14 +27,14 @@ module.exports = {
           collapsable: false, // 可选的, 默认值是 true
           children: [
             '',
-            'installation'
+            'quickstart'
           ]
         },
         // {
         //   title: '其他',   // 必要的
         //   collapsable: false, // 可选的, 默认值是 true
         //   children: [
-        //     'installation'
+           
         //   ]
         // },
       ],
