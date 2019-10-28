@@ -29,7 +29,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "vue": "^2.5.17"
+    "vue": "^2.6.10"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",

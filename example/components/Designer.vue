@@ -1,6 +1,6 @@
 <template>
   <div class="designer">
-    <xform-designer :value="fields" @input="update" ref="designer" mode="a">
+    <xform-designer :value="fields" @input="update" ref="designer" mode="example">
       <template #tool>
         <div class="designer-tool">
           <el-button type="text" icon="el-icon-delete" size="medium" @click="clear">清空</el-button>

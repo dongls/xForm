@@ -14,7 +14,7 @@ Vue.component(Modal.name, Modal);
 Vue.use(ElementUI, {size: 'small'});
 Vue.use(XForm, {
   modes: {
-    a: [
+    example: [
       {
         group: '基础字段',
         types: ['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'date']
@@ -23,8 +23,7 @@ Vue.use(XForm, {
         group: '辅助字段',
         types: ['divider', 'info']
       }
-    ],
-    b: ['text', 'textarea', 'number', 'select']
+    ]
   },
   validator: {
     immediate: true
