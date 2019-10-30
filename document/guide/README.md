@@ -13,7 +13,7 @@ xForm是由Vue驱动的自定义表单套件。该项目的核心理念是**除�
 ### 依赖
 
 - [Vue](https://github.com/vuejs/vue) 2.6.10及以上版本
-- [可选] [ElementUI](https://github.com/ElemeFE/element) 2.12.0及以上版本
+- [可选] [ElementUI](https://github.com/ElemeFE/element) 2.12.0及以上版本，详细说明参照[这里](/guide/other/element-ui.html)
 
 ### 浏览器兼容性
 因当前为早期开发版本，所以暂时只支持以下版本：

@@ -23,29 +23,55 @@ module.exports = {
     sidebar: {
       '/guide/': [
         {
-          title: '基础',   // 必要的
-          collapsable: false, // 可选的, 默认值是 true
+          title: '基础',   
+          collapsable: false,
           children: [
             '',
-            'quickstart'
+            'quickstart',
+            'theme'
           ]
         },
-        // {
-        //   title: '其他',   // 必要的
-        //   collapsable: false, // 可选的, 默认值是 true
-        //   children: [
-           
-        //   ]
-        // },
-      ],
-
-      // '/config/': [
-      //   ''
-      // ],
-
-      // '/': [
-      //   ''
-      // ]
+        {
+          title: "组件",
+          collapsable: false,
+          children: [
+           'components/XFormDesigner',
+           'components/XFormBuilder',
+           'components/XFormViewer',
+           'components/XFormItem'
+          ]
+        },
+        {
+          title: '字段',   
+          collapsable: false,
+          children: [
+            'fields/text',
+            'fields/textarea',
+            'fields/number',
+            'fields/select',
+            'fields/radio',
+            'fields/checkbox',
+            'fields/date',
+            'fields/divider',
+            'fields/info',
+          ]
+        },
+        {
+          title: '进阶',
+          collapsable: false,
+          children: [
+            "advanced/create-new-field-type"
+          ]
+        },
+        {
+          title: '其他',
+          collapsable: false,
+          children: [
+            'other/element-ui'
+          ]
+        }
+      ]
+      
     },
     lastUpdated: '上次更新'
   },

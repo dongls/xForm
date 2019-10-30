@@ -16,13 +16,18 @@ npm install @dongls/xform
 您可以选择只使用核心组件，也可以选择与流行的UI库集成的组件。
 
 #### 只使用核心组件
-如果您不需要任何内置的字段，您可以选择只引入核心组件。如果您选择了此种方式，那么您需要提供字段的具体实现。
+如果您不需要任何内置的字段类型，您可以选择只引入核心组件。如果您选择了此种方式，那么您需要提供字段类型的具体实现。
 ```javascript
 import Vue from 'vue';
 
 import '@dongls/xform/dist/css/xform.css';
-import XForm form '@dongls/xform';
+import XForm from '@dongls/xform';
 
+import Text from '/some_path';
+import Select from '/some_path';
+
+// 将注册您自己创建字段类型
+XForm.store.register(Text, Select);
 Vue.use(XForm, {/* 全局配置, 可选 */})
 ```
 
@@ -35,9 +40,9 @@ import 'element-ui/lib/theme-chalk/index.css';
 import ElementUI from 'element-ui';
 
 import '@dongls/xform/dist/css/xform.element-ui.css';
-import XForm form '@dongls/xform/dist/xform.element-ui';
+import XForm from '@dongls/xform/dist/xform.element-ui';
 
-Vue.use(ElementUI, {/* 全局配置, 可选 */});
+Vue.use(ElementUI);
 Vue.use(XForm, {/* 全局配置, 可选 */})
 ```
 
