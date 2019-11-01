@@ -8,6 +8,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 const RELEASE_ES2015 = process.env.RELEASE_TARGET == 'ES2015';
 
+// TODO: 改进打包机制，可在线引入
 module.exports = merge(baseConfig, {
   entry(){
     return (

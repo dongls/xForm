@@ -23,14 +23,6 @@ export default {
       }
     }
   },
-  extension: {
-    'ext_viewer': {
-      name: 'ext-viewer',
-      render(){
-        return <div>ext text viewer</div>
-      }
-    }
-  },
   validator: {
     max: MAX_LENGTH
   }

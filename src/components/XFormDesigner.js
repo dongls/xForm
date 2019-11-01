@@ -322,11 +322,11 @@ const XFormDesigner = {
      * 根据字段对象创建对应的组件
      * 
      * 组件按以下顺序匹配，如有任一情况匹配，则创建对应组件：
-     * 2. 检索是否有名为`type_${field.type}_${target}`的作用域插槽
-     * 3. 检索是否有名为`${mode}_${target}`的扩展组件
-     * 4. 检索默认的`${target}`组件
+     * 1. 检索是否有名为`type_${field.type}_${target}`的作用域插槽
+     * 2. 检索是否有名为`${mode}_${target}`的扩展组件
+     * 3. 检索默认的`${target}`组件
      * 
-     * @param {string} target -- 目标组件
+     * @param {string} target -- 目标组件 [setting, preview]
      * @param {XField} field -- 字段
      * @param {object} attrs -- 组件属性
      * @returns 组件 

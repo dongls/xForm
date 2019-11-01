@@ -23,7 +23,8 @@ Vue.use(XForm, {
         group: '辅助字段',
         types: ['divider', 'info']
       }
-    ]
+    ],
+    simple: ['text', 'textarea', 'number', 'select']
   },
   validator: {
     immediate: true

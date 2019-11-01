@@ -2,22 +2,18 @@ module.exports = {
   port: 9000,
   dest: './docs',
   title: 'xForm',
-  // description: 'Just playing around',
-  // head: [
-  //   ['link', { rel: 'icon', href: '/logo.png' }]
-  // ],
   locales: {
     '/': {
       lang: 'zh-CN',
       title: 'xForm',
-      description: 'Vue-powered Static Site Generator'
+      description: 'Vue驱动的自定义表单套件'
     }
   },
   themeConfig: {
     nav: [
       { text: '指南', link: '/guide/' },
       // { text: '配置', link: '/config/' },
-      { text: '示例', link: 'https://xform.imdo.me/example/index.html' },
+      { text: '在线示例', link: 'https://xform.imdo.me/example/index.html' },
       { text: 'GitHub', link: 'https://github.com/dongls/xForm' }
     ],
     sidebar: {
@@ -28,7 +24,8 @@ module.exports = {
           children: [
             '',
             'quickstart',
-            'theme'
+            'theme',
+            'config'
           ]
         },
         {
@@ -41,28 +38,28 @@ module.exports = {
            'components/XFormItem'
           ]
         },
-        {
-          title: '字段',   
-          collapsable: false,
-          children: [
-            'fields/text',
-            'fields/textarea',
-            'fields/number',
-            'fields/select',
-            'fields/radio',
-            'fields/checkbox',
-            'fields/date',
-            'fields/divider',
-            'fields/info',
-          ]
-        },
-        {
-          title: '进阶',
-          collapsable: false,
-          children: [
-            "advanced/create-new-field-type"
-          ]
-        },
+        // {
+        //   title: '字段',   
+        //   collapsable: false,
+        //   children: [
+        //     'fields/text',
+        //     'fields/textarea',
+        //     'fields/number',
+        //     'fields/select',
+        //     'fields/radio',
+        //     'fields/checkbox',
+        //     'fields/date',
+        //     'fields/divider',
+        //     'fields/info',
+        //   ]
+        // },
+        // {
+        //   title: '进阶',
+        //   collapsable: false,
+        //   children: [
+        //     "advanced/create-new-field-type"
+        //   ]
+        // },
         {
           title: '其他',
           collapsable: false,

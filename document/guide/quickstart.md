@@ -36,11 +36,17 @@ Vue.use(XForm, {/* 全局配置, 可选 */})
 ```javascript
 import Vue from 'vue';
 
+// 引入element-ui
 import 'element-ui/lib/theme-chalk/index.css';
 import ElementUI from 'element-ui';
 
+// 引入xform
+import '@dongls/xform/dist/css/xform.css';
 import '@dongls/xform/dist/css/xform.element-ui.css';
-import XForm from '@dongls/xform/dist/xform.element-ui';
+import XForm from '@dongls/xform';
+import XFormElementUI from '@dongls/xform/dist/xform.element-ui';
+
+XForm.use(XFormElementUI);
 
 Vue.use(ElementUI);
 Vue.use(XForm, {/* 全局配置, 可选 */})
