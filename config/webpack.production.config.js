@@ -18,8 +18,8 @@ module.exports = merge(baseConfig, {
           'xform.element-ui.modern': './packages/element-ui/index.js'
         }
         : {
-          'xform': ['./src/index.js', './src/index.css'],
-          'xform.element-ui': ['./packages/element-ui/index.js', './packages/element-ui/index.scss']
+          'xform': ['./src/index.css', './src/index.js'],
+          'xform.element-ui': ['./packages/element-ui/index.scss', './packages/element-ui/index.js']
         }
     )
   },
@@ -29,7 +29,7 @@ module.exports = merge(baseConfig, {
     library: 'xForm',
     libraryTarget: 'umd',
     libraryExport: 'default',
-    umdNamedDefine: true,
+    umdNamedDefine: true
   },
   plugins: [
     RELEASE_ES2015 ? undefined : new CleanWebpackPlugin(),
