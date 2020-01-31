@@ -38,8 +38,8 @@ npm run build:example
 # commit
 git add .
 git commit -m "build: $VERSION"
-#npm version $VERSION --message "release: $VERSION"
+npm version $VERSION --message "release: $VERSION"
 git push
 
 # publish
-#npm publish
+npm publish

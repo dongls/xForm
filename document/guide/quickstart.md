@@ -27,7 +27,7 @@ import Text from '/some_path';
 import Select from '/some_path';
 
 // 将注册您自己创建字段类型
-XForm.store.register(Text, Select);
+XForm.register(Text, Select);
 Vue.use(XForm, {/* 全局配置, 可选 */})
 ```
 
