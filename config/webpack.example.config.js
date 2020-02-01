@@ -18,6 +18,11 @@ module.exports = merge(baseConfig, {
     // publicPath: '/example/',
     filename: '[name].[hash:8].js'
   },
+  resolve: {
+    alias: {
+      '@dongls/xform': path.resolve(__dirname, '../src/index')
+    }
+  },
   plugins: [
     new CleanWebpackPlugin(),
     new OptimizeCSSPlugin(),
