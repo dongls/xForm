@@ -34,6 +34,7 @@ npm run build:production -- RELEASE_VERSION=$VERSION RELEASE_TARGET=ES2015
 # build example
 echo -e '\nbuild bundle for expample'
 npm run build:example
+echo 'xform.imdo.me' > ./docs/CNAME
 
 # commit
 git add .
