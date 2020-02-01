@@ -22,7 +22,7 @@ const install = function(Vue, options = {}){
 
 const XForm = {
   name: 'xForm',
-  version: '0.4.3',
+  version: '0.4.4',
   install,
   use: store.use,
   register: store.register,
