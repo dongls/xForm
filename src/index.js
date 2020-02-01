@@ -36,6 +36,9 @@ if (typeof window !== 'undefined' && window.Vue) {
   install(window.Vue);
 }
 
+// 暴露xForm对象
+window[`__xform_shared_${XForm.version.replace(/\./g, '_')}__`] = XForm;
+
 export {
   store,
   mixin,

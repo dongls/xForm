@@ -26,7 +26,7 @@
  * TODO: 
  * 1. 支持设置快捷选项
  */
-import {mixin} from '@src/index';
+import {mixin} from '@dongls/xform';
 
 export default {
   name: 'xform-el-date-setting',

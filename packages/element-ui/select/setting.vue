@@ -36,7 +36,7 @@
  * TODO:
  * 1. 支持批量编辑选项
  */
-import {mixin} from '@src/index';
+import {mixin} from '@dongls/xform';
 
 export default {
   name: 'xform-el-select-setting',

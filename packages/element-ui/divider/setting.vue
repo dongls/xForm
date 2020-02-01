@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import {mixin} from '@src/index';
+import {mixin} from '@dongls/xform';
 import divider from './divider.vue';
 
 export default {

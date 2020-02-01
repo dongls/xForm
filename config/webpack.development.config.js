@@ -1,3 +1,5 @@
+const path = require('path');
+
 const merge = require('webpack-merge');
 const baseConfig = require('./webpack.base.config');
 
@@ -16,6 +18,11 @@ module.exports = merge(baseConfig, {
       modules: false,
       entrypoints: false,
       children: false
+    }
+  },
+  resolve: {
+    alias: {
+      '@dongls/xform': path.resolve(__dirname, '../src/index')
     }
   },
   plugins: [

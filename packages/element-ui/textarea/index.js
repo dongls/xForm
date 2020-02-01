@@ -1,4 +1,4 @@
-import {mixin} from '@src/index'
+import {mixin} from '@dongls/xform'
 import icon from '../../common/svg/textarea.svg';
 
 import setting from './setting.vue';

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import {mixin} from '@src/index';
+import {mixin} from '@dongls/xform';
 
 export default {
   name: 'xform-el-select-setting',

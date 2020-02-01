@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {mixin} from '@src/index'
+import {mixin} from '@dongls/xform'
 
 /**
  * TODO: 

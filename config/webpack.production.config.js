@@ -23,10 +23,18 @@ module.exports = merge(baseConfig, {
         }
     )
   },
+  externals: [
+    function(context, request, callback) {
+      if (/^@dongls\/xform$/.test(request)){
+        return callback(null, `root __xform_shared_${process.env.RELEASE_VERSION.replace(/\./g, '_')}__`);
+      }
+      callback();
+    }
+  ],
   output: {
     publicPath: '/dist/',
     filename: '[name].js',
-    library: 'xForm',
+    library: '[name]',
     libraryTarget: 'umd',
     libraryExport: 'default',
     umdNamedDefine: true
