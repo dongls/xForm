@@ -19,6 +19,7 @@
   height: 100%;
   display: flex;
   flex-flow: column nowrap;
+  user-select: none;
 }
 
 .xform-designer-scroll{
@@ -152,13 +153,13 @@
 }
 
 .xform-designer-preview.xform-is-dragging{
-    border-color: transparent;
-    outline: none !important;
+  border-color: transparent;
+  outline: none !important;
 }
 
-.xform-designer-preview.xform-is-dragging.xform-designer-cover{
-  background-color: #d5d5d5 !important;
-  opacity: .45 !important;
+.xform-designer-preview.xform-is-dragging .xform-designer-cover{
+  background-color: #e5e5e5 !important;
+  opacity: .75 !important;
 }
 
 .xform-designer-cover{

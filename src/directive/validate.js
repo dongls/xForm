@@ -5,9 +5,10 @@ const XFORM_ITEM_INSTANCE = '__xform_directive_xform_item_instance__';
 const XFORM_VALIDATE_KEY = '__xform_directive_validate_key__';
 
 export default {
+  // TODO: 待改进，确定instance, context, 在非组件下如何处理
   bind(el, binding, vnode){
     const context = vnode.context;
-    const instance = vnode.componentInstance;
+    const instance = vnode.componentInstance || vnode.parent && vnode.parent.componentInstance;
     const xFormItem = closest(instance, 'xform-item');
 
     const value = typeof binding.value == 'object' ? binding.value : {key: binding.value}
@@ -19,7 +20,9 @@ export default {
 
     // 监听value变化，触发验证
     if(Store.findConfigProp('validator.immediate')) {
-      context.$watch('value', () => xFormItem.$emit('xform.builder.validate'), {deep: true});
+      instance.$watch('value', function(){
+        xFormItem.$emit('xform.builder.validate')
+      }, {deep: true});
     }
 
     context[XFORM_VALIDATE_KEY] = key;

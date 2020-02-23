@@ -6,9 +6,9 @@
     >
       <template #top>
         <header class="builder-header">笔记本电脑报修单</header>
-        <!-- <xform-item :field="customField" :validation="validateCustomFiled">
-          <c-text :field="customField" v-model="model.no"/>
-        </xform-item> -->
+        <xform-item :field="customField" :validation="validateCustomFiled">
+          <el-input v-model="model.no" v-xform:validate="customField.name"/>
+        </xform-item>
       </template>
       <template #bottom>
         <div class="builder-bottom">
@@ -26,6 +26,7 @@
 
 <script>
 import localData from '../mixin/localData';
+import {model} from '../../src'
 
 export default {
   name: 'builder',
@@ -33,11 +34,11 @@ export default {
   mixins: [localData],
   data(){
     return {
-      customField: {
+      customField: new model.XField({
         name: 'no',
         type: 'text',
         title: '编号'
-      },
+      }),
       show: false,
       fields: this.getLocalFields(),
       model: this.getLocalModel()
@@ -52,11 +53,11 @@ export default {
     hidden(){
       this.fields = this.fields.filter(f => f.type != 'textarea');
     },
-    validateCustomFiled(field, value, changeMessage){
+    validateCustomFiled(field, value, context){
       return new Promise((resolve, reject) => {
-        changeMessage('正在验证...')
+        context.changeMessage('正在验证...')
         setTimeout(() => {
-          changeMessage()
+          context.changeMessage()
           value == null || value.length < 10 ? resolve() : reject('长度过长')
         }, 500);
       })
@@ -90,29 +91,7 @@ export default {
         localStorage.setItem(key, JSON.stringify(this.model));
       }
     }
-  },
-  // components: {
-  //   'c-text': {
-  //     name: 'c-text',
-  //     mixins: [XForm.mixin.builder],
-  //     props: {
-  //       value: {
-  //         type: String,
-  //         default: null
-  //       }
-  //     },
-  //     render(){
-  //       const field = this.field;
-
-  //       return (
-  //         <input 
-  //           type="text" id={field.name} name={field.name} 
-  //           class="xform-text xform-item-control" placeholder={this.placeholder} 
-  //           value={this.value} onInput={this.inputForDom}/>
-  //       )
-  //     }
-  //   }
-  // }
+  }
 }
 </script>
 

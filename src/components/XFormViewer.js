@@ -1,6 +1,6 @@
 import Store from '../util/store';
 
-const XFormView = {
+const XFormViewer = {
   name: 'xform-viewer',
   props: {
     fields: {
@@ -110,4 +110,4 @@ const XFormView = {
   }
 }
 
-export default XFormView;
+export default XFormViewer;
