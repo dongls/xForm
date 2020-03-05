@@ -2,10 +2,11 @@
   "name": "@dongls/xform",
   "version": "0.4.4",
   "description": "Vue驱动的自定义表单套件。",
-  "main": "dist/xform.js",
-  "style": "dist/css/xform.css",
+  "main": "dist/xform.core.js",
+  "style": "dist/css/xform.corenpm.css",
   "scripts": {
     "build:production": "node script/build.production.js",
+    "build:es2015": "node script/build.production.js RELEASE_TARGET=ES2015",
     "build:example": "node script/build.example.js",
     "build:docs": "vuepress build document",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.development.config.js",

@@ -29,12 +29,12 @@ npm run build:production -- RELEASE_VERSION=$VERSION
 
 # build es 2015 version
 echo -e '\nbuild bundle for production:ES2015'
-npm run build:production -- RELEASE_VERSION=$VERSION RELEASE_TARGET=ES2015
+npm run build:es2015 -- RELEASE_VERSION=$VERSION
 
 # build example
 echo -e '\nbuild bundle for expample'
 npm run build:example
-echo 'xform.imdo.me' > ./docs/CNAME
+# echo 'xform.imdo.me' > ./docs/CNAME
 
 # commit
 git add .

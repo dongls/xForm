@@ -5,7 +5,7 @@ set -e
 
 # npm run build:docs
 npm run build:example
-echo 'xform.imdo.me' > ./docs/CNAME
+# echo 'xform.imdo.me' > ./docs/CNAME
 
 # git add .
 # git commit -m "docs: $MESSAGE"
