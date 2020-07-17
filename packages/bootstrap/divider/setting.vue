@@ -18,6 +18,7 @@ export default defineComponent({
     }
 
     return {
+      types: ['solid', 'dashed', 'double', 'solid-dashed', 'dashed-solid'],
       update,
       updateField(event: Event, prop: string, scope?: string){
         const target = event.target as HTMLInputElement
@@ -29,6 +30,9 @@ export default defineComponent({
         }
       
         emit('update:field', { prop, value, scope })
+      },
+      isChecked(type: string){
+        return props.field.attributes.type == type || (type == 'solid' && props.field.attributes.type == null)
       }
     }
   }
@@ -45,34 +49,14 @@ export default defineComponent({
 
   <section class="xform-setting xform-divider-types">
     <header>样式：</header>
-    <div class="custom-control custom-radio">
-      <input id="divider-solid" name="setting-divider-type" type="radio" value="solid" class="custom-control-input" :checked="field.attributes.type == 'solid'" @change="update('type', 'solid', 'attributes')">
-      <label class="custom-control-label" for="divider-solid">
-        <xform-divider type="solid"/>
-      </label>
-    </div>
-    <div class="custom-control custom-radio">
-      <input id="divider-dashed" name="setting-divider-type" type="radio" value="dashed" class="custom-control-input" :checked="field.attributes.type == 'dashed'" @change="update('type', 'dashed', 'attributes')">
-      <label class="custom-control-label" for="divider-dashed">
-        <xform-divider type="dashed"/>
-      </label>
-    </div>
-    <div class="custom-control custom-radio">
-      <input id="divider-double" name="setting-divider-type" type="radio" value="double" class="custom-control-input" :checked="field.attributes.type == 'double'" @change="update('type', 'double', 'attributes')">
-      <label class="custom-control-label" for="divider-double">
-        <xform-divider type="double"/>
-      </label>
-    </div>
-    <div class="custom-control custom-radio">
-      <input id="divider-solid-dashed" name="setting-divider-type" type="radio" value="solid-dashed" class="custom-control-input" :checked="field.attributes.type == 'solid-dashed'" @change="update('type', 'solid-dashed', 'attributes')">
-      <label class="custom-control-label" for="divider-solid-dashed">
-        <xform-divider type="solid-dashed"/>
-      </label>
-    </div>
-    <div class="custom-control custom-radio">
-      <input id="divider-dashed-solid" name="setting-divider-type" type="radio" value="dashed-solid" class="custom-control-input" :checked="field.attributes.type == 'dashed-solid'" @change="update('type', 'dashed-solid', 'attributes')">
-      <label class="custom-control-label" for="divider-dashed-solid">
-        <xform-divider type="dashed-solid"/>
+    <div v-for="type in types" :key="type" class="custom-control custom-radio">
+      <input 
+        :id="`divider-${type}`" name="setting-divider-type" 
+        type="radio" :value="type" class="custom-control-input" 
+        :checked="isChecked(type)" @change="update('type', type, 'attributes')"
+      >
+      <label class="custom-control-label" :for="`divider-${type}`">
+        <xform-divider :type="type"/>
       </label>
     </div>
   </section>

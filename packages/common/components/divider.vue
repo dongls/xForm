@@ -10,7 +10,7 @@ export default defineComponent({
     },
     layout: {
       type: String,
-      default: 'left'
+      default: 'center'
     },
     type: {
       type: String,

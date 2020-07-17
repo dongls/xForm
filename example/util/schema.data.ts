@@ -136,7 +136,6 @@ export default {
       required: false,
       options: [],
       attributes: {
-        layout: 'center',
         type: 'double',
         top: 50,
         bottom: 0
