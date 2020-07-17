@@ -195,7 +195,7 @@ function renderFormSetting(slots: Slots, schema: XFormSchema, instance: XFormDes
   if(vnodes.length > 0) return vnodes
 
   const preset = Store.getPreset()
-  if(preset.slots.setting) return h(preset.slots.setting, {
+  if(preset && preset.slots.setting) return h(preset.slots.setting, {
     schema,
     'onUpdate:prop': function(event: any){
       const { prop, value } = event
@@ -210,7 +210,7 @@ function renderFormSetting(slots: Slots, schema: XFormSchema, instance: XFormDes
 function renderSetting(slots: Slots, schema: XFormSchema, instance: XFormDesignerInstance){
   const { selectedField, selectedTab, chooseTab } = instance
   const formSetting = renderFormSetting(slots, schema, instance)
-  if(null == formSetting) return renderFieldSetting(selectedField, slots, instance)
+  if(null == formSetting) return <div class="xform-designer-setting-field xform-is-scroll">{renderFieldSetting(selectedField, slots, instance)}</div>
 
   const tabContent = (
     selectedTab == 'field' 

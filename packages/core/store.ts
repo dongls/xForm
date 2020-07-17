@@ -21,6 +21,7 @@ export function useConfig(config: XFormConf){
 }
 
 export function usePreset(preset: XFormPreset){
+  if(null == preset) return
   store.preset = Object.assign(store.preset || {}, preset)
   preset.fieldConfs.forEach(registerField)
 }
@@ -52,7 +53,9 @@ export function findFieldConf(type: string){
   return store.fields.get(type)
 }
 
-export function findMode(mode: string): Array<ModeGroup | string>{  
+export function findMode(mode: string): Array<ModeGroup | string>{
+  if(mode == null) return Array.from(store.fields.keys())
+
   const types = store.config.modes[mode]
   if(!Array.isArray(types)) return []
 

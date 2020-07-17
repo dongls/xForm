@@ -60,7 +60,7 @@ export interface XFormPreset {
 
 export interface XFormOption {
   // 组件配置
-  preset: XFormPreset;
+  preset?: XFormPreset;
   // 表单默认设置
   config: XFormConf;
 }

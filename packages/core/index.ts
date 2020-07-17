@@ -19,7 +19,8 @@ const install = function(app: App, options: XFormOption){
 
 const XForm = {
   version,
-  install
+  install,
+  store
 }
 
 export {

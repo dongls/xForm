@@ -367,7 +367,12 @@
 .xform-tabs li.xform-is-active{
   color: var(--xform-color-primary);
   border-color: var(--xform-color-primary);
-} 
+}
+
+.xform-designer-setting-field{
+  padding: 10px;
+  height: 100%;
+}
 
 .xform-tabs-content{
   padding: 10px;
