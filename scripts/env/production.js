@@ -1,8 +1,8 @@
 module.exports = {
   doc: {
-    base: '/xform.next/'
+    base: '/xForm/'
   },
   example: {
-    base: '/xform.next/example.html'
+    base: '/xForm/example.html'
   }
 }
