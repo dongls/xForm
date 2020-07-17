@@ -1,0 +1,32 @@
+{
+  "name": "@dongls/xform",
+  "version": "0.4.4",
+  "description": "Vue驱动的自定义表单套件。",
+  "main": "dist/index.js",
+  "style": "dist/index.css",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dongls/xForm.git"
+  },
+  "homepage": "https://github.com/dongls/xForm",
+  "keywords": [
+    "vue",
+    "form",
+    "xform"
+  ],
+  "author": {
+    "name": "dongls",
+    "email": "173110115@qq.com"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0-beta.24"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org",
+    "access": "public"
+  }
+}

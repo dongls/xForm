@@ -1,0 +1,31 @@
+.xform-viewer{
+  font-size: 14px;
+  color: var(--xform-text-color);
+  background-color: #fff;
+}
+
+.xform-viewer-main{
+  box-sizing: border-box;
+  width: 640px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.xform-viewer .xform-item-label > span:before{
+  content: none !important;
+}
+
+.xform-viewer .xform-item-content{
+  line-height: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  min-height: 30px;
+}
+
+.xform-viewer .xform-item-label{
+  padding-left: 0;
+}
+
+.xform-viewer .xform-item.xform-is-top .xform-item-label{
+  padding-left: 0 !important;
+}

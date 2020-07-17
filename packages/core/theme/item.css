@@ -1,0 +1,116 @@
+.xform-item{
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: row nowrap;
+  color: var(--xform-text-color);
+}
+
+.xform-item + .xform-item{
+  margin-top: 10px;
+}
+
+.xform-item.xform-template{
+  padding: 8px;
+}
+  
+.xform-item.xform-is-required .xform-item-label{
+  font-weight: 700;
+}
+
+.xform-item.xform-is-required .xform-item-label > span.xform-item-title:before{
+  content: "*";
+  position: absolute;
+  top: 0;
+  left: -10px;
+  color: var(--xform-color-danger);
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.xform-is-left .xform-item-label{
+  text-align: left;
+}
+
+.xform-is-right .xform-item-label{
+  text-align: right;
+}
+
+.xform-is-top{
+  flex-direction: column;
+}
+
+.xform-is-top .xform-item-label{
+  width: auto !important;
+  padding-left: 0;
+  padding-top: 0;
+  padding-bottom: 4px;
+}
+
+.xform-is-top.xform-is-required .xform-item-label{
+  padding-left: 10px ;
+}
+
+.xform-is-top .xform-item-content{
+  width: 100%;
+}
+
+.xform-item-label{
+  box-sizing: border-box;
+  width: 120px;
+  padding: 5px 10px 0 10px;  
+  line-height: 20px;
+  word-break: break-all;
+  margin: 0;
+}
+
+.xform-item-label > span{
+  position: relative;
+}
+
+.xform-item-content{
+  box-sizing: border-box;
+  width: 0;
+  flex: 1;
+  line-height: 20px;
+}
+
+i.xform-item-help-icon{
+  font-size: 14px;
+  margin-left: 2px;
+  color: #909399;
+  cursor: help;
+}
+
+pre.xform-item-help-content{
+  margin: 0;
+  font-family: inherit;
+  line-height: 1.25;
+  white-space: pre-line;
+  max-width: 480px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.xform-is-error .xform-item-control{
+  border-color: var(--xform-color-danger);
+}
+
+.xform-is-error .xform-item-message{
+  color: var(--xform-color-danger);
+}
+
+.xform-is-validating,
+.xform-item-message{
+  color: #606266;
+  font-size: 12px;
+  line-height: 20px;
+  margin: 0;
+}
+
+.xform-is-unknown{
+  padding: 5px 0;
+  line-height: 20px;
+  margin: 0;
+  color: #989dab;
+}

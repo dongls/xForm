@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "./dist/",
+    "paths": {
+      "@core/*": ["packages/core/*"],
+      "@common/*": ["packages/common/*"],
+      "@dongls/xform": ["packages/core/index"]
+    },
+    "target": "ESNext"
+  },
+  "include": [
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "packages/**.d.ts",
+    "example/**/*.ts",
+    "document/**/*.ts"
+  ]
+}
