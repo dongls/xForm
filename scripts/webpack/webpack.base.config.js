@@ -71,7 +71,7 @@ module.exports = {
   plugins: [
     new VueLoaderPlugin(),
     new webpack.DefinePlugin({
-      '__VERSION__': JSON.stringify(require('../../package.json').version)
+      '__VERSION__': JSON.stringify(process.env.RELEASE_VERSION)
     })
   ],
   performance: {

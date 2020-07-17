@@ -12,7 +12,7 @@
     "build:example": "cross-env NODE_ENV=production webpack --config scripts/webpack/webpack.example.config.js",
     "build:docs": "cross-env TARGET=document NODE_ENV=production webpack --config scripts/webpack/webpack.document.config.js",
     "dev": "npm run clean && cross-env NODE_ENV=development webpack-dev-server --config scripts/webpack/webpack.example.config.js",
-    "dev:docs": "cross-env TARGET=document webpack-dev-server --config scripts/webpack/webpack.document.config.js",
+    "dev:docs": "npm run clean && cross-env TARGET=document webpack-dev-server --config scripts/webpack/webpack.document.config.js",
     "lint": "eslint --ext .ts,.tsx,.vue .",
     "test": "jest --no-cache",
     "release": "node scripts/release.js"
@@ -107,7 +107,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && git add ."
+      "pre-commit": "npm run lint"
     }
   }
 }

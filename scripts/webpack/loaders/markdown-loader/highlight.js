@@ -4,6 +4,7 @@ const hljs = require('highlight.js/lib/core')
 hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'))
 hljs.registerLanguage('typescript', require('highlight.js/lib/languages/typescript'))
 hljs.registerLanguage('xml', require('highlight.js/lib/languages/xml'))
+hljs.registerLanguage('bash', require('highlight.js/lib/languages/bash'))
 
 function genHtml(str, lang){
   if(!lang || null == hljs.getLanguage(lang)) return escapeHtml(str)

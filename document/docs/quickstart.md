@@ -9,25 +9,31 @@
 推荐使用`npm`的方式安装，它能更好地和[Webpack][webpack]配合使用。
 ```sh
 npm install @dongls/xform
+
+# 安装基于bootstrap的字段库
+npm i @dongls/xform.bootstrap
 ```
 当然你也通过CDN获取到最新版本的资源，例如你可以直接引用[unpkg][unpkg]提供的在线资源。 
 ```html
-<!-- 引入样式 -->
-<link href="https://unpkg.com/@dongls/xform@0.4.4/dist/css/xform.css" rel="stylesheet">
-<!-- 引入组件 -->
-<script src="https://unpkg.com/@dongls/xform@0.4.4/dist/xform.js"></script>
+<!-- 核心组件 -->
+<link href="https://unpkg.com/@dongls/xform@__VERSION__/dist/index.css" rel="stylesheet">
+<script src="https://unpkg.com/@dongls/xform@__VERSION__/dist/index.js"></script>
+
+<!-- 基于bootstrap的字段库 -->
+<link href="https://unpkg.com/@dongls/xform.bootstrap@__VERSION__/dist/index.js" rel="stylesheet">
+<script src="https://unpkg.com/@dongls/xform.bootstrap@__VERSION__/dist/index.css"></script>
 ```
 
 ## 使用
-`xForm`本身并**不提供具体字段类型的实现**，因此在设计时就将核心组件与字段解耦，所以你可以选择只使用核心组件，也可以选择使用内置字段（依赖UI库）。
+`xForm`本身并**不提供具体字段类型的实现**，因此在设计时就将核心组件与字段解耦，所以你可以选择只使用核心组件，也可以选择使用内置字段（依赖外部UI库）。
 
 #### 只使用核心组件
 如果您不需要任何内置的字段类型，您可以选择只引入核心组件。如果您选择了此种方式，那么您需要提供字段类型的具体实现。
 ```javascript
 import { createApp } from 'vue';
-import Example from 'somepath';
+import App from 'somepath'
 
-import '@dongls/xform/dist/css/xform.css';
+import '@dongls/xform/dist/index.css';
 import XForm from '@dongls/xform';
 
 import Text from 'somepath';
@@ -37,7 +43,29 @@ import Select from 'somepath';
 XForm.store.registerField(Text);
 XForm.store.registerField(Select);
 
-createApp(Example).use(XForm, {/*xForm config*/ });
+createApp(App).use(XForm, { 
+  config: { /* xForm config */ } 
+});
+```
+
+#### 使用基于Bootstrap的字段库
+字段库基于[Bootstrap@4.x][bootstrap]开发，你需要自行安装`Bootstrap`。
+
+```javascript
+import '@dongls/xform/dist/index.css';
+import '@dongls/xform.bootstrap/dist/index.css';
+
+import { createApp } from 'vue'
+import App from 'somepath'
+
+import XForm from '@dongls/xform';
+import XFormBootstrap from '@dongls/xform.bootstrap';
+
+createApp(App).use(XForm, {
+  preset: XFormBootstrap,
+  config: { /* xForm config */ } 
+});
+
 ```
 
 <!-- ## Hello world
@@ -49,3 +77,4 @@ createApp(Example).use(XForm, {/*xForm config*/ });
 
 [Webpack]: https://webpack.js.org
 [unpkg]: https://unpkg.com/@dongls/xform/
+[bootstrap]: https://getbootstrap.com/docs/4.5/

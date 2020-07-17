@@ -47,7 +47,7 @@ module.exports = merge(baseConfig, {
       filename: 'index.css',
     }),
     new webpack.BannerPlugin({
-      banner: `${props.packageName} v${RELEASE_VERSION} (https://github.com/dongls/xForm)\nCopyright 2020 dongls\nReleased under the MIT License`
+      banner: `${props.packageName} v${RELEASE_VERSION} (https://github.com/dongls/xForm)\nCopyright 2019-present dongls\nReleased under the MIT License`
     })
   ]
 })

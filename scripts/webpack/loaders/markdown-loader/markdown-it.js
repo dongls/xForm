@@ -32,4 +32,14 @@ md.renderer.rules.heading_open = function(tokens, idx, options, env, slf){
   return slf.renderToken(tokens, idx, options)
 }
 
+md.renderer.rules.bullet_list_open = function(tokens, idx, options, env, slf){
+  const token = tokens[idx]
+  
+  if(null != token){
+    token.attrJoin('class', 'doc-ul')
+  }
+
+  return slf.renderToken(tokens, idx, options)
+}
+
 module.exports = md

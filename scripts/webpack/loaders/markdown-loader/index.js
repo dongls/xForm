@@ -6,6 +6,10 @@ module.exports = function (source) {
   const esModule = typeof options.esModule !== 'undefined' ? options.esModule : true
   const prefix = esModule ? 'export default' : 'module.exports ='
 
-  const html = md.render(source).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029')
+  const html = md.render(source)
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+    .replace(/__VERSION__/g, process.env.RELEASE_VERSION)
+  
   return `${prefix} ${JSON.stringify(html)};`
 }

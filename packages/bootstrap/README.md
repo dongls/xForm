@@ -2,7 +2,7 @@
 基于Bootstrap的xForm字段库。
 
 - [文档](https://dongls.github.io/xForm/)
-- [示例](https://dongls.github.io/xForm/)
+- [示例](https://dongls.github.io/xForm/example.html)
 
 ## 已支持字段
 - checkbox

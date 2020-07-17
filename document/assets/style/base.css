@@ -88,11 +88,36 @@ h2{
 
 ul{
   margin: 0 0 15px 0;
-  padding-left: 35px;
+  padding-left: 34px;
 }
 
 ul > li + li{
   margin-top: 4px;
+}
+
+ul.doc-ul{
+  list-style: none;
+}
+
+ul.doc-ul > li{
+  position: relative;
+}
+
+ul.doc-ul > li::before{
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: -20px;
+  width: 6px;
+  height: 6px;
+  background-color: #191f2f;
+  border-radius: 50%;
+  transition: background-color ease .3s;
+}
+
+ul.doc-ul > li:hover::before{
+  background-color: var(--doc-color-primary);
+  box-shadow: 0 0 4px rgba(0, 123, 255, .5);
 }
 
 code:not(.hljs-code){
