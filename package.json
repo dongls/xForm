@@ -7,6 +7,7 @@
   "style": "dist/css/xform.core.css",
   "scripts": {
     "clean": "node scripts/clean",
+    "build:code": "npm run build:core && npm run build:bootstrap",
     "build:core": "cross-env NODE_ENV=production RELEASE_PACKAGE=core webpack --config scripts/webpack/webpack.production.config.js",
     "build:bootstrap": "cross-env NODE_ENV=production RELEASE_PACKAGE=bootstrap webpack --config scripts/webpack/webpack.production.config.js",
     "build:example": "npm run clean && cross-env NODE_ENV=production webpack --config scripts/webpack/webpack.example.config.js",
@@ -80,7 +81,7 @@
     "ts-loader": "^8.0.0",
     "typescript": "^3.9.6",
     "url-loader": "^4.1.0",
-    "vue": "^3.0.0-beta.24",
+    "vue": "^3.0.0-rc.1",
     "vue-jest": "^5.0.0-alpha.0",
     "vue-loader": "^16.0.0-beta.4",
     "vue-router": "^4.0.0-beta.2",

@@ -14,9 +14,9 @@ import {
   resolveComponent,
   VNode,
   Slots,
-  VNodeProps,
   ComponentPublicInstance,
-  ComponentOptions
+  ComponentOptions,
+  VNodeProps
 } from 'vue'
 
 import { 
@@ -63,6 +63,10 @@ interface XFormDesignerSetupState {
 } 
 
 type XFormDesignerInstance = ComponentPublicInstance & XFormDesignerProps & XFormDesignerSetupState;
+
+type RawProps = VNodeProps & {
+  [key: string]: any;
+}
 
 function shwoSelectedField(instance: ComponentInternalInstance){
   return nextTick(() => {
@@ -158,7 +162,7 @@ function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesigner
   const fieldConf = (field instanceof XField) && field.findFieldConf()
   if(!fieldConf) return <p class="xform-setting-tip">点击字段设置属性</p>
 
-  const props: VNodeProps = { field: field, key: field.name }
+  const props: RawProps = { field: field, key: field.name }
 
   const nameSlotFunc = slots[`setting_name_${field.name}`]
   const nameSlot: VNode[] = typeof nameSlotFunc == 'function' && nameSlotFunc(props)
