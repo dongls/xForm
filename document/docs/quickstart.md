@@ -1,6 +1,6 @@
 # 快速上手
 
-本节将介绍如何在项目中使用xForm。
+本节将介绍如何在项目中使用`xForm`。
 ::: tip 提示
 该文档默认你使用[Webpack][webpack]构建项目，代码使用ES2015+规范进行编写。
 :::
@@ -20,8 +20,8 @@ npm i @dongls/xform.bootstrap
 <script src="https://unpkg.com/@dongls/xform@__VERSION__/dist/index.js"></script>
 
 <!-- 基于bootstrap的字段库 -->
-<link href="https://unpkg.com/@dongls/xform.bootstrap@__VERSION__/dist/index.js" rel="stylesheet">
-<script src="https://unpkg.com/@dongls/xform.bootstrap@__VERSION__/dist/index.css"></script>
+<link href="https://unpkg.com/@dongls/xform.bootstrap@__VERSION__/dist/index.css" rel="stylesheet">
+<script src="https://unpkg.com/@dongls/xform.bootstrap@__VERSION__/dist/index.js"></script>
 ```
 
 ## 使用
@@ -67,13 +67,11 @@ createApp(App).use(XForm, {
 });
 
 ```
-
-<!-- ## Hello world
-这里有一个基于`Bootstrap`的在线示例。
-<iframe height="265" style="width: 100%;" scrolling="no" title="Element demo" src="//codepen.io/ziyoung/embed/rRKYpd/?height=265&theme-id=light&default-tab=html" frameborder="no" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href='https://codepen.io/ziyoung/pen/rRKYpd/'>Element demo</a> by hetech
-  (<a href='https://codepen.io/ziyoung'>@ziyoung</a>) on <a href='https://codepen.io'>CodePen</a>.
-</iframe> -->
+这里有一个基于Bootstrap的[在线表单设计器](https://codepen.io/dongls/pen/QWyJvEN)。
+<iframe height="265" style="width: 100%;" scrolling="no" title="xform demo" src="https://codepen.io/dongls/embed/QWyJvEN?height=265&theme-id=light&default-tab=html" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/dongls/pen/QWyJvEN'>xform demo</a> by dongls
+  (<a href='https://codepen.io/dongls'>@dongls</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
 
 [Webpack]: https://webpack.js.org
 [unpkg]: https://unpkg.com/@dongls/xform/

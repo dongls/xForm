@@ -32,6 +32,7 @@ module.exports = merge(baseConfig, {
     path: props.outPath,
     filename: 'index.js',
     library: props.library,
+    libraryExport: props.libraryExport,
     libraryTarget: 'umd',
     umdNamedDefine: true
   },

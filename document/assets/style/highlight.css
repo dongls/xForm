@@ -24,9 +24,8 @@ hue-6-2: #c18401
   overflow-x: auto;
   padding: 15px;
   color: #383a42;
-  background: #f7f7f7;
+  background: #f8f9fa;
   border-radius: 1px;
-  border: 1px solid #f0f0f0;
   line-height: 20px;
 }
 
@@ -57,7 +56,7 @@ hue-6-2: #c18401
 .hljs-doctag,
 .hljs-keyword,
 .hljs-formula {
-  color: #e01add;
+  color: #a626a4;
 }
 
 .hljs-section,
@@ -69,7 +68,7 @@ hue-6-2: #c18401
 }
 
 .hljs-literal {
-  color: #0499da;
+  color: #0184bb;
 }
 
 .hljs-string,
@@ -77,12 +76,12 @@ hue-6-2: #c18401
 .hljs-addition,
 .hljs-attribute,
 .hljs-meta-string {
-  color: #06b603;
+  color: #50a14f;
 }
 
 .hljs-built_in,
 .hljs-class .hljs-title {
-  color: #fdb00a;
+  color: #c18401;
 }
 
 .hljs-attr,

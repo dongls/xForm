@@ -122,7 +122,7 @@ ul.doc-ul > li:hover::before{
 
 code:not(.hljs-code){
   color: var(--doc-color-primary);
-  font-family: Cascadia Code,SFMono-Regular, Menlo, Monaco, Consolas ,Liberation Mono, Courier New, monospace;
+  font-family: Cascadia Code, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-weight: 600;
   line-height: 12px;
   font-size: 14px;

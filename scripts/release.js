@@ -54,6 +54,9 @@ async function releaseCode(){
   })
 
   if(!yes) return console.log(EXIT_MESSAGE)
+
+  // 测试
+  // execa.commandSync('npm run test')
   
   // build
   for(const package of packageNames) buildPackage(package, version)

@@ -2,7 +2,8 @@ import {
   ComponentInternalInstance,
   onMounted,
   onBeforeUnmount,
-  inject
+  inject,
+  reactive
 } from 'vue'
 
 import {
@@ -13,7 +14,7 @@ import {
 } from './util/event'
 
 import { findComponentElement } from './util/component'
-import { FieldAddEventDetail, FieldEventDetail, XFormModel } from './model'
+import { FieldAddEventDetail, FieldEventDetail, XFormModel, XFormSchema } from './model'
 import { XFORM_MODEL_SYMBOL } from '@core/model/constant'
 
 export function useModel(){
@@ -40,4 +41,12 @@ export function useField(component: ComponentInternalInstance, detail: FieldAddE
       dispatchEvent(element, EVENT_XFORM_VALIDATE)
     }
   }
+}
+
+export function createSchema(){
+  const schema = {
+    fields: []
+  } as XFormSchema
+
+  return reactive(schema)
 }
