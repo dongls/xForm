@@ -1,7 +1,7 @@
 {
   "name": "xform",
   "private": true,
-  "version": "0.4.4",
+  "version": "0.5.2",
   "description": "Vue驱动的自定义表单套件。",
   "main": "dist/xform.core.js",
   "style": "dist/css/xform.core.css",
