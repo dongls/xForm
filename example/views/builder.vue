@@ -25,9 +25,9 @@ export default defineComponent({
 
         pending.value = true
         return builder.validate()
-          .then((messages: any) => {
-            console.log('validate:', messages)
-            if(messages.every((i: any) => i === true)) viewJSON()
+          .then((res: any) => {
+            console.log('validate:', res)
+            if(res.valid) viewJSON()
           })
           .finally(() => pending.value = false)
       }

@@ -7,25 +7,9 @@ function parseMeta(article: Element){
   }
 }
 
-function onScroll(event: Event){
-  const anchors = document.querySelectorAll('.head-anchor')
-  const scrollTop = document.documentElement.scrollTop + 20
-
-  let anchor: HTMLElement = null
-  for(let i = 0; i < anchors.length; i++){
-    const curr = anchors[i] as HTMLElement
-    const next = anchors[i + 1] as HTMLElement
-    if(curr.offsetTop <= scrollTop) anchor = curr
-    if(next && next.offsetTop > scrollTop) break
-  }
-  
-  const elements = document.querySelectorAll('.article-toc > li')
-  const link = anchor ? document.querySelector(`.article-toc a[href="#${anchor.id}"]`) : null
-  const li = link ? link.parentNode : null
-
-  for(const ele of elements){
-    ele == li ? ele.classList.add('active') : ele.classList.remove('active')
-  }
+function getOffsetTop(element: HTMLElement): number {
+  if(null == element.offsetParent) return 0
+  return element.offsetTop + getOffsetTop(element.offsetParent as HTMLElement)
 }
 
 export function scrollTo(selector: string){
@@ -33,8 +17,7 @@ export function scrollTo(selector: string){
     const head = document.querySelector(decodeURIComponent(selector)) as HTMLElement
     if(null == head) return
 
-    window.location.hash = selector
-    setTimeout(() =>  document.documentElement.scrollTop = head.offsetTop - 20, 0)
+    setTimeout(() => document.documentElement.scrollTop = getOffsetTop(head), 0)
   } catch (error) { /**/ }
 }
 
@@ -46,8 +29,6 @@ function renderToc(article: Element, meta: any){
     const id = head.id
     return `<li><a href="#${id}">${id}</a></li>`
   }).join('')
-
-  meta.toc === false ? window.removeEventListener('scroll', onScroll) : window.addEventListener('scroll', onScroll, { passive: true })
 }
 
 function enhance(path: string){
@@ -57,11 +38,11 @@ function enhance(path: string){
   renderToc(article, meta)
 }
 
-export default function(path: string){
-  return new Promise(resolve => {
+export default function(path: string, hash: string){
+  return new Promise(() => {
     setTimeout(() => {
       enhance(path)
-      resolve()
+      if(hash) scrollTo(hash)
     }, 0)
   })
 }

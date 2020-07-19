@@ -13,8 +13,10 @@ import {
   EVENT_XFORM_VALIDATE
 } from './util/event'
 
+import { isObject } from './util/lang'
+
 import { findComponentElement } from './util/component'
-import { FieldAddEventDetail, FieldEventDetail, XFormModel, XFormSchema } from './model'
+import { FieldAddEventDetail, FieldEventDetail, XFormModel, XFormSchema, XField } from './model'
 import { XFORM_MODEL_SYMBOL } from '@core/model/constant'
 
 export function useModel(){
@@ -43,10 +45,11 @@ export function useField(component: ComponentInternalInstance, detail: FieldAddE
   }
 }
 
-export function createSchema(){
-  const schema = {
-    fields: []
-  } as XFormSchema
+export function createSchema(origin?: any){
+  const t = isObject(origin) ? origin : {}
+  const schema = { ...t }
+  if(!Array.isArray(schema.fields)) schema.fields = []
+  if(schema.fields.length > 0) schema.fields = schema.fields.map((f: any) => f instanceof XField ? f : new XField(f))
 
-  return reactive(schema)
+  return reactive(schema as XFormSchema)
 }

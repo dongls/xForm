@@ -1,6 +1,5 @@
 # 快速上手
 
-本节将介绍如何在项目中使用`xForm`。
 ::: tip 提示
 该文档默认你使用[Webpack][webpack]构建项目，代码使用ES2015+规范进行编写。
 :::
@@ -27,7 +26,7 @@ npm i @dongls/xform.bootstrap
 ## 使用
 `xForm`本身并**不提供具体字段类型的实现**，因此在设计时就将核心组件与字段解耦，所以你可以选择只使用核心组件，也可以选择使用内置字段（依赖外部UI库）。
 
-#### 只使用核心组件
+### 只使用核心组件
 如果您不需要任何内置的字段类型，您可以选择只引入核心组件。如果您选择了此种方式，那么您需要提供字段类型的具体实现。
 ```javascript
 import { createApp } from 'vue';
@@ -48,8 +47,8 @@ createApp(App).use(XForm, {
 });
 ```
 
-#### 使用基于Bootstrap的字段库
-字段库基于[Bootstrap@4.x][bootstrap]开发，你需要自行安装`Bootstrap`。
+### 使用基于Bootstrap的字段库
+字段库基于[Bootstrap@4.x][bootstrap]开发，这里推荐安装`v4.5`及以上版本。
 
 ```javascript
 import '@dongls/xform/dist/index.css';
@@ -67,12 +66,14 @@ createApp(App).use(XForm, {
 });
 
 ```
-这里有一个基于Bootstrap的[在线表单设计器](https://codepen.io/dongls/pen/QWyJvEN)。
-<iframe height="265" style="width: 100%;" scrolling="no" title="xform demo" src="https://codepen.io/dongls/embed/QWyJvEN?height=265&theme-id=light&default-tab=html" frameborder="no" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href='https://codepen.io/dongls/pen/QWyJvEN'>xform demo</a> by dongls
+这里有一个基于Bootstrap的[在线表单设计器](https://codepen.io/dongls/pen/QWyJvEN)或者查看[在线示例][example]的[源代码][code]了解如何使用。
+<iframe height="265" style="width: 100%;" scrolling="no" title="xform bootstrap demo" src="https://codepen.io/dongls/embed/QWyJvEN?height=265&theme-id=light&default-tab=html" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/dongls/pen/QWyJvEN'>xform bootstrap demo</a> by dongls
   (<a href='https://codepen.io/dongls'>@dongls</a>) on <a href='https://codepen.io'>CodePen</a>.
 </iframe>
 
 [Webpack]: https://webpack.js.org
 [unpkg]: https://unpkg.com/@dongls/xform/
 [bootstrap]: https://getbootstrap.com/docs/4.5/
+[example]: https://dongls.github.io/xForm/example.html
+[code]: https://github.com/dongls/xForm/tree/master/example

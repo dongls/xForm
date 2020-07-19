@@ -1,4 +1,4 @@
-require('markdown-it/lib/common/html_blocks').push('md-meta')
+require('./extend-html')
 
 const EMOJI_REG = require('emoji-regex')()
 const MarkdownIt = require('markdown-it')
@@ -23,11 +23,16 @@ md.use(mdAnchor, {
 md.renderer.rules.heading_open = function(tokens, idx, options, env, slf){
   const token = tokens[idx]
   const next = tokens[idx + 1]
-
-  if(null != token && token.tag == 'h2' && null != next){
-    token.attrJoin('class', 'head-anchor')
+  
+  // 需要包裹一下
+  if(null != token && token.nesting == 1 && token.tag == 'h2' && null != next){
+    token.attrJoin('class', 'head-anchor article-sticky-heading')
     token.attrSet('id', genId(next.content))
   }
+
+  // if(null != token && token.nesting == 1 && token.tag == 'h3'){
+  //   token.attrSet('class', 'head-anchor article-sticky-heading')
+  // }
 
   return slf.renderToken(tokens, idx, options)
 }

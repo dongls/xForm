@@ -1,7 +1,6 @@
 <script lang="ts">
 import { useLocalSchema } from '../util/common'
 import { defineComponent } from 'vue'
-
 export default defineComponent({
   name: 'designer-view',
   setup(){
@@ -31,6 +30,9 @@ export default defineComponent({
     </template> -->
     <!-- <template #setting_type_text="scope">
       <div >field setting: {{ scope }}</div>
+    </template> -->
+    <!-- <template #setting_name_field_8e78d692="{field}">
+      <div >field setting: {{ field }}</div>
     </template> -->
   </xform-designer>
 </template>

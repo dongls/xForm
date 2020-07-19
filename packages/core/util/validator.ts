@@ -186,7 +186,7 @@ export function useValidator(instance: ComponentInternalInstance, model: XFormMo
 
   function fieldValidateHandle(event: CustomEvent){
     event.stopPropagation()
-    typeof context.validator == 'function' && context.validator()
+    typeof validator == 'function' && validator()
   }
 
   onMounted(() => {

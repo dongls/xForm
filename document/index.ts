@@ -1,4 +1,5 @@
 import './index.css'
+import './native/index'
 
 import { createApp } from 'vue'
 import router from './router'

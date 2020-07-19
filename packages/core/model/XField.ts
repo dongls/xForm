@@ -6,8 +6,8 @@ interface XFieldStorage {
 }
 
 interface XFieldDesignerProps {
-  dragging: boolean;
   [prop: string]: any;
+  dragging: boolean;
 }
 
 interface XFieldAttributes{

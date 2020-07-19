@@ -1,5 +1,5 @@
 const { IS_PRODUCTION, NODE_ENV } = require('./args')
- 
+
 const path = require('path')
 const webpack = require('webpack')
 const { merge } = require('webpack-merge')
@@ -72,8 +72,7 @@ const production = {
   stats: {
     modules: false,
     children: false
-  },
-  devtool: 'inline-cheap-source-map'
+  }
 }
 
 module.exports = merge(baseConfig, common, IS_PRODUCTION ? production : development)

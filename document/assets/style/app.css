@@ -7,9 +7,9 @@
   top: 0;
   width: 100%;
   height: 40px;
-  background-color: var(--doc-color-primary);
+  background-color:#fff;
   z-index: 10;
-  color: #fff;
+  border-bottom: 1px solid #dcdfe6;
 }
 
 .doc-header-main{
@@ -32,7 +32,7 @@
 }
 
 .doc-nav{
-  width: 200px;
+  width: 240px;
   position: sticky;
   top: 40px;
   max-height: calc(100vh - 80px);
@@ -44,6 +44,7 @@
   flex: 1;
   padding-right: 180px;
   position: relative;
+  width: 0;
 }
 
 .doc-main{
@@ -70,7 +71,7 @@
   list-style: none;
 }
 
-.doc-menus > li{
+.doc-menu-item{
   position: relative;
   line-height: 20px;
   padding-right: 24px;
@@ -78,23 +79,37 @@
   user-select: none;
 }
 
-.doc-menus > li > a:link,
-.doc-menus > li > a:visited{
+.doc-menu-group:first-child{
+  margin-top: 0;
+}
+
+.doc-menu-item > a:link,
+.doc-menu-item > a:visited{
   color: #333;
 }
 
-.doc-menus > li > a:hover{
+.doc-menu-item > a:hover{
   color: var(--doc-link-color);;
 }
 
-.doc-menus > li > a.router-link-exact-active{
+.doc-menu-item > a.router-link-exact-active{
   font-weight: 700;
   color: var(--doc-link-color);;
 }
 
-h3.doc-menu-title{
+.doc-menu-item > small{
+  color: #666;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.doc-menu-group{
   height: 28px;
+  line-height: 28px;
   margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 15px;
 }
 
 .doc-menu-loading::after{
@@ -126,19 +141,29 @@ h3.doc-menu-title{
 .doc-logo > small{
   font-size: 12px;
   margin-left: 4px;
-  color: #f0f0f0;
+  color: #666;
 }
 
-.doc-header-links a + a{
-  margin-left: 20px;
+.doc-header-links img{
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .doc-header-links a{
-  color: #fff;
+  margin: 0 2px 0 20px;
+  height: 18px;
+  line-height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.doc-header-links a{
+  font-weight: 500;
+  color: var(--doc-text-color-primar);
 }
 
 .doc-header-links a:hover{
-  border-color: #fff;
+  color: var(--doc-link-color);
 }
 
 .doc-not-found{
@@ -172,60 +197,98 @@ h3.doc-menu-title{
   padding-left: 20px;
 }
 
-.article-toc{
+.icon-outbound{
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+
+  background: url('./assets/svg/outbound.svg') no-repeat;
+}
+
+is-link{
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+is-link:hover path,
+is-link:hover polygon{
+  fill: var(--doc-color-primary);
+}
+
+is-link > svg{
+  display: block;
+}
+
+@media (max-width: 768px){
+  .doc-header-main,
+  .doc-container,
+  .doc-copyright{
+    width: 100%;
+  }
+
+  .doc-header-main{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .doc-nav{
+    display: none;
+  }
+
+  .doc-affix{
+    display: none;
+  }
+
+  .doc-content{
+    padding-right: 0;
+  }
+
+  .doc-toggle-btn{
+    display: block !important;
+  }
+}
+
+.doc-nav.is-open{
+  display: block !important;
   position: fixed;
-  width: 180px;
-  margin: 0;
-  list-style: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 19;
+  background-color: rgba(0 ,0, 0, .125);
+  max-height: 100%;
+  width: 100%;
   padding: 0;
-  border-left: 1px solid #ddd;
 }
 
-.article-toc > li{
-  padding-left: 20px;
-  height: 20px;
-  line-height: 20px;
-  margin-left: -1px;
-  border-left: 1px solid transparent;
+.doc-nav.is-open .doc-menus{
+  padding: 20px;
+  height: 100%;
+  overflow: auto;
+  background-color: #fff;
+  width: 280px;
+  float: right;
 }
 
-.article-toc > li.active{
-  border-left-color: var(--doc-color-primary);
-}
-
-.article-toc > li.active a{
-  color: var(--doc-link-color) !important;
-}
-
-.article-toc > li + li{
-  margin-top: 5px;
-}
-
-.article-toc > li > a:link,
-.article-toc > li > a:visited{
-  color: #333;
-}
-
-.article-toc > li > a:hover{
-  color: var(--doc-link-color);
-}
-
-.article a{
-  margin-left: 2px;
-  margin-right: 2px;
-}
-
-h2.head-anchor:hover .article-anchor{
-  opacity: 1;
-}
-
-.article-anchor{
-  float: left;
-  margin-left: -15px !important;
-  opacity: 0;
-}
-
-.article-anchor:hover{
-  background-color: transparent;
-  border-bottom-color: transparent;
+.doc-toggle-btn{
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 18;
+  font-weight: 700;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background-color: #fff;
+  border: 1px solid #dcdfe6;
+  box-shadow: 0 1px 4px rgba(0 ,0, 0, .125);
+  font-size: 12px;
+  outline: none;
 }

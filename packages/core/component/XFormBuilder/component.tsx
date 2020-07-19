@@ -124,7 +124,7 @@ export default defineComponent({
         const messages = await Promise.all(promises)
         pending.value = false
         
-        return messages
+        return { messages, valid: messages.every(i => i === true) }
       },
       update(event: any){
         const model = props.value

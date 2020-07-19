@@ -61,6 +61,9 @@ async function releaseCode(){
   // build
   for(const package of packageNames) buildPackage(package, version)
 
+  // document
+  buildDocument()
+
   // commit
   execa.commandSync('git add .')
   execa.sync('git', ['commit', '-m', 'release: v' + version])
@@ -81,9 +84,13 @@ async function releaseCode(){
   console.log()
 }
 
-function releaseDocument(){
+function buildDocument(){
   execa.commandSync('npm run build:docs', { stdio: 'inherit' })
   execa.commandSync('npm run build:example', { stdio: 'inherit' })
+}
+
+function releaseDocument(){
+  buildDocument()
   execa.commandSync('git add .')
   execa.sync('git', ['commit', '-m', 'docs: build document'])
   execa.commandSync('git push')

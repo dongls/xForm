@@ -37,8 +37,8 @@ type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormVie
 
 /**
  * 根据字段创建对应的设置组件，按以下顺序逐次匹配：
- * 1. 检索是否有名为`setting_name_[name]`对应的slot
- * 2. 检索是否有名为`setting_type_[type]`对应的slot
+ * 1. 检索是否有名为`name_[name]`对应的slot
+ * 2. 检索是否有名为`type_[type]`对应的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
 function renderField(field: XField, instance: XFormViewerInstance){

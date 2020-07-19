@@ -1,5 +1,5 @@
 <template>
-  <p class="doc-not-found">404 not found</p>
+  <p class="doc-not-found">😂 在写了！在写了！在写了~~~</p>
 </template>
 
 <script>

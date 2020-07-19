@@ -45,7 +45,10 @@ module.exports = {
       { // 处理字体
         test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
         loader: 'file-loader',
-        exclude: /packages\/common\/svg/,
+        exclude: [
+          /packages\/common\/svg/,
+          /document\/assets\/svg/
+        ],
         options: IS_PRODUCTION ? {
           name: 'font/[name].[ext]'
         } : undefined
@@ -71,7 +74,11 @@ module.exports = {
   plugins: [
     new VueLoaderPlugin(),
     new webpack.DefinePlugin({
-      '__VERSION__': JSON.stringify(process.env.RELEASE_VERSION)
+      '__VUE_OPTIONS_API__': JSON.stringify(true),
+      '__VUE_PROD_DEVTOOLS__': JSON.stringify(!IS_PRODUCTION),
+      '__VERSION__': JSON.stringify(process.env.RELEASE_VERSION),
+      '__IS_DEV__': JSON.stringify(process.env.NODE_ENV == 'development'),
+      '__VUE_VERSION__': JSON.stringify(process.env.VUE_VERSION)
     })
   ],
   performance: {

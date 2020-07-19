@@ -40,6 +40,8 @@ function renderMessage(message: Ref<string>, validating: Ref<boolean>){
   return null
 }
 
+// TODO: prop label
+// TODO: prop type
 export default defineComponent({
   name: 'xform-item',
   props: {

@@ -23,7 +23,10 @@ const common = {
   module: {
     rules: [{
       test: /\.md$/,
-      loader: path.resolve(__dirname, './loaders/markdown-loader')
+      use: [
+        'html-loader',
+        path.resolve(__dirname, './loaders/markdown-loader')
+      ]
     }]
   }
 }

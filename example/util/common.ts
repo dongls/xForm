@@ -1,5 +1,6 @@
 import { watch, computed, reactive } from 'vue'
-import { XField, XFormModel, XFormSchema } from '@core/model'
+import { XFormModel } from '@core/model'
+import { createSchema } from '@core/index'
 
 import DEFAULT_SCHEMA from './schema.data'
 
@@ -10,16 +11,7 @@ function saveToLocalStorage(key: string, value: string){
   localStorage.setItem(key, value)
 }
 
-function toXField(f: any): XField{
-  return f instanceof XField ? f : new XField(f)
-}
-
-function toXFormSchema(schema: any){
-  schema.fields = schema.fields.map(toXField)
-  return schema as XFormSchema
-}
-
-function getLocalSchema(): XFormSchema{
+function getLocalSchema(){
   const str = localStorage.getItem(XFORM_SCHEMA_STORAGE_KEY)
   try {
     const schema: any = JSON.parse(str)
@@ -30,10 +22,10 @@ function getLocalSchema(): XFormSchema{
       schema.fields.length == 0
     ) throw new Error
 
-    return toXFormSchema(schema)
+    return createSchema(schema)
   } catch (error) {
     const source = JSON.parse(JSON.stringify(DEFAULT_SCHEMA))
-    const schema = toXFormSchema(source)
+    const schema = createSchema(source)
     saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(schema))
     return schema
   }
@@ -49,8 +41,7 @@ function getLocalModel(){
 }
 
 export function useLocalSchema(){
-  const localSchema = getLocalSchema()
-  const schema = reactive<XFormSchema>(localSchema)
+  const schema = getLocalSchema()
   watch(schema, value => {
     saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(value))
   }, { deep: true })

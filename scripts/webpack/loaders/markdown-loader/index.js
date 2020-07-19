@@ -11,5 +11,6 @@ module.exports = function (source) {
     .replace(/\u2029/g, '\\u2029')
     .replace(/__VERSION__/g, process.env.RELEASE_VERSION)
   
-  return `${prefix} ${JSON.stringify(html)};`
+  const HAS_HTML_LOADER = this.loaders.some(l => /\/html-loader\//.test(l.path))
+  return HAS_HTML_LOADER ? html : `${prefix} ${JSON.stringify(html)};`
 }

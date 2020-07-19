@@ -21,9 +21,8 @@ export interface DragEvent {
 export type WrappedValidator = () => Promise<any>;
 
 export interface XFormItemContext {
-  validating: Ref;
+  validating: Ref<boolean>;
   message: Ref<string>;
-  validator?: WrappedValidator;
 }
 
 export interface FieldEventDetail {

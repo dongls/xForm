@@ -17,7 +17,8 @@ export interface Rule{
 export type ValidateFunc = (field: XField, value: any, model: any, context: XFormItemContext) => Promise<any>
 export type Validator = ValidateFunc;
 
-type XFieldConfComponent = ComponentOptions | ((field: XField, mode: string) => ComponentOptions | VNode);
+type ModeCompontFunc = (field: XField, mode: string) => ComponentOptions | VNode;
+type XFieldConfComponent = ComponentOptions | ModeCompontFunc;
 
 /** 描述字段类型的类，主要用于组件渲染 */
 export default class XFieldConf{
@@ -29,7 +30,7 @@ export default class XFieldConf{
   icon?: string | Function;
 
   custom?: boolean;
-  attributes?: object;
+  attributes?: object | Function;
   extension?: object;
   validator?: Validator;
 

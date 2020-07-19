@@ -17,12 +17,14 @@ const MENUS_DATA = data.map(i => {
     name: i.name,
     group: i.group === true,
     path: i.path,
-    status: MenuStatusEnum.INIT
+    subtitle: i.subtitle,
+    status: MenuStatusEnum.INIT,
+    hidden: i.hidden === true
   }
 })
 
-const PURE_MENU = MENUS_DATA.filter(i => !i.group)
-export const menus = reactive(MENUS_DATA)
+const PURE_MENU = MENUS_DATA.filter(i => i.group !== true && i.hidden !== true)
+export const menus = reactive(MENUS_DATA.filter(i => i.hidden !== true))
 
 export function load(path: string){
   const raw = MENU_RAW_MAP.get(path)
@@ -33,7 +35,7 @@ export function load(path: string){
 }
 
 export function getMenu(path: string){
-  return menus.find(m => m.path == path)
+  return MENUS_DATA.find(m => m.path == path)
 }
 
 export function getMenuRelation(path: string){

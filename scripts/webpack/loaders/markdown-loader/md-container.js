@@ -3,6 +3,8 @@ const Container = require('markdown-it-container')
 const CONTAINER_REG = /^\W*(danger|tip|warning)(?:\s+(.*))?$/
 const validate = params => CONTAINER_REG.test(params)
 
+const CODEBOX_REG = /^code-box\s*(.*)$/
+
 function render(tokens, idx){
   const token = tokens[idx]
 
@@ -20,5 +22,13 @@ function render(tokens, idx){
 
 module.exports = function(md){
   md.use(Container, 'container', { validate, render })
+  md.use(Container, 'code-box', {
+    validate(params) {
+      return params.trim().match(CODEBOX_REG)
+    },
+    render(tokens, idx) {
+      return tokens[idx].nesting === 1 ? '<code-box>' : '</code-box>'
+    }
+  })
   return md
 }

@@ -21,8 +21,7 @@ hue-6-2: #c18401
 .hljs {
   position: relative;
   display: block;
-  overflow-x: auto;
-  padding: 15px;
+
   color: #383a42;
   background: #f8f9fa;
   border-radius: 1px;
@@ -43,6 +42,9 @@ hue-6-2: #c18401
 }
 
 .hljs code{
+  overflow-x: auto;
+  padding: 15px;
+  display: block;
   font-size: 14px;
   font-family: Cascadia Code, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
 }

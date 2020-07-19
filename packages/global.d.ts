@@ -1,4 +1,6 @@
 declare var __VERSION__: string
+declare var __IS_DEV__: boolean
+declare var __VUE_VERSION__: string
 
 declare module '@config'{
   interface config{
@@ -55,6 +57,12 @@ declare module '*.svg' {
 }
 
 declare module '*.md' {
+  const src: string
+  export default src
+}
+
+
+declare module '*.css' {
   const src: string
   export default src
 }

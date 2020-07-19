@@ -38,9 +38,17 @@ export function use(option: XFormOption){
   usePreset(option.preset)
 }
 
-export function reset(option: XFormOption){
+export function resetPreset(){
   store.preset = null
+}
+
+export function resetConfig(){
   store.config = clonePlainObject(CONFIG)
+}
+
+export function reset(option?: XFormOption){
+  resetPreset()
+  resetConfig()
   if(null != option) use(option)
 }
 
@@ -77,6 +85,9 @@ export default {
   getPreset,
   registerField,
   registerManyField,
-  useConfig,
+  reset,
+  resetConfig,
+  resetPreset,
   use,
+  useConfig
 }

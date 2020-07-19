@@ -1,7 +1,7 @@
 <template>
   <article :key="path" :path="path" class="article" @click="proxy" v-html="content" />
   <div class="doc-affix">
-    <ul class="article-toc" @click.prevent="jump"/>
+    <ul class="article-toc"/>
   </div>
   <footer-guide/>
 </template>
@@ -11,7 +11,7 @@ import { defineComponent, onBeforeMount, ref, Ref, computed } from 'vue'
 import { useRoute, onBeforeRouteUpdate, RouteLocationNormalized, NavigationGuardNext, useRouter, Router } from 'vue-router'
 import { load, getMenu, MenuStatusEnum } from '../menus'
 import FooterGuide from '../component/FooterGuide.vue'
-import enhance, { scrollTo } from './enhance'
+import enhance from './enhance'
 
 async function loadDocument(route: RouteLocationNormalized, content: Ref<string>, router: Router, next?: NavigationGuardNext){
   const menu = getMenu(route.path)
@@ -26,21 +26,19 @@ async function loadDocument(route: RouteLocationNormalized, content: Ref<string>
   document.title = menu.name
 
   if(typeof next == 'function') next()
-  await enhance(route.path)
-
-  if(null != route.hash) scrollTo(route.hash)
+  enhance(route.path, route.hash)
 }
 
 function proxy(router: Router, event: Event){
   const target = event.target as HTMLElement
+  if(target.classList.contains('article-anchor')) return
+
   const tag = target.tagName.toLowerCase()
-  
   if(tag == 'a'){
     event.preventDefault()
     const a = target as HTMLAnchorElement
     const href = a.getAttribute('href')
 
-    if(a.classList.contains('article-anchor')) return scrollTo(href)
     if(href.startsWith('/doc/')) return router.push(href)
 
     return window.open(a.href)
@@ -60,19 +58,16 @@ export default defineComponent({
     })
 
     onBeforeRouteUpdate((to, from, next) => {
+      // 只是hash变化不加载文档
+      if(to.fullPath.split('#')[0] == from.fullPath.split('#')[0]) return
+
       loadDocument(to, content, router, next)
     })
 
     return { 
       content,
       path: computed(() => route.path),
-      proxy: proxy.bind(null, router),
-      jump(event: Event){
-        const target = event.target as HTMLElement
-        if(target.tagName.toLowerCase() != 'a') return
-
-        scrollTo(target.getAttribute('href'))
-      }
+      proxy: proxy.bind(null, router)
     }
   },
   components: {

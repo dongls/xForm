@@ -248,6 +248,7 @@ export default defineComponent({
   props: {
     mode: {
       type: String,
+      required: false,
       default: null
     },
     schema: {
