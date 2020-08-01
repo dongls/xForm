@@ -11,6 +11,7 @@ import Radio from './radio'
 import Checkbox from './checkbox'
 import Date from './date'
 import Divider from './divider'
+import Group from './group'
 
 const bootstrap: XFormPreset = {
   name: 'bootstrap',
@@ -26,7 +27,8 @@ const bootstrap: XFormPreset = {
     Radio,
     Checkbox,
     Date,
-    Divider
+    Divider,
+    Group
   ]
 }
 

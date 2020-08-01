@@ -9,7 +9,7 @@ import XFormItem from './component/XFormItem/component'
 
 const version = __VERSION__
 const install = function(app: App, options: XFormOption){
-  store.use(options)
+  if(null != options) store.use(options)
 
   app.component(XFormDesigner.name, XFormDesigner)
   app.component(XFormBuilder.name, XFormBuilder)
@@ -24,9 +24,15 @@ const XForm = {
 }
 
 export {
+  DragContext,
+  DragEvent,
+  DragModeEnum,
   XField,
   XFieldConf,
-  XFormPreset
+  XFormModel,
+  XFormOption,
+  XFormPreset,
+  XFormSchema,
 } from './model'
 
 export {
@@ -35,5 +41,6 @@ export {
   install
 }
 
+export * from './model/constant'
 export * from './api'
 export default XForm

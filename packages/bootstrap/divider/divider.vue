@@ -5,6 +5,7 @@ import divider from '../../common/components/divider.vue'
 
 export default defineComponent({
   name: 'xform-bs-divider',
+  inheritAttrs: false,
   components: {
     [divider.name]: divider
   },

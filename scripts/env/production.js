@@ -1,8 +1,5 @@
 module.exports = {
-  doc: {
+  website: {
     base: '/xForm/'
-  },
-  example: {
-    base: '/xForm/example.html'
   }
 }

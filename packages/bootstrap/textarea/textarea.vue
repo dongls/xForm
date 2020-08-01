@@ -1,6 +1,6 @@
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from 'vue'
-import { XField, useField } from '@dongls/xform'
+import { defineComponent } from 'vue'
+import { XField } from '@dongls/xform'
 import { updateValue } from '../util'
 
 export default defineComponent({
@@ -17,14 +17,6 @@ export default defineComponent({
   },
   emits: ['update:value'],
   setup(props: any, { emit }){
-    const instance = getCurrentInstance()
-    const detail = {
-      key: props.field.name,
-      prop: props.field.name,
-      field: props.field,
-    }
-
-    useField(instance, detail)
     return { updateValue: updateValue.bind(null, emit, props.field.name) }
   }
 })

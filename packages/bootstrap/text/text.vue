@@ -1,6 +1,18 @@
+<template>
+  <input
+    :id="field.name"
+    :name="field.name"
+    type="text"
+    :value="value"
+    :class="clasName"
+    :placeholder="field.placeholder"
+    @input="updateValue"
+  >
+</template>
+
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from 'vue'
-import { useField, XField } from '@dongls/xform'
+import { defineComponent, computed } from 'vue'
+import { XField } from '@dongls/xform'
 import { updateValue } from '../util'
 
 export default defineComponent({
@@ -16,27 +28,16 @@ export default defineComponent({
     }
   },
   setup(props: any, { emit }){
-    const instance = getCurrentInstance()
-    const detail = {
-      key: props.field.name,
-      field: props.field,
-      prop: props.field.name,
+    return { 
+      updateValue: updateValue.bind(null, emit, props.field.name),
+      clasName: computed(() => {
+        return {
+          'form-control': true,
+          'form-control-sm': true,
+          'is-invalid': props.field.valid == 'error'
+        }
+      })
     }
-
-    useField(instance, detail)
-    return { updateValue: updateValue.bind(null, emit, props.field.name) }
   }
 })
 </script>
-
-<template>
-  <input
-    :id="field.name"
-    :name="field.name"
-    type="text"
-    :value="value"
-    class="form-control form-control-sm"
-    :placeholder="field.placeholder"
-    @input="updateValue"
-  >
-</template>

@@ -2,26 +2,27 @@ const OBJECT_TO_STRING_TAG = {
   RegExp: '[object RegExp]'
 }
 
-/** 是否为空串或null */
-export function isEmptyStr(value: any){
-  return null == value || (typeof value == 'string' && value.length == 0)
+export function isNull(value: unknown){
+  return value == null
 }
 
-export function isEmpty(value: any){
-  return (
-    isEmptyStr(value) || 
-    ( typeof value == 'number' && (isNaN(value) || !isFinite(value)) )
-  )
+/** 是否为空串或null */
+export function isEmpty(value: unknown){
+  return typeof value == 'string' && value.trim().length == 0
 }
 
 /** 是否为对象 */
-export function isObject(value: any){
+export function isObject(value: unknown){
   return value != null && (typeof value == 'object' || typeof value == 'function')
 }
 
 /** 是否为正则表达式 */
-export function isRegExp(value: any){
+export function isRegExp(value: unknown){
   return isObject(value) && Object.prototype.toString.call(value) == OBJECT_TO_STRING_TAG.RegExp
+}
+
+export function isFunction(value: unknown){
+  return typeof value == 'function'
 }
 
 /**
@@ -30,7 +31,6 @@ export function isRegExp(value: any){
  * @returns 克隆后的对象
  */
 export function clonePlainObject(target: any): any{
-  // TODO: 对带原型数据的处理
   if(null == target || typeof target != 'object') return target
   if(Array.isArray(target)) return target.map(clonePlainObject)
   

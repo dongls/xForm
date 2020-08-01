@@ -1,16 +1,17 @@
-import './index.css'
-import './native/index'
-
+import '@core/theme/index.css'
 import { createApp } from 'vue'
+
+import XForm from '@core/index'
+import Example from './example.vue'
+import Modal from './component/modal.vue'
+
 import router from './router'
-import App from './app.vue'
-import { doc as config } from '@config'
 
-const props = {
-  version: __VERSION__,
-  config: config
-}
+const app = createApp(Example)
 
-const app = createApp(App, props)
 app.use(router)
-app.mount('body')
+app.use(XForm)
+app.component(Modal.name, Modal)
+app.mount('#app')
+
+app.config.performance = __IS_DEV__

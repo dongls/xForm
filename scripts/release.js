@@ -85,8 +85,7 @@ async function releaseCode(){
 }
 
 function buildDocument(){
-  execa.commandSync('npm run build:docs', { stdio: 'inherit' })
-  execa.commandSync('npm run build:example', { stdio: 'inherit' })
+  execa.commandSync('npm run build:document', { stdio: 'inherit' })
 }
 
 function releaseDocument(){

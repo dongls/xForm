@@ -1,8 +1,5 @@
 module.exports = {
-  doc: {
-    base: '/'
-  },
-  example: {
+  website: {
     base: '/'
   }
 }

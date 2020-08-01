@@ -1,6 +1,6 @@
 <script lang="ts">
-import { defineComponent, getCurrentInstance, computed } from 'vue'
-import { XField, useField } from '@dongls/xform'
+import { defineComponent, computed } from 'vue'
+import { XField } from '@dongls/xform'
 import { updateValue } from '../util'
 
 export default defineComponent({
@@ -17,14 +17,6 @@ export default defineComponent({
   },
   emits: ['update:value'],
   setup(props, { emit }) {
-    const instance = getCurrentInstance()
-    const detail = {
-      key: props.field.name,
-      field: props.field,
-      prop: props.field.name
-    }
-
-    useField(instance, detail)
     return {
       updateValue: updateValue.bind(null, emit, props.field.name),
       radioClassName: computed(() => {

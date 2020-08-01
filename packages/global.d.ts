@@ -7,8 +7,9 @@ declare module '@config'{
     base: string
   }
 
+  export const website: config
+  // TODO: delete
   export const doc: config
-  export const example: config
 }
 
 interface Document {
@@ -16,8 +17,8 @@ interface Document {
 }
 
 declare module '*.vue' {
-	import { ComponentOptionsMixin } from 'vue'
-	const component: ComponentOptionsMixin
+	import { ComponentOptions } from 'vue'
+	const component: ComponentOptions
 	export default component
 }
 

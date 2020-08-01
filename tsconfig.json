@@ -9,9 +9,10 @@
     "noImplicitAny": true,
     "outDir": "./dist/",
     "paths": {
+      "@packages/*": ["packages/*"],
       "@core/*": ["packages/core/*"],
       "@common/*": ["packages/common/*"],
-      "@dongls/xform": ["packages/core/index"]
+      "@dongls/xform": ["packages/core/index"],
     },
     "target": "ESNext"
   },
@@ -19,7 +20,6 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "packages/**.d.ts",
-    "example/**/*.ts",
     "document/**/*.ts"
   ]
 }

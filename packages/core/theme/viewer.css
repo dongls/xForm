@@ -29,3 +29,7 @@
 .xform-viewer .xform-item.xform-is-top .xform-item-label{
   padding-left: 0 !important;
 }
+
+.xform-is-empty{
+  color: #9a9a9a;
+}

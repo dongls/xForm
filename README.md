@@ -1,8 +1,7 @@
 # xForm
-Vue驱动的自定义表单库。
+基于Vue@3.x的动态表单生成器。
 
 - [文档](https://dongls.github.io/xForm/)
-- [示例](https://dongls.github.io/xForm/example.html)
 
 ## License
 [MIT](LICENSE)

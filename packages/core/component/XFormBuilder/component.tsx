@@ -7,33 +7,28 @@ import {
   resolveComponent,
   VNode,
   ComponentPublicInstance,
-  ComponentOptions
+  ComponentOptions,
+  RenderFunction,
+  watch
 } from 'vue'
 
-import {
-  EVENT_XFORM_FIELD_ADD,
-  EVENT_XFORM_FIELD_REMOVE
-} from '@core/util/event'
-
 import { 
-  FieldAddEventDetail, 
-  FieldEventDetail, 
   XFormModel,
   XFormSchema,
   XField,
+  XFORM_MODEL_PROVIDE_KEY, 
+  XFORM_BUILDER_CONTEXT_PROVIDE_KEY, 
+  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  ValidateOptions,
+  ComponentEnum,
   WrappedValidator
 } from '@core/model'
 
 import {
-  genEventName,
   getFieldComponent
 } from '@core/util/component'
 
-import {
-  XFORM_MODEL_SYMBOL,
-  XFORM_FORM_SCHEMA_SYMBOL
-} from '@core/model/constant'
-import { ComponentEnum } from '@core/model/XFieldConf'
+import Store from '@core/store'
 
 interface XFormBuilderProps{
   mode: string;
@@ -44,8 +39,6 @@ interface XFormBuilderProps{
 
 interface XFormBuilderSetupState{
   update: Function;
-  onFieldAdd: (event: CustomEvent) => void;
-  onFieldRemove: (event: CustomEvent) => void;
 }
 
 type XFormBuilderInstance = ComponentPublicInstance & XFormBuilderProps & XFormBuilderSetupState;
@@ -56,21 +49,32 @@ type XFormBuilderInstance = ComponentPublicInstance & XFormBuilderProps & XFormB
  * 2. 检索是否有名为`type_[type]`的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderField(field: XField, value: any, slots: Slots, instance: XFormBuilderInstance){
-  const fc = field.findFieldConf()
+function renderField(instance: XFormBuilderInstance, slots: Slots, value: any, field: XField){
   const component = getFieldComponent(field, ComponentEnum.BUILD, instance.mode)
-  if(fc.custom && null != component) return h(component, { field, value })
+  if(field.conf?.custom === true && null != component) {
+    const props = { field, value: value[field.name] } as any
+    if(component && 'renderField' in component.props) {
+      props.renderField = renderField.bind(null, instance, slots, value)
+    }
+
+    return h(component, props)
+  }
 
   const XFormItem = resolveComponent('xform-item') as ComponentOptions
   const itemProps = { key: field.name, field, validation: true }
 
   return h(XFormItem, itemProps, function(){
+    // 动态props
     const props = {
       field: field,
       value: value[field.name],
       'onUpdate:value': instance.update
-    }
+    } as any
 
+    if(component && 'renderField' in component.props) {
+      props.renderField = renderField.bind(null, instance, slots, value)
+    }
+    
     const nameSlotFunc = slots[`name_${field.name}`]
     const nameSlot: VNode[] = typeof nameSlotFunc == 'function' && nameSlotFunc(props)
     if(nameSlot.length > 0) return nameSlot
@@ -78,8 +82,8 @@ function renderField(field: XField, value: any, slots: Slots, instance: XFormBui
     const typeSlotFunc = slots[`type_${field.type}`]
     const typeSlot: VNode[] = typeof typeSlotFunc == 'function' && typeSlotFunc(props)
     if(typeSlot.length > 0) return typeSlot
-      
-    if(fc == null || fc.build == null) {
+    
+    if(field.conf == null || field.conf.build == null) {
       console.warn(`field[${field.title}: ${field.name}] not implement build component`)
       return <p class="xform-is-unknown">暂不支持的字段类型</p>
     }
@@ -108,45 +112,59 @@ export default defineComponent({
       default: 'form'
     }
   },
+  emits: ['update:value', 'change'],
   setup(props: XFormBuilderProps, { emit }){
     const pending = ref(false)
-    const validators = new Map<string, WrappedValidator>()
+    const REGISTERED_FIELDS = new Map<string, ValidateOptions>()
 
-    provide(XFORM_MODEL_SYMBOL, props.value)
-    provide(XFORM_FORM_SCHEMA_SYMBOL, props.schema)
+    function registerField(key: string, validator: WrappedValidator){
+      const stopHandle = watch(() => props.value[key], () => {
+        if(Store.getConfig().validation.immediate !== false) validator()
+      })
+
+      REGISTERED_FIELDS.set(key, { validator, stopHandle })
+    }
+    
+    function removeField(key: string){
+      const o = REGISTERED_FIELDS.get(key)
+      if(null != o) {
+        REGISTERED_FIELDS.delete(key)
+        if(typeof o.stopHandle == 'function') o.stopHandle()
+      }
+    }
+
+    function update(event: any){
+      const model = props.value
+      const { value, name } = event
+
+      model[name] = value
+
+      emit('update:value', model)
+      emit('change', event)
+    }
+
+    provide(XFORM_MODEL_PROVIDE_KEY, props.value)
+    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    provide(XFORM_BUILDER_CONTEXT_PROVIDE_KEY, { 
+      registerField, 
+      removeField, 
+      updateFieldValue: update
+    })
 
     return {
       async validate(){
         if(pending.value) return Promise.reject('[xform error]: validate pending...')
         
         pending.value = true
-        const promises = [...validators.values()].map(fn => fn())
+        const promises = [...REGISTERED_FIELDS.values()].map(i => i.validator())
         const messages = await Promise.all(promises)
         pending.value = false
         
         return { messages, valid: messages.every(i => i === true) }
       },
-      update(event: any){
-        const model = props.value
-        const { value, name } = event
-
-        model[name] = value
-
-        emit('update:value', model)
-        emit('change', event)
-      },
-      onFieldAdd(event: CustomEvent){
-        event.stopPropagation()
-
-        const { validator, key } = event.detail as FieldAddEventDetail
-        if(typeof validator == 'function') validators.set(key, validator)
-      },
-      onFieldRemove(event: CustomEvent){
-        event.stopPropagation()
-
-        const { key } = event.detail as FieldEventDetail
-        validators.delete(key)
-      }
+      update,
+      registerField,
+      removeField
     }
   },
   render(instance: XFormBuilderInstance){
@@ -155,19 +173,19 @@ export default defineComponent({
     const value = instance.value
     
     const tagName = instance.tag || 'div'
-    const props: any = { 
+    const props = { 
       className: 'xform-builder', 
-      [genEventName(EVENT_XFORM_FIELD_ADD)]: instance.onFieldAdd,
-      [genEventName(EVENT_XFORM_FIELD_REMOVE)]: instance.onFieldRemove,
+      novalidate: tagName == 'form'
     }
-
+    
     const main = (
       <div class="xform-builder-main">
-        {typeof slots.header == 'function' &&  slots.header()}
-        {schema.fields.map(field => renderField(field, value, slots, instance))}
+        {typeof slots.header == 'function' && slots.header()}
+        {schema.fields.map(field => renderField(instance, slots, value, field))}
+        {typeof slots.default == 'function' && slots.default()}
         {typeof slots.footer == 'function' && slots.footer()}
       </div>
-    ) as VNode
+    ) as RenderFunction
         
     return h(tagName, props, main)
   }

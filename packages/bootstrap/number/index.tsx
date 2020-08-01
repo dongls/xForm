@@ -1,8 +1,9 @@
-import { defineComponent, getCurrentInstance } from 'vue'
-import { XFieldConf, XField, useField } from '@dongls/xform'
+import { defineComponent } from 'vue'
+import { XFieldConf, XField, XFormModel } from '@dongls/xform'
+import { updateValue } from '../util'
+
 import icon from '@common/svg/number.svg'
 import setting from './setting.vue'
-import { updateValue } from '../util'
 
 const build = defineComponent({
   name: 'xform-bs-number',
@@ -17,15 +18,6 @@ const build = defineComponent({
     }
   },
   setup(props, { emit }){
-    const instance = getCurrentInstance()
-    const detail = {
-      key: props.field.name,
-      field: props.field,
-      prop: props.field.name
-    }
-
-    useField(instance, detail)
-
     return function(){
       return (
         <input
@@ -46,7 +38,8 @@ export default new XFieldConf({
   title: '数字',
   setting,
   build,
-  validator(field: XField, value: any){
+  validator(field: XField, model: XFormModel){
+    const value = model[field.name]
     const isEmpty = null == value || typeof value == 'number' && (isNaN(value) || !isFinite(value))
     if(field.required && isEmpty) return Promise.reject('必填')
     if(field.attributes.integer && !/^[-+]?[1-9]\d*$/.test(value))  return Promise.reject('请输入整数')

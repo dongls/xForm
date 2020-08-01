@@ -25,10 +25,8 @@ export function genEventName(name: string){
 }
 
 /** 获取字段配置的组件 */
-export function getFieldComponent(field: XField, target: ComponentEnum, mode: string){
-  const fc = field.findFieldConf()
-  const component = fc[target]
-
+export function getFieldComponent(field: XField, target: ComponentEnum, mode?: string){
+  const component = field.conf?.[target]
   return typeof component == 'function' ? component(field, mode) : component
 }
  

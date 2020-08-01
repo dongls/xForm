@@ -1,0 +1,70 @@
+.xform-bs-group-list{
+  min-height: 200px;
+  padding: 5px;
+}
+
+.xform-preview-group.xform-is-selected > .xform-preview-addition > .xform-preview-cover,
+.xform-preview-group:hover > .xform-preview-addition > .xform-preview-cover{
+  background-color: rgb(253, 213, 138);
+}
+
+.xform-bs-group{
+  flex-direction: column;
+}
+
+.xform-bs-group .card{
+  border-radius: 0;
+}
+
+.xform-bs-group.xform-is-collasped{
+  .card-header{
+    border-bottom: 0;
+  }
+  
+  .xform-bs-group-list{
+    display: none;
+  }
+}
+
+.xform-bs-group .card-header{
+  display: flex;
+  flex-flow: row nowrap;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  align-items: center;
+}
+
+.xform-bs-group-toggle{
+  border: none;
+  margin: 0;
+  background-color: transparent;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  margin-right: 5px;
+
+  & > svg{
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+  }
+}
+
+
+.xform-bs-group .xform-bs-group-list{
+  padding: 10px;
+}
+
+.xform-bs-group-empty{
+  position: absolute;
+  top: 120px;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  color: #9a9a9a;
+  font-size: 14px;
+  font-weight: 600;
+}

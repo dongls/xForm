@@ -10,5 +10,6 @@ export default new XFieldConf({
   title: '分割线',
   custom: true,
   setting: setting,
-  build: divider
+  build: divider,
+  view: divider
 })

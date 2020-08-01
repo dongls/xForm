@@ -11,14 +11,15 @@ import {
 import { 
   XField, 
   XFormModel, 
-  XFormSchema
+  XFormSchema,
+  AnyProps
 } from '@core/model'
 
 import { 
-  XFORM_FORM_SCHEMA_SYMBOL 
+  XFORM_FORM_SCHEMA_PROVIDE_KEY
 } from '@core/model/constant'
 
-import { isEmpty } from '@core/util/lang'
+import { isEmpty, isNull } from '@core/util/lang'
 import { getFieldComponent } from '@core/util/component'
 import { ComponentEnum } from '@core/model/XFieldConf'
 
@@ -41,16 +42,16 @@ type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormVie
  * 2. 检索是否有名为`type_[type]`对应的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderField(field: XField, instance: XFormViewerInstance){
+function renderField(instance: XFormViewerInstance, field: XField){
   const component = getFieldComponent(field, ComponentEnum.VIEW, instance.mode)
-  const fc = field.findFieldConf()
   const props = {
     field: field,
     value: instance.formatter(field),
     model: instance.model
-  }
+  } as AnyProps
 
-  if(fc.custom && component != null) return h(component, props)
+  if(component && 'renderField' in component.props) props.renderField = renderField.bind(null, instance)
+  if(field.conf?.custom === true && component != null) return h(component, props)
 
   const XFormItem = resolveComponent('xform-item') as ComponentOptions
   const itemProps = { key: field.name, field }
@@ -66,7 +67,7 @@ function renderField(field: XField, instance: XFormViewerInstance){
     const typeSlot: VNode[] = typeof typeSlotFunc == 'function' && typeSlotFunc(props)
     if(typeSlot.length > 0) return typeSlot
 
-    return null == component ? instance.formatter(field): h(component, props)
+    return null == component ? instance.formatter(field) : h(component, props)
   })
 }
 
@@ -90,12 +91,12 @@ export default defineComponent({
     function formatter(field: XField){
       const model = props.model
       const value = model[field.name]
-      const placeholder = props.schema.viewerPlaceholder || ''
 
-      return isEmpty(value) ? placeholder  : value
+      if(isNull(value) || isEmpty(value)) return props.schema.viewerPlaceholder ?? ''
+      return Array.isArray(value) ? value.join('，') : value
     }
 
-    provide(XFORM_FORM_SCHEMA_SYMBOL, props.schema)
+    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
 
     return {
       formatter
@@ -103,11 +104,15 @@ export default defineComponent({
   },
   render(instance: XFormViewerInstance){
     const schema: XFormSchema = instance.schema
+    const slots = instance.$slots
 
     return (
       <div class="xform-viewer">
         <div class="xform-viewer-main">
-          {schema.fields.map(field => renderField(field, instance))}
+          {typeof slots.header == 'function' && slots.header()}
+          {schema.fields.map(field => renderField(instance, field))}
+          {typeof slots.default == 'function' && slots.default()}
+          {typeof slots.footer == 'function' && slots.footer()}
         </div>
       </div>
     )

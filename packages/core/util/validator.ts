@@ -1,34 +1,22 @@
-import Store from '@core/store'
-
 import { 
   isRegExp, 
-  isEmptyStr 
+  isEmpty, 
+  isFunction
 } from './lang'
 
 import { 
   XField, 
-  FieldAddEventDetail, 
-  XFormModel, 
-  XFormItemContext
+  XFormModel,
+  ValidStatusEnum
 } from '@core/model'
 
-import { 
-  ComponentInternalInstance, 
-  watch, 
-  onMounted, 
-  onBeforeUnmount 
-} from 'vue'
+import { ComputedRef } from 'vue'
 
-import { 
-  XFormItemProps, 
-} from '@core/component/XFormItem/component'
+function checkPromise(p: unknown){
+  if(p instanceof Promise) return p
 
-import {
-  EVENT_XFORM_FIELD_ADD, 
-  EVENT_XFORM_VALIDATE
-} from '@core/util/event'
-
-import { findComponentElement } from './component'
+  throw new Error('validator must return Promise')
+}
 
 function parseError(error: any){
   if(null == error) return null
@@ -37,37 +25,37 @@ function parseError(error: any){
   return error
 }
 
-export function genValidator(field: XField, model: XFormModel, external: Boolean | Function, context: XFormItemContext){
-  const validator = function(){
-    const findConf = field.findFieldConf()
-    const value = model[field.name]
-    
-    // 如果有外部传入的自定义验证器
-    if(typeof external == 'function') {
-      const promise = external(field, value, model, context)
-      if(!(promise instanceof Promise)) throw new Error('validator必须返回Promise对象')
-      return promise
+export function createValidator(
+  fieldRef: ComputedRef<XField>,
+  validationRef: ComputedRef<boolean | Function>, 
+  model: XFormModel
+){
+  function validator(){
+    if(validationRef.value === false) return Promise.resolve()
+
+    if(typeof validationRef.value == 'function'){
+      const promise = validationRef.value(fieldRef.value, model)
+      return checkPromise(promise)
     }
 
-    // 如果是是自定义验证器
-    const validator = findConf.validator
-    if(typeof validator == 'function') {
-      const promise = validator(field, value, model, context)
-      if(!(promise instanceof Promise)) throw new Error('validator必须返回Promise对象')
-      return promise
+    const fc = fieldRef.value.conf
+    if(fc && isFunction(fc.validator)) {
+      const promise = fc.validator(fieldRef.value, model)
+      return checkPromise(promise)
     }
 
     return Promise.resolve()
-    // return validateRules(validator, field, value);
   }
 
   return function(){
     return validator().then(() => {
-      context.message.value = null
+      fieldRef.value.validation.message = null
+      fieldRef.value.validation.valid = ValidStatusEnum.SUCCESS
       return true
     }).catch((error: any) => {
       const message = parseError(error)
-      context.message.value = message
+      fieldRef.value.validation.message = message
+      fieldRef.value.validation.valid = ValidStatusEnum.ERROR
       return message
     })
   }
@@ -108,7 +96,7 @@ export function validateRules(rules: any, field: XField, value: any){
  */
 export function validateRule(rule: any, field: XField, value: any){
   // 非必填且为空值时不验证
-  if(field.required !== true && isEmptyStr(value)) return null
+  if(field.required !== true && isEmpty(value)) return null
 
   if(typeof rule.test == 'function') return rule.test(value, field)
 
@@ -168,40 +156,4 @@ function genEmptyTip(rule: any){
   }
 
   return '不能为空'
-}
-
-export function useValidator(instance: ComponentInternalInstance, model: XFormModel, props: XFormItemProps, context: XFormItemContext){
-  const config = Store.getConfig()
-  const immediate = config.validator.immediate
-  const field = props.field
-  const validator = genValidator(field, model, props.validation, context)
-
-  function fieldAddHandle(event: CustomEvent){
-    const detail = event.detail as FieldAddEventDetail
-    detail.validator = validator
-
-    // 启用实时验证
-    if(immediate) watch(() => model[field.name], validator, { deep: true })
-  }
-
-  function fieldValidateHandle(event: CustomEvent){
-    event.stopPropagation()
-    typeof validator == 'function' && validator()
-  }
-
-  onMounted(() => {
-    const element = findComponentElement(instance)
-
-    element.addEventListener(EVENT_XFORM_FIELD_ADD, fieldAddHandle)
-    element.addEventListener(EVENT_XFORM_VALIDATE, fieldValidateHandle)
-  })
-
-  onBeforeUnmount(() => {
-    const element = findComponentElement(instance)
-
-    element.removeEventListener(EVENT_XFORM_FIELD_ADD, fieldAddHandle)
-    element.removeEventListener(EVENT_XFORM_VALIDATE, fieldValidateHandle)
-  })
-
-  return validator
 }

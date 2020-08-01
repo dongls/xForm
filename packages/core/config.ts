@@ -2,7 +2,7 @@ import { XFormConf } from '@core/model'
 
 const config: XFormConf = {
   modes: {},
-  validator: {
+  validation: {
     immediate: true
   },
   confirm(message: string){

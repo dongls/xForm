@@ -5,12 +5,10 @@ const webpack = require('webpack')
 const { merge } = require('webpack-merge')
 const baseConfig = require('./webpack.base.config')
 
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-
-const config = require(`../env/${NODE_ENV}`)
 
 const common = {
   mode: NODE_ENV,
@@ -19,21 +17,12 @@ const common = {
     alias: {
       '@config': path.resolve(__dirname, `../env/${NODE_ENV}.js`)
     }
-  },
-  module: {
-    rules: [{
-      test: /\.md$/,
-      use: [
-        'html-loader',
-        path.resolve(__dirname, './loaders/markdown-loader')
-      ]
-    }]
   }
 }
 
 const development = {
   devServer: {
-    port: 8802,
+    port: 8801,
     publicPath: '/',
     hot: true,
     open: true,
@@ -45,7 +34,12 @@ const development = {
     }
   },
   output: {
-    publicPath: '/'
+    publicPath: '/',
+  },
+  resolve: {
+    alias: {
+      '@dongls/xform': path.resolve(__dirname, '../../packages/core/index')
+    }
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
@@ -58,9 +52,14 @@ const development = {
 
 const production = {
   output: {
-    path: path.resolve(__dirname, '../../docs/static'),
-    publicPath: config.doc.base + 'static/',
+    path: path.resolve(__dirname, '../../docs'),
+    publicPath: require(`../env/${NODE_ENV}.js`).website.base,
     filename: '[name].[hash:8].js'
+  },
+  resolve: {
+    alias: {
+      '@dongls/xform': path.resolve(__dirname, '../../packages/core/index')
+    }
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -71,11 +70,11 @@ const production = {
     }),
     new HtmlWebpackPlugin({
       template: './document/index.html',
-      filename: '../index.html',
+      filename: './index.html',
     }),
     new HtmlWebpackPlugin({
       template: './document/index.html',
-      filename: '../404.html',
+      filename: './404.html',
     })
   ],
   stats: {

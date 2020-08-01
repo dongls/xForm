@@ -1,21 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { doc as config } from '@config'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { website } from '@config'
 
-import Doc from './view/doc.vue'
-import NotFound from './view/not-found.vue'
+import Designer from './views/designer.vue'
+import Builder from './views/builder.vue'
+import Viewer from './views/viewer.vue'
 
 const router = createRouter({
-  history: createWebHistory(config.base),
+  history: createWebHistory(website.base),
   routes: [
-    { path: '/doc/:doc', component: Doc },
-    { path: '/:catchAll(.*)', component: NotFound }
-  ]
-})
-
-router.beforeEach((to, from, next) => {
-  if(to.path == '/') return next('/doc/introduction')
-
-  next()
+    { path: '/', redirect: '/example/designer' },
+    { path: '/example/designer', component: Designer },
+    { path: '/example/builder', component: Builder },
+    { path: '/example/viewer', component: Viewer }
+  ] as RouteRecordRaw[]
 })
 
 export default router

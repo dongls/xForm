@@ -6,17 +6,17 @@ describe('store: useConfig', () => {
 
     expect(config).not.toBeNull()
     expect(config.modes).not.toBeNull()
-    expect(config.validator.immediate).toBe(true)
+    expect(config.validation.immediate).toBe(true)
     expect(config.confirm).toBeInstanceOf(Function)
     expect(config.confirm('')).toBeInstanceOf(Promise)
   })
 
   test('validator.immediate', () => {
     store.resetConfig()
-    store.useConfig({ validator: { immediate: false } })
+    store.useConfig({ validation: { immediate: false } })
 
     const config = store.getConfig()
-    expect(config.validator.immediate).toBe(false)
+    expect(config.validation.immediate).toBe(false)
   })
 
 })

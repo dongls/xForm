@@ -72,13 +72,13 @@ module.exports = {
       'order': [
         'el',
         'name',
+        'inheritAttrs',
         'parent',
         'functional',
         ['delimiters', 'comments'],
         ['components', 'directives', 'filters'],
         'extends',
         'mixins',
-        'inheritAttrs',
         'model',
         ['props', 'propsData'],
         'fetch',
@@ -95,7 +95,8 @@ module.exports = {
     }],
     'vue/max-attributes-per-line': 'off',
     'vue/html-closing-bracket-spacing': 'off',
-    'vue/no-v-html': 'off'
+    'vue/no-v-html': 'off',
+    'vue/one-component-per-file': 'off'
   },
   overrides: [
     {

@@ -43,12 +43,8 @@ module.exports = {
         use: util.genLessLoader(IS_PRODUCTION)
       },
       { // 处理字体
-        test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+        test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
         loader: 'file-loader',
-        exclude: [
-          /packages\/common\/svg/,
-          /document\/assets\/svg/
-        ],
         options: IS_PRODUCTION ? {
           name: 'font/[name].[ext]'
         } : undefined
@@ -66,6 +62,7 @@ module.exports = {
   },
   resolve: {
     alias: {
+      '@packages': path.resolve(__dirname, '../../packages'),
       '@core': path.resolve(__dirname, '../../packages/core'),
       '@common': path.resolve(__dirname, '../../packages/common')
     },
@@ -83,5 +80,8 @@ module.exports = {
   ],
   performance: {
     hints: false
+  },
+  watchOptions: {
+    aggregateTimeout: 1000
   }
 }

@@ -1,5 +1,5 @@
 import { XFieldConf, XFormOption, XFormPreset } from './model'
-import { clonePlainObject, mergePlainObject } from './util/lang'
+import { clonePlainObject, mergePlainObject, isNull, isEmpty } from './util/lang'
 import { ModeGroup, XFormConf } from '@core/model'
 import CONFIG from './config'
 
@@ -34,11 +34,18 @@ export function registerField(fc: XFieldConf){
 }
 
 export function use(option: XFormOption){
-  useConfig(option.config)
-  usePreset(option.preset)
+  if(option.config) useConfig(option.config)
+  if(option.preset) usePreset(option.preset)
 }
 
 export function resetPreset(){
+  // 删除字段配置
+  const fieldConfs = store.preset?.fieldConfs ?? []
+  for(const fc of fieldConfs){
+    const value = store.fields.get(fc.type)
+    if(fc === value) store.fields.delete(fc.type)
+  }
+
   store.preset = null
 }
 
@@ -58,7 +65,10 @@ export function registerManyField(...fcs: XFieldConf[]){
 }
 
 export function findFieldConf(type: string){
-  return store.fields.get(type)
+  if(isNull(type) || isEmpty(type)) return null
+
+  const fc = store.fields.get(type)
+  return fc instanceof XFieldConf ? fc : null
 }
 
 export function findMode(mode: string): Array<ModeGroup | string>{

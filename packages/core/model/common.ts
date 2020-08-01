@@ -1,51 +1,20 @@
-import { ComponentOptionsMixin, Ref } from 'vue'
+import { ComponentOptionsMixin, WatchStopHandle } from 'vue'
 
 import XField from './XField'
 import XFieldConf from './XFieldConf'
 
-export interface DragContext {
-  dragEvent: DragEvent;
-}
-
-export interface DragEvent {
-  init: boolean;
-  // 拖拽模式: sort, insert
-  mode: string; 
-  field?: XField;
-  target: HTMLElement;
-  prevClientY: number;
-  offsetLeft: number;
-  offsetTop: number;
-}
-
-export type WrappedValidator = () => Promise<any>;
-
-export interface XFormItemContext {
-  validating: Ref<boolean>;
-  message: Ref<string>;
-}
-
-export interface FieldEventDetail {
-  key: string;
-}
-
-export interface FieldAddEventDetail extends FieldEventDetail {
-  validator?: WrappedValidator;
-  field?: XField;
-}
-
-export interface XFormModel {
+export interface AnyProps extends Object {
   [propName: string]: any;
 }
 
-export interface XFormSchema {
+export type XFormModel = AnyProps
+
+export interface XFormSchema extends AnyProps {
   fields: XField[];
   labelSuffix?: string;
   labelPosition?: string;
 
   viewerPlaceholder?: string;
-
-  [propName: string]: any;
 }
 
 export interface XFormPreset {
@@ -74,17 +43,28 @@ export interface ModeConf {
   [propName: string]: Array<ModeGroup | string>;
 }
 
-interface ValidatorConf {
+interface ValidationConf {
   immediate?: boolean;
-}
-
-interface DesignerConf {
-  init?: () => any;
 }
 
 export interface XFormConf{
   modes?: ModeConf;
-  validator?: ValidatorConf;
-  designer?: DesignerConf;
+  validation?: ValidationConf;
   confirm?: (message: string) => Promise<boolean>;
+}
+
+export type WrappedValidator = () => Promise<any>
+
+export interface ValidateOptions {
+  validator: WrappedValidator;
+  stopHandle: WatchStopHandle;
+}
+
+export interface XFormBuilderContext {
+  // 注册字段
+  registerField: (key: string, o: WrappedValidator) => void;
+  // 删除字段
+  removeField: (key: string) => void;
+  // 更新字段值
+  updateFieldValue: Function;
 }
