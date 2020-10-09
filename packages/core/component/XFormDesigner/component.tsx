@@ -7,7 +7,6 @@ import {
   ComponentPublicInstance,
   Slots,
   VNode,
-  VNodeProps,
   computed,
   defineComponent,
   getCurrentInstance,
@@ -25,7 +24,8 @@ import {
   XFormSchema,
   ModeGroup,
   DragModeEnum,
-  ATTRS
+  ATTRS, 
+  RawProps
 } from '@core/model'
 
 import { isHidden, normalizeWheel } from '@core/util/dom'
@@ -48,7 +48,6 @@ interface XFormDesignerProps {
 interface XFormDesignerSetupState {
   groups?: ModeGroup[];
   icon?: any;
-  isEmpty?: boolean;
   selectedField?: XField;
   selectedTab?: string;
 
@@ -63,11 +62,16 @@ interface XFormDesignerSetupState {
   [prop: string]: any;
 } 
 
-type XFormDesignerInstance = ComponentPublicInstance & XFormDesignerProps & XFormDesignerSetupState;
-
-type RawProps = VNodeProps & {
-  [key: string]: any;
+export interface XFormDesignerRefs{
+  root: Element
+  scroll: Element
+  list: Element
+  mark: Element
+  ghost: Element
+  template: Element
 }
+
+export type XFormDesignerInstance = ComponentPublicInstance & XFormDesignerProps & XFormDesignerSetupState;
 
 function findFieldScope(field: XField, schema: XFormSchema, list: unknown){
   const fieldEl = (list as Element).querySelector(`[xfield-name="${field.name}"`)
@@ -106,12 +110,12 @@ function renderIcon(fc: XFieldConf){
 
   if(isVNode(icon)) return icon
   if(IS_BASE64.test(icon)) return <img src={icon} class="xform-icon xform-icon-is-img"/>
-  if(IS_SVG) return h('i', { innerHTML: icon, className: 'xform-icon xform-icon-is-svg' })
+  if(IS_SVG.test(icon)) return h('i', { innerHTML: icon, className: 'xform-icon xform-icon-is-svg' })
 
   return <i class={icon}/>
 }
 
-function renderFieldGroup(groups: ModeGroup[], dragstart: Function){
+function renderFieldPanel(groups: ModeGroup[], dragstart: Function){
   return groups.map((group, i) => {
     const title = group.title ? <h3>{group.title}</h3> : null
     const fcs = group.fieldConfs
@@ -195,6 +199,8 @@ function renderPreview(instance: XFormDesignerInstance, field: XField){
 }
 
 function renderPreviewList(instance: XFormDesignerInstance, fields: XField[]){
+  if(fields.length == 0) return renderEmptyTip()
+
   return fields.map(field => renderPreview(instance, field))
 }
 
@@ -283,8 +289,7 @@ function renderSetting(slots: Slots, schema: XFormSchema, instance: XFormDesigne
   ]
 }
 
-function renderEmptyTip(isEmpty: boolean){
-  if(!isEmpty) return null
+function renderEmptyTip(){
   return (
     <div class="xform-preview-tip">
       <img src={XFormTip}/>
@@ -362,7 +367,7 @@ export default defineComponent({
       })
     }
 
-    const { dragstart } = useDragging(instance, props.schema, chooseField)
+    const { dragstart } = useDragging(instance, chooseField)
 
     provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
   
@@ -374,7 +379,6 @@ export default defineComponent({
       remove,
       groups,
       icon: { clone: IconClone, remove: IconRemove },
-      isEmpty: computed(() => !Array.isArray(props.schema.fields) || props.schema.fields.length == 0),
       selectedField,
       selectedTab,
       chooseTab,
@@ -385,26 +389,30 @@ export default defineComponent({
     const slots = instance.$slots
     const schema: XFormSchema = instance.schema
     const groups: ModeGroup[] = instance.groups as ModeGroup[]
-    const fields: XField[] = schema.fields || []
+    const fields: XField[] = Array.isArray(schema.fields) ? schema.fields : []
+
+    const listClassName = {
+      'xform-designer-list': true,
+      'xform-is-empty': fields.length == 0
+    }
 
     return (
-      <div class="xform-designer" ref="designer">
-        <div class="xform-designer-panel">{ renderFieldGroup(groups, instance.dragstart) }</div>
+      <div class="xform-designer" ref="root">
+        <div class="xform-designer-panel">{ renderFieldPanel(groups, instance.dragstart) }</div>
         <div class="xform-designer-main">
           { typeof slots.tool == 'function' && slots.tool() }
           <div ref="scroll" class="xform-designer-scroll xform-is-scroll">
-            <div ref="zone" class="xform-designer-zone">
-              <div ref="list" class="xform-designer-list">{ renderPreviewList(instance, fields) }</div>
-              <div ref="mark" key="xform-mark" class="xform-designer-mark"/>
-              { renderEmptyTip(instance.isEmpty) }
+            <div ref="list" class={listClassName}>
+              { renderPreviewList(instance, fields) }
             </div>
           </div>
         </div>
         <div class="xform-designer-setting">{ renderSetting(slots, schema, instance) }</div>
         <div ref="ghost" key="xform-ghost" class="xform-designer-ghost" onWheel={instance.doScroll}>
-          <div class="xform-designer-ghost-template"/>
+          <div class="xform-designer-ghost-template" ref="template"/>
           <div class="xform-designer-cover"/>
         </div>
+        <div ref="mark" key="xform-mark" class="xform-designer-mark"/>
       </div>
     )
   }

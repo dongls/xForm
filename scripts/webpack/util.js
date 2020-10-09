@@ -4,18 +4,25 @@ const { RELEASE_PACKAGE } = require('./args')
 
 const { packages } = require('../packages')
 
+const CSS_LOADER = {
+  loader: 'css-loader',
+  options: {
+    esModule: false
+  }
+}
+
 module.exports = {
   genCssLoader(IS_PRODUCTION){
     return [
       IS_PRODUCTION ? MiniCssExtractPlugin.loader : 'vue-style-loader',
-      'css-loader',
+      CSS_LOADER,
       'postcss-loader'
     ]
   },
   genScssLoader(IS_PRODUCTION){
     return [
       IS_PRODUCTION ? MiniCssExtractPlugin.loader : 'vue-style-loader',
-      'css-loader',
+      CSS_LOADER,
       'postcss-loader',
       'sass-loader'
     ]
@@ -23,7 +30,7 @@ module.exports = {
   genLessLoader(IS_PRODUCTION){
     return [
       IS_PRODUCTION ? MiniCssExtractPlugin.loader : 'vue-style-loader',
-      'css-loader',
+      CSS_LOADER,
       'postcss-loader',
       'less-loader'
     ]

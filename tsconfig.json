@@ -9,8 +9,8 @@
     "noImplicitAny": true,
     "outDir": "./dist/",
     "paths": {
-      "@packages/*": ["packages/*"],
       "@core/*": ["packages/core/*"],
+      "@packages/*": ["packages/*"],
       "@common/*": ["packages/common/*"],
       "@dongls/xform": ["packages/core/index"],
     },

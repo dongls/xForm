@@ -15,5 +15,12 @@ export default new XFieldConf({
     const isEmpty = null == value || typeof value == 'string' && value.length == 0
     if(field.required && isEmpty) return Promise.reject('必填')
     return Promise.resolve()
+  },
+  onCreated(field: XField, params: any){
+    const options = Array.isArray(params.options) ? params.options : []
+    if(options.length == 0) options.push({ value: '选项1' })
+    field.options = options
+
+    return field
   }
 })

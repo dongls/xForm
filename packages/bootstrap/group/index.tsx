@@ -1,13 +1,15 @@
 import { defineComponent, ref } from 'vue'
 
 import { 
-  DragContext,
-  DragEvent, 
+  GlobalDragEvent, 
   XField,
   XFieldConf, 
   SELECTOR,
   store,
-  ATTRS
+  ATTRS,
+  XFormSchema,
+  findElementFromPoint,
+  getRef
 } from '@dongls/xform'
 
 import CollapseIcon from '!!raw-loader!../assets/svg/collapse.svg'
@@ -140,39 +142,44 @@ export default new XFieldConf({
   setting,
   build,
   view,
-  onDragOver(event: MouseEvent, dragEvent: DragEvent, context: DragContext){
-    if(dragEvent.fieldType == 'group') return false
-
-    const hookEl = dragEvent.hookElement
-    const target = context.findElementFromPoint(event.clientX, event.clientY, MATCH_PATCHS, hookEl)
+  onDragOver(event: GlobalDragEvent){
+    if(event.data.type == 'group') return false
+    
+    const hookEl = event.hookElement
+    const originEvent = event.originEvent as MouseEvent
+    const target = findElementFromPoint(originEvent.clientX, originEvent.clientY, MATCH_PATCHS, hookEl)
     if(target == hookEl) return false
 
+    const context = event.context
     const listEl = hookEl.querySelector('.' + GROUP_LIST_CLASS)
-    context.moveMarkEl(dragEvent.direction, target, context.markEl, listEl, hookEl)
+    const mark = getRef<HTMLElement>(context.instance.refs, 'mark')
+    context.moveMark(event.direction, target, mark, listEl, hookEl)
   },
-  onDrop(event: MouseEvent, dragEvent: DragEvent, context: DragContext){
-    const schema = context.schema
-    const markEl = context.markEl
-    const dropEl = dragEvent.dropElement
+  onDrop(event: GlobalDragEvent){
+    const context = event.context
+    const schema = context.instance.props.schema as XFormSchema
+    const markEl = context.instance.refs.mark as HTMLElement
+    const dropEl = event.dropElement
     const name = dropEl.getAttribute(ATTRS.XFIELD_NAME)
     const group = schema.fields.find(f => f.name == name)
 
     // 插入时直接在对应位置添加新字段即可
-    if(dragEvent.mode == 'insert'){
-      const type = dragEvent.fieldType
+    if(event.mode == 'insert'){
+      const type = event.data.type
       const fc = store.findFieldConf(type)
       const index = Array.prototype.indexOf.call(dropEl.children, markEl)
-      const newField = new XField(fc)
+      const newField = new XField(fc, group)
       group.fields.splice(index, 0, newField)
-      context.triggerUpdateSchema()
+      context.updateSchema()
       return context.chooseField(newField)
     }
 
     // 排序时需要处理字段的来源
-    if(dragEvent.mode == 'sort'){
-      const field = dragEvent.field
+    if(event.mode == 'sort'){
+      const field = event.data.field
+      const root = context.instance.refs.root as HTMLElement
       // 先查询原字段
-      const originEl = context.rootEl.querySelector(`${SELECTOR.DRAGGABLE}[xfield-name="${field.name}"]`)
+      const originEl = root.querySelector(`${SELECTOR.DRAGGABLE}[xfield-name="${field.name}"]`)
       const originScopedEl = originEl.closest(SELECTOR.SCOPED)
       const schemaIndex = schema.fields.indexOf(field)
       const list = dropEl.querySelector(GROUP_LIST_SELECTOR).children
@@ -196,7 +203,7 @@ export default new XFieldConf({
         context.sort(oldIndex, newIndex, group.fields)
       }
 
-      context.triggerUpdateSchema()
+      context.updateSchema()
       return context.chooseField(field)
     }
   }

@@ -24,7 +24,7 @@ module.exports = {
     'plugin:vue/vue3-recommended'
   ],
   ignorePatterns: [
-    '__script__',
+    '__private__',
     'dist/',
     'docs/',
     'node_modules/',

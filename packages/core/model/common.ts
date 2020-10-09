@@ -1,4 +1,4 @@
-import { ComponentOptionsMixin, WatchStopHandle } from 'vue'
+import { ComponentOptionsMixin, VNodeProps, WatchStopHandle } from 'vue'
 
 import XField from './XField'
 import XFieldConf from './XFieldConf'
@@ -8,6 +8,8 @@ export interface AnyProps extends Object {
 }
 
 export type XFormModel = AnyProps
+
+export type RawProps = VNodeProps & AnyProps
 
 export interface XFormSchema extends AnyProps {
   fields: XField[];
@@ -24,13 +26,6 @@ export interface XFormPreset {
     [prop: string]: ComponentOptionsMixin;
   };
   fieldConfs: XFieldConf[];
-}
-
-export interface XFormOption {
-  // 组件配置
-  preset?: XFormPreset;
-  // 表单默认设置
-  config: XFormConf;
 }
 
 export interface ModeGroup {
@@ -67,4 +62,11 @@ export interface XFormBuilderContext {
   removeField: (key: string) => void;
   // 更新字段值
   updateFieldValue: Function;
+}
+
+export interface XFormOption {
+  // 组件配置
+  preset?: XFormPreset;
+  // 表单默认设置
+  config: XFormConf;
 }

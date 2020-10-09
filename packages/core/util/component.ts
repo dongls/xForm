@@ -42,3 +42,13 @@ export function genPlaceholder(field: XField){
   const placeholder = field.placeholder || ''
   return `${prefix}${placeholder}` || null
 }
+
+/** 获取ref对应的dom或组件 */
+export function getRef<T>(refs: Record<string, unknown>, key: string): T{
+  return refs[key] as T
+}
+
+/** 获取ref对应的HTMLElement */
+export function getHtmlElement(refs: Record<string, unknown>, key: string){
+  return getRef<HTMLElement>(refs, key)
+}

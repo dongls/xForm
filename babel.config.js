@@ -6,10 +6,9 @@ const presets = [
 ];
 
 const plugins = [
-  '@ant-design-vue/babel-plugin-jsx',
   '@babel/plugin-proposal-nullish-coalescing-operator',
   '@babel/plugin-proposal-optional-chaining',
-  '@babel/plugin-syntax-jsx',
+  '@vue/babel-plugin-jsx'
 ]
 
 module.exports = { presets, plugins };

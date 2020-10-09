@@ -6,8 +6,9 @@ const util = require('./util')
 const baseConfig = require('./webpack.base.config')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const props = util.genPackageProps()
 
@@ -36,14 +37,16 @@ module.exports = merge(baseConfig, {
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
-  stats: {
-    modules: false,
-    children: false,
-    entrypoints: false
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false
+      }),
+      new CssMinimizerPlugin()
+    ]
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new OptimizeCSSPlugin(),
     new MiniCssExtractPlugin({
       filename: 'index.css',
     }),

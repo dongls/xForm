@@ -1,6 +1,5 @@
 dist
 node_modules
 .vscode
-__script__
-TODO.md
+__private__
 coverage

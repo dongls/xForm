@@ -1,27 +1,20 @@
-import { ComponentInternalInstance } from 'vue'
-import { DragModeEnum, DirectionEnum, SELECTOR, ATTRS, CLASS } from './constant'
-import { XFormSchema } from './common'
 import XField from './XField'
 
-export interface DragContext {  
-  schema: XFormSchema;
+import { ComponentInternalInstance } from 'vue'
+import { DragModeEnum, DirectionEnum, SELECTOR, ATTRS, CLASS } from './constant'
+import { getHtmlElement } from '@core/util/component'
+
+export interface GlobalDragContext {  
   instance: ComponentInternalInstance;
 
-  rootEl: HTMLElement;
-  ghostEl: HTMLElement;
-  listEl: HTMLElement;
-  markEl: HTMLElement;
-  zoneEl: HTMLElement;
-
   chooseField: Function;
-  clearDragStatus: Function;
-  findElementFromPoint: Function;
-  moveMarkEl: Function;
+  resetStatus: Function;
+  moveMark: Function;
   sort: Function;
-  triggerUpdateSchema: Function;
+  updateSchema: Function;
 }
 
-export class DragEvent{
+export class GlobalDragEvent{
   init = false;
 
   // 拖拽的元素
@@ -30,50 +23,87 @@ export class DragEvent{
   hookElement: Element;
   // 拖放的目标元素
   dropElement: Element;
-
   // 拖拽模式: sort, insert
   mode: DragModeEnum;
   // 拖动的方向
   direction: DirectionEnum;
-  // 字段类型
-  fieldType: string; 
-  // 字段
-  field?: XField;
   // 上一位置的y坐标
   clientY: number;
   // ghostEl左边与鼠标之间的偏移量
-  offsetLeft: number;
+  deltaX: number;
   // ghostEl上边与鼠标之间的偏移量
-  offsetTop: number;
+  deltaY: number;
+  // 携带的数据
+  data: {
+    // 字段类型
+    type: string;
+     // 字段
+    field?: XField;
+  }
+  // 当前触发的原生事件
+  originEvent: Event;
+  // 事件上下文
+  context: GlobalDragContext;
   
-  constructor(event: MouseEvent, mode: DragModeEnum, field: XField){
+  constructor(event: MouseEvent, mode: DragModeEnum, field: XField, context: GlobalDragContext){
     const target = (event.target as Element).closest(SELECTOR.DRAGGABLE)
     const rect = target.getBoundingClientRect()
 
     this.mode = mode
-    this.fieldType = target.getAttribute(ATTRS.XFIELD_TYPE)
-    this.field = field
     this.target = target
     this.clientY = event.clientY
-    this.offsetLeft = mode == DragModeEnum.INSERT ? event.clientX - rect.left : 72
-    this.offsetTop = mode == DragModeEnum.INSERT ? event.clientY - rect.top : 17
+    this.deltaX = mode == DragModeEnum.INSERT ? event.clientX - rect.left : 72
+    this.deltaY = mode == DragModeEnum.INSERT ? event.clientY - rect.top : 17
+
+    this.data = { type: target.getAttribute(ATTRS.XFIELD_TYPE), field }
+    
+    this.originEvent = event
+    this.context = context
   }
 
-  initialize(context: DragContext){
-    const template = context.ghostEl.querySelector(SELECTOR.GHOST_TEMPLATE)
+  /** 更新拖动方向 */
+  updateDirection(y: number){
+    const direction = y - this.clientY < 0 ? DirectionEnum.UP : DirectionEnum.DOWN
+    
+    this.direction = direction
+    this.clientY = y
+  }
 
-    context.ghostEl.classList.add(CLASS.IS_SHOW)
-    context.listEl.classList.add(CLASS.LIST_SILENCE)
-    template.innerHTML = this.createGhost(context.rootEl)
+  updateDragStatus(event: MouseEvent){
+    if(!this.init) this.initDrag()
+
+    const instance = this.context.instance
+    const left = event.clientX - this.deltaX
+    const top = event.clientY - this.deltaY
+    const ghost = getHtmlElement(instance.refs, 'ghost')
+    ghost.style.transform = `translate(${left}px, ${top}px)`
+
+    this.setOriginEvent(event)
+  }
+
+  setOriginEvent(event: Event){
+    this.originEvent = event
+  }
+
+  private initDrag(){
+    const instance = this.context.instance
+    const template = getHtmlElement(instance.refs, 'template')
+    const ghost = getHtmlElement(instance.refs, 'ghost')
+    const list = getHtmlElement(instance.refs, 'list')
+    const root = getHtmlElement(instance.refs, 'root')
+
+    template.innerHTML = this.createGhost(root)
+    ghost.classList.add(CLASS.IS_SHOW)
+    list.classList.add(CLASS.LIST_SILENCE)
   
     if(this.mode == DragModeEnum.INSERT) {
       this.target.classList.add(CLASS.IS_DRAGGING)
     }
     
-    this.init = true  
+    this.init = true
   }
 
-  private createGhost(scope: HTMLElement){
+  private createGhost(scope: Element){
     if(this.mode == 'insert'){
       return (
         this.target.matches(SELECTOR.TEMPLATE)
@@ -81,15 +111,12 @@ export class DragEvent{
           : this.target.querySelector(SELECTOR.TEMPLATE).outerHTML
       )
     }
-  
-    const field = this.field
+
+    const field = this.data.field
     const selector = `${SELECTOR.FIELD}[${ATTRS.XFIELD_TYPE}="${field.type}"]`
     const element = scope.querySelector(selector)
-    if(null == element) return `
-      <div class="xform-designer-field">
-        <strong>${field.title}</strong>
-      </div>
-    `
+    if(null == element) return `<div class="xform-designer-field"><strong>${field.title}</strong></div>`
+    
     return element.outerHTML.replace(
       /<strong>(.*)<\/strong>/, 
       `<strong>${field.title}</strong>`

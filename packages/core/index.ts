@@ -24,8 +24,8 @@ const XForm = {
 }
 
 export {
-  DragContext,
-  DragEvent,
+  GlobalDragContext,
+  GlobalDragEvent,
   DragModeEnum,
   XField,
   XFieldConf,

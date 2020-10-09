@@ -2,13 +2,21 @@ const OBJECT_TO_STRING_TAG = {
   RegExp: '[object RegExp]'
 }
 
-export function isNull(value: unknown){
-  return value == null
+export function isString(value: unknown): value is string{
+  return typeof value === 'string'
 }
 
-/** 是否为空串或null */
+/** 是否为空串 */
 export function isEmpty(value: unknown){
-  return typeof value == 'string' && value.trim().length == 0
+  return isString(value) && value.trim().length == 0 
+}
+
+export function isNumber(value: unknown): value is number{
+  return typeof value === 'number'
+}
+
+export function isNull(value: unknown): value is null{
+  return value == null
 }
 
 /** 是否为对象 */
@@ -17,11 +25,11 @@ export function isObject(value: unknown){
 }
 
 /** 是否为正则表达式 */
-export function isRegExp(value: unknown){
+export function isRegExp(value: unknown): value is RegExp{
   return isObject(value) && Object.prototype.toString.call(value) == OBJECT_TO_STRING_TAG.RegExp
 }
 
-export function isFunction(value: unknown){
+export function isFunction(value: unknown): value is Function{
   return typeof value == 'function'
 }
 

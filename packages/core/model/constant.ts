@@ -23,7 +23,7 @@ export const SELECTOR = {
   FIELD: '.xform-designer-field'
 }
 
-export const MATCH_PATHS = ['.xform-designer-mark', '.xform-droppable', '.xform-designer-zone']
+export const MATCH_PATHS = ['.xform-designer-mark', '.xform-droppable', '.xform-designer-list']
 
 export const ATTRS = {
   XFIELD_TYPE: 'xfield-type',

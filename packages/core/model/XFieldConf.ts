@@ -2,7 +2,7 @@ import XField from './XField'
 
 import { markRaw, ComponentOptions, VNode } from 'vue'
 import { XFormModel } from './common'
-import { DragContext, DragEvent } from './drag'
+import { GlobalDragEvent } from './drag'
 import { isFunction, isNull } from '@core/util/lang'
 
 export enum ComponentEnum {
@@ -22,12 +22,31 @@ export type Validator = Function ;
 
 type ModeComponentFn = (field: XField, mode: string) => ComponentOptions | VNode;
 type XFieldConfComponent = ComponentOptions | ModeComponentFn;
-type DragHookFn = (event: MouseEvent, dragEvent: DragEvent, context: DragContext) => void | boolean;
+type DragHookFn = (dragEvent: GlobalDragEvent) => void | boolean;
+
+class Hook{
+  // 字段创建时调用
+  onCreated?: (field: XField, params: any) => XField;
+  // 字段删除后时调用
+  onRemoved?: Function;
+  // 字段拖到该字段上方时调用
+  onDragOver?: DragHookFn;
+  // 字段放到该字段上调用, 只对scoped值为true的字段生效
+  onDrop?: DragHookFn;
+
+  constructor(options: any = {}){
+    this.onCreated = isFunction(options.onCreated) ? options.onCreated : null
+    this.onRemoved = isFunction(options.onRemoved) ? options.onRemoved : null
+    this.onDragOver = isFunction(options.onDragOver) ? options.onDragOver : null
+    this.onDrop = isFunction(options.onDrop) ? options.onDrop : null
+  }
+  
+}
 
 /** 
  * 描述字段类型的类，XForm就是根据它决定每一个字段的行为
  */
-export default class XFieldConf{
+export default class XFieldConf extends Hook{
   // 字段类型
   type: string;
   // 字段名称
@@ -45,16 +64,9 @@ export default class XFieldConf{
   build?: XFieldConfComponent;
   view?: XFieldConfComponent;
 
-  // 字段创建时调用
-  onCreated?: (field: XField, params: any) => XField;
-  // 字段删除后时调用
-  onRemoved?: Function;
-  // 字段拖到该字段上方时调用
-  onDragOver?: DragHookFn;
-  // 字段放到该字段上调用, 只对scoped值为true的字段生效
-  onDrop?: DragHookFn;
-
   constructor(options: any = {}){
+    super(options)
+
     this.type = options.type
     this.title = options.title
     this.icon = options.icon
@@ -68,11 +80,6 @@ export default class XFieldConf{
     this.preview = isNull(options.preview) ? null : markRaw(options.preview)
     this.build = isNull(options.build) ? null : markRaw(options.build)
     this.view = isNull(options.view) ? null : markRaw(options.view)
-
-    this.onCreated = isFunction(options.onCreated) ? options.onCreated : null
-    this.onRemoved = isFunction(options.onRemoved) ? options.onRemoved : null
-    this.onDragOver = isFunction(options.onDragOver) ? options.onDragOver : null
-    this.onDrop = isFunction(options.onDrop) ? options.onDrop : null
   }
 
   /** 

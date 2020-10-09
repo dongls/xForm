@@ -6,9 +6,10 @@ const { merge } = require('webpack-merge')
 const baseConfig = require('./webpack.base.config')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const common = {
   mode: NODE_ENV,
@@ -26,12 +27,7 @@ const development = {
     publicPath: '/',
     hot: true,
     open: true,
-    historyApiFallback: true,
-    stats: {
-      modules: false,
-      entrypoints: false,
-      children: false
-    }
+    historyApiFallback: true
   },
   output: {
     publicPath: '/',
@@ -54,19 +50,26 @@ const production = {
   output: {
     path: path.resolve(__dirname, '../../docs'),
     publicPath: require(`../env/${NODE_ENV}.js`).website.base,
-    filename: '[name].[hash:8].js'
+    filename: '[name].[contenthash:8].js'
   },
   resolve: {
     alias: {
       '@dongls/xform': path.resolve(__dirname, '../../packages/core/index')
     }
   },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false
+      }),
+      new CssMinimizerPlugin()
+    ]
+  },
   plugins: [
     new CleanWebpackPlugin(),
-    new OptimizeCSSPlugin(),
     new MiniCssExtractPlugin({
-      filename: '[name].[hash:8].css',
-      chunkFilename: '[name].[hash:8].css'
+      filename: '[name].[contenthash:8].css',
+      chunkFilename: '[name].[contenthash:8].css'
     }),
     new HtmlWebpackPlugin({
       template: './document/index.html',
@@ -76,11 +79,7 @@ const production = {
       template: './document/index.html',
       filename: './404.html',
     })
-  ],
-  stats: {
-    modules: false,
-    children: false
-  }
+  ]
 }
 
 module.exports = merge(baseConfig, common, IS_PRODUCTION ? production : development)

@@ -48,7 +48,8 @@
   flex: 1;
 }
 
-.xform-designer-zone{
+.xform-designer-list{
+  padding: 0 5px;
   box-sizing: border-box;
   position: relative;
   max-width: 640px;
@@ -57,10 +58,6 @@
   background-color: #fff;
   border: 1px dashed #ccc;
   min-height: 100%;
-}
-
-.xform-designer-list{
-  padding: 0 5px;
 }
 
 .xform-designer-field-group h3{
@@ -331,6 +328,11 @@
 
 .xform-is-silence .xform-preview-tip{
   display: none;
+}
+
+.xform-is-silence.xform-designer-list.xform-is-empty{
+  border: 1px dashed;
+  min-height: 100%;
 }
 
 /** xform setting */

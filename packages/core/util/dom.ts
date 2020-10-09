@@ -7,10 +7,10 @@ import { SELECTOR } from '@core/model'
 * @returns {boolean} 不可见返回true
 */
 export function isHidden(el: HTMLElement, container: HTMLElement): boolean{
-  return (
-    el.offsetTop < container.scrollTop ||
-    el.offsetTop > container.scrollTop + container.offsetHeight
-  )
+  const tRect = el.getBoundingClientRect()
+  const cRect = container.getBoundingClientRect()
+
+  return tRect.bottom < cRect.top || tRect.top > cRect.bottom
 }
 
 /**

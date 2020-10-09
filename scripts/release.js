@@ -55,6 +55,8 @@ async function releaseCode(){
 
   if(!yes) return console.log(EXIT_MESSAGE)
 
+  // 检查代码格式
+
   // 测试
   // execa.commandSync('npm run test')
   

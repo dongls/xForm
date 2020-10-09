@@ -14,7 +14,7 @@ module.exports = {
       },
       {
         test: /\.tsx?$/,
-        loader: [
+        use: [
           'babel-loader',
           {
             loader: 'ts-loader', 
@@ -77,11 +77,5 @@ module.exports = {
       '__IS_DEV__': JSON.stringify(process.env.NODE_ENV == 'development'),
       '__VUE_VERSION__': JSON.stringify(process.env.VUE_VERSION)
     })
-  ],
-  performance: {
-    hints: false
-  },
-  watchOptions: {
-    aggregateTimeout: 1000
-  }
+  ]
 }

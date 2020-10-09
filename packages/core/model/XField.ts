@@ -13,6 +13,8 @@ interface Validation {
 
 interface XFieldStorage {
   [prop: string]: any;
+  // 缓存字段父级
+  parent: any;
   excludeProps: string[]
 }
 
@@ -36,7 +38,7 @@ interface Option {
 //   return options as any[]
 // }
 
-// TODO: 支持用于指定算法
+// TODO: 支持用户指定算法
 function genName(){
   const time = Date.now().toString(36)
   const random = Math.random().toString(36).slice(-4)
@@ -73,26 +75,27 @@ export default class XField{
   // 缓存
   storage: XFieldStorage;
 
-  constructor(o: any = {}){
+  constructor(o: any = {}, parent?: any){
     const params = o instanceof XFieldConf ? o.toParams() : o
 
     this.type = params.type
     this.name = params.name ?? genName()
     this.title = params.title
     
-    this.placeholder = params.placeholder || ''    
+    this.placeholder = params.placeholder ?? ''    
     this.required = params.required === true
     this.options = Array.isArray(params.options) ? params.options : []
     this.attributes = params.attributes || {}
     this.fields = (
       Array.isArray(params.fields) 
-        ? params.fields.map((f: any) => f instanceof XField ? f : new XField(f)) 
+        ? params.fields.map((f: any) => f instanceof XField ? f : new XField(f, this)) 
         : []
     )
 
     Object.defineProperty(this, 'storage', { 
       writable: true, 
       value: {
+        parent,
         excludeProps: ['validation']
       } 
     })
@@ -106,11 +109,20 @@ export default class XField{
     return findFieldConf(this.type)
   }
 
+  get parent(){
+    return this.storage.parent
+  }
+
+  set parent(v){
+    this.storage.parent = v
+  }
+
   /** 复制该对象, `name`字段除外 */
   clone() {
+    const parent = this.parent
     const data = JSON.parse(JSON.stringify(this))
     delete data.name
-    return new XField(data)
+    return new XField(data, parent)
   }
 
   toJSON(): any {
