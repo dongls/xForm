@@ -1,4 +1,9 @@
-import { SELECTOR } from '@core/model'
+import { 
+  XField,
+  XFormScope,
+  SELECTOR,
+  PROPS
+} from '@model'
 
 /**
 * 判断元素是否不可见
@@ -6,7 +11,7 @@ import { SELECTOR } from '@core/model'
 * @param {HTMLElement} container - 容器
 * @returns {boolean} 不可见返回true
 */
-export function isHidden(el: HTMLElement, container: HTMLElement): boolean{
+export function isHidden(el: HTMLElement, container: HTMLElement){
   const tRect = el.getBoundingClientRect()
   const cRect = container.getBoundingClientRect()
 
@@ -20,7 +25,7 @@ export function isHidden(el: HTMLElement, container: HTMLElement): boolean{
  * @param {string[]} selectors - 目标选择器
  * @returns {Element | null} 
  */
-export function findElementFromPoint(x: number, y: number, selectors: string[], scope: Element): Element | null{
+export function findElementFromPoint(x: number, y: number, selectors: string[], scope: Element){
   const elementsFromPoint = document.elementsFromPoint || document.msElementsFromPoint
   if(typeof elementsFromPoint !== 'function') return null
 
@@ -46,13 +51,28 @@ export function normalizeWheel(event: WheelEvent){
   return { pixelX: deltaX * unit, pixelY: deltaY * unit }
 }
 
-
 /**
  * 查询需要触发hook的元素
  * @param {Element} target - 目标元素 
  * @returns {Element} 如果目标元素位于单独的scope中，那么返回scope对应的元素，否则返回目标元素
  */
 export function findHookEl(target: Element){
-  const scoped = target.closest(SELECTOR.SCOPED)
-  return scoped ? scoped : target
+  const scope = target.closest(SELECTOR.SCOPE)
+  return scope ? scope : target
+}
+
+/** 获取dom元素上的属性 */
+export function getProperty<T>(element: Element, key: string){
+  return (element as any)[key] as T
+}
+
+/** 获取dom元素上绑定的XField字段值 */
+export function getXField(element: Element){
+  return getProperty<XField>(element, PROPS.XFIELD)
+}
+
+/** 查询元素所在的scope */
+export function findScope(element: Element){
+  const el = element.closest(SELECTOR.SCOPE)
+  return null == el ? null : getProperty<XFormScope>(el, PROPS.SCOPE)
 }

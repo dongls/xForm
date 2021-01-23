@@ -6,6 +6,7 @@ const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
+  target: IS_PRODUCTION ? 'browserslist' : 'web',
   module: {
     rules: [
       {
@@ -62,9 +63,11 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@packages': path.resolve(__dirname, '../../packages'),
+      '@model': path.resolve(__dirname, '../../packages/core/model'),
       '@core': path.resolve(__dirname, '../../packages/core'),
-      '@common': path.resolve(__dirname, '../../packages/common')
+      '@common': path.resolve(__dirname, '../../packages/common'),
+      '@packages': path.resolve(__dirname, '../../packages'),
+      '@document': path.resolve(__dirname, '../../document'),
     },
     extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
   },

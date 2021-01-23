@@ -1,3 +1,5 @@
+import Store from '@core/store'
+
 import { 
   defineComponent, 
   provide,
@@ -5,35 +7,33 @@ import {
   h,
   Slots,
   resolveComponent,
-  VNode,
   ComponentPublicInstance,
-  ComponentOptions,
-  RenderFunction,
-  watch
+  watch,
+  getCurrentInstance,
+  ComputedRef,
 } from 'vue'
 
 import { 
   XFormModel,
   XFormSchema,
   XField,
-  XFORM_MODEL_PROVIDE_KEY, 
-  XFORM_BUILDER_CONTEXT_PROVIDE_KEY, 
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
   ValidateOptions,
+  WrappedValidator,
   ComponentEnum,
-  WrappedValidator
-} from '@core/model'
+  XFORM_MODEL_PROVIDE_KEY, 
+  XFORM_CONTEXT_PROVIDE_KEY, 
+  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  RawProps,
+  XFormBuilderContext,
+} from '@model'
 
-import {
-  getFieldComponent
-} from '@core/util/component'
-
-import Store from '@core/store'
+import { getFieldComponent } from '@core/util/component'
+import { isFunction, isString } from '@core/util/lang'
 
 interface XFormBuilderProps{
   mode: string;
   schema: XFormSchema;
-  value: XFormModel;
+  model: XFormModel;
   tag: string;
 }
 
@@ -43,52 +43,51 @@ interface XFormBuilderSetupState{
 
 type XFormBuilderInstance = ComponentPublicInstance & XFormBuilderProps & XFormBuilderSetupState;
 
+const EVENTS = {
+  CHANGE: 'change',
+  UPDATE_MODEL: 'update:model'
+}
+
 /**
  * 根据字段创建对应的组件，按以下顺序逐次匹配：
  * 1. 检索是否有名为`name_[name]`的slot
  * 2. 检索是否有名为`type_[type]`的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderField(instance: XFormBuilderInstance, slots: Slots, value: any, field: XField){
-  const component = getFieldComponent(field, ComponentEnum.BUILD, instance.mode)
-  if(field.conf?.custom === true && null != component) {
-    const props = { field, value: value[field.name] } as any
-    if(component && 'renderField' in component.props) {
-      props.renderField = renderField.bind(null, instance, slots, value)
-    }
+function renderContent(instance: XFormBuilderInstance, props: RawProps, field: XField){
+  const slots = instance.$slots
 
-    return h(component, props)
+  const nameSlot = slots[`name_${field.name}`]
+  if(isFunction(nameSlot)) return nameSlot(props)
+
+  const typeSlot = slots[`type_${field.type}`]
+  if(isFunction(typeSlot)) return typeSlot(props)
+
+  const component = getFieldComponent(field, ComponentEnum.BUILD, instance.mode)
+  return component == null ? null : h(component, props)
+}
+
+function renderField(instance: XFormBuilderInstance, field: XField){
+  const props = {
+    field: field,
+    value: instance.model[field.name],
+    'onUpdate:value': instance.update
   }
 
-  const XFormItem = resolveComponent('xform-item') as ComponentOptions
+  const content = renderContent(instance, props, field)
+  // 字段完全自定义时不使用xform-item包裹
+  if(field.conf?.custom === true) return content
+
+  const XFormItem = resolveComponent('xform-item')
   const itemProps = { key: field.name, field, validation: true }
 
   return h(XFormItem, itemProps, function(){
-    // 动态props
-    const props = {
-      field: field,
-      value: value[field.name],
-      'onUpdate:value': instance.update
-    } as any
-
-    if(component && 'renderField' in component.props) {
-      props.renderField = renderField.bind(null, instance, slots, value)
-    }
-    
-    const nameSlotFunc = slots[`name_${field.name}`]
-    const nameSlot: VNode[] = typeof nameSlotFunc == 'function' && nameSlotFunc(props)
-    if(nameSlot.length > 0) return nameSlot
-
-    const typeSlotFunc = slots[`type_${field.type}`]
-    const typeSlot: VNode[] = typeof typeSlotFunc == 'function' && typeSlotFunc(props)
-    if(typeSlot.length > 0) return typeSlot
-    
-    if(field.conf == null || field.conf.build == null) {
-      console.warn(`field[${field.title}: ${field.name}] not implement build component`)
+    if(null == content) {
+      console.warn(`[xform] field not implement build component: ${field.title}(${field.name})`)
       return <p class="xform-is-unknown">暂不支持的字段类型</p>
     }
-
-    return h(component, props)
+  
+    return content
   })
 }
 
@@ -103,7 +102,7 @@ export default defineComponent({
       type: Object,
       required: true
     },
-    value: {
+    model: {
       type: Object,
       required: true
     },
@@ -112,43 +111,53 @@ export default defineComponent({
       default: 'form'
     }
   },
-  emits: ['update:value', 'change'],
+  emits: [EVENTS.CHANGE, EVENTS.UPDATE_MODEL],
   setup(props: XFormBuilderProps, { emit }){
+    const instance = getCurrentInstance()
     const pending = ref(false)
     const REGISTERED_FIELDS = new Map<string, ValidateOptions>()
 
-    function registerField(key: string, validator: WrappedValidator){
-      const stopHandle = watch(() => props.value[key], () => {
-        if(Store.getConfig().validation.immediate !== false) validator()
-      })
+    function registerField(fieldRef: ComputedRef<XField>, validator: WrappedValidator){
+      const key = fieldRef.value.name
+      const stopHandle = watch(() => props.model[key], () => Store.isImmediateValidate() && validator())
 
-      REGISTERED_FIELDS.set(key, { validator, stopHandle })
+      REGISTERED_FIELDS.set(key, { fieldRef, validator, stopHandle })
     }
     
     function removeField(key: string){
       const o = REGISTERED_FIELDS.get(key)
       if(null != o) {
         REGISTERED_FIELDS.delete(key)
-        if(typeof o.stopHandle == 'function') o.stopHandle()
+        isFunction(o.stopHandle) && o.stopHandle()
       }
     }
 
     function update(event: any){
-      const model = props.value
+      const model = props.model
       const { value, name } = event
 
       model[name] = value
 
-      emit('update:value', model)
-      emit('change', event)
+      emit(EVENTS.UPDATE_MODEL, model)
+      emit(EVENTS.CHANGE, event)
     }
 
-    provide(XFORM_MODEL_PROVIDE_KEY, props.value)
-    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
-    provide(XFORM_BUILDER_CONTEXT_PROVIDE_KEY, { 
+    // 清除验证信息
+    function resetValidate(){
+      for(const option of REGISTERED_FIELDS.values()){
+        const field = option.fieldRef.value
+        field && field.resetValidate()
+      }
+    }
+
+    provide(XFORM_MODEL_PROVIDE_KEY, props.model)
+    provide<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    provide<XFormBuilderContext>(XFORM_CONTEXT_PROVIDE_KEY, {
+      type: 'builder',
       registerField, 
       removeField, 
-      updateFieldValue: update
+      updateFieldValue: update,
+      renderField: renderField.bind(null, instance.proxy)
     })
 
     return {
@@ -162,6 +171,11 @@ export default defineComponent({
         
         return { messages, valid: messages.every(i => i === true) }
       },
+      resetValidate,
+      reset(){
+        resetValidate()
+        emit(EVENTS.UPDATE_MODEL, {})
+      },
       update,
       registerField,
       removeField
@@ -170,9 +184,8 @@ export default defineComponent({
   render(instance: XFormBuilderInstance){
     const slots: Slots = instance.$slots
     const schema: XFormSchema = instance.schema
-    const value = instance.value
-    
-    const tagName = instance.tag || 'div'
+    const tagName = (isString(instance.tag) ? instance.tag : 'form').toLowerCase()
+    // 考虑到异步验证时需要处理与表单相关的交互，这里暂不处理submit事件
     const props = { 
       className: 'xform-builder', 
       novalidate: tagName == 'form'
@@ -180,12 +193,12 @@ export default defineComponent({
     
     const main = (
       <div class="xform-builder-main">
-        {typeof slots.header == 'function' && slots.header()}
-        {schema.fields.map(field => renderField(instance, slots, value, field))}
-        {typeof slots.default == 'function' && slots.default()}
-        {typeof slots.footer == 'function' && slots.footer()}
+        {isFunction(slots.header) && slots.header()}
+        {schema.fields.map(field => renderField(instance, field))}
+        {isFunction(slots.default) && slots.default()}
+        {isFunction(slots.footer) && slots.footer()}
       </div>
-    ) as RenderFunction
+    )
         
     return h(tagName, props, main)
   }

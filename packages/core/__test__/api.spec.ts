@@ -1,5 +1,5 @@
 import { createSchema } from '../api'
-import { XField } from '@core/model'
+import { XField } from '@model'
 
 describe('api: createShema', () => {
   test('edge cases', () => {

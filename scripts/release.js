@@ -58,7 +58,7 @@ async function releaseCode(){
   // 检查代码格式
 
   // 测试
-  // execa.commandSync('npm run test')
+  execa.commandSync('npm run test')
   
   // build
   for(const package of packageNames) buildPackage(package, version)

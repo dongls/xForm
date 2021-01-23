@@ -3,9 +3,8 @@ import icon from '@common/svg/textarea.svg'
 
 import textarea from './textarea.vue'
 import setting from './setting.vue'
-import {  } from '@core/model'
 
-export default new XFieldConf({
+export default XFieldConf.create({
   icon: icon,
   type: 'textarea',
   title: '多行文本',

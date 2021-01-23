@@ -1,33 +1,10 @@
-import { ComponentInternalInstance } from 'vue'
-import { XField } from '@core/model'
-import { ComponentEnum } from '@core/model/XFieldConf'
-
-/** 获取组件的根节点。 如果是Fragment 返回第一个dom节点 */
-export function findComponentElement(component: ComponentInternalInstance): HTMLElement{
-  const subTree = component.subTree
-  if(subTree.el instanceof HTMLElement) return subTree.el
-
-  const children = subTree.children
-
-  if(Array.isArray(children)){
-    for(const c of children){
-      const child = c as any
-      if(null != child && typeof child == 'object' && child.el instanceof HTMLElement) return child.el
-    }
-  }
-  
-  return null
-}
-
-/** 生成VNodeProps里事件名 */
-export function genEventName(name: string){
-  return 'on' + name[0].toUpperCase() + name.slice(1)
-}
+import { RawProps, XField, ComponentEnum } from '@core/model'
+import { isFunction } from './lang'
 
 /** 获取字段配置的组件 */
 export function getFieldComponent(field: XField, target: ComponentEnum, mode?: string){
   const component = field.conf?.[target]
-  return typeof component == 'function' ? component(field, mode) : component
+  return isFunction(component) ? component(field, mode) : component
 }
  
 /**
@@ -51,4 +28,17 @@ export function getRef<T>(refs: Record<string, unknown>, key: string): T{
 /** 获取ref对应的HTMLElement */
 export function getHtmlElement(refs: Record<string, unknown>, key: string){
   return getRef<HTMLElement>(refs, key)
+}
+
+export function buildComponentProps(defs: unknown, props: any){
+  if(null == defs || typeof defs != 'object') return {}
+
+  return Object.keys(defs).reduce((acc, key) => {
+    acc[key] = props[key]
+    return acc
+  }, {} as RawProps)
+}
+
+export function genEventName(name: string){
+  return 'on' + name[0].toUpperCase() + name.slice(1)
 }

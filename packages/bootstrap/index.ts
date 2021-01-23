@@ -17,7 +17,7 @@ const bootstrap: XFormPreset = {
   name: 'bootstrap',
   version: __VERSION__,
   slots: {
-    setting: Setting
+    'setting_form': Setting
   },
   fieldConfs: [
     Text,

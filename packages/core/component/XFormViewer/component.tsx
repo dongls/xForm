@@ -4,24 +4,23 @@ import {
   h,
   resolveComponent,
   ComponentPublicInstance,
-  ComponentOptions,
-  VNode
+  getCurrentInstance
 } from 'vue'
 
 import { 
   XField, 
   XFormModel, 
   XFormSchema,
-  AnyProps
+  ComponentEnum,
+  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  RawProps,
+  XFORM_CONTEXT_PROVIDE_KEY,
+  XFormViewerContext
 } from '@core/model'
 
-import { 
-  XFORM_FORM_SCHEMA_PROVIDE_KEY
-} from '@core/model/constant'
-
-import { isEmpty, isNull } from '@core/util/lang'
+import { isFunction } from '@core/util/lang'
 import { getFieldComponent } from '@core/util/component'
-import { ComponentEnum } from '@core/model/XFieldConf'
+import Store from '@core/store'
 
 interface XFormViewerProps{
   schema: XFormSchema;
@@ -42,32 +41,32 @@ type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormVie
  * 2. 检索是否有名为`type_[type]`对应的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderField(instance: XFormViewerInstance, field: XField){
+function renderContent(instance: XFormViewerInstance, props: RawProps, field: XField){
+  const slots = instance.$slots
+
+  const nameSlot = slots[`name_${field.name}`]
+  if(isFunction(nameSlot)) return nameSlot(props)
+
+  const typeSlot = slots[`type_${field.type}`]
+  if(isFunction(typeSlot)) return typeSlot(props)
+
   const component = getFieldComponent(field, ComponentEnum.VIEW, instance.mode)
-  const props = {
-    field: field,
-    value: instance.formatter(field),
-    model: instance.model
-  } as AnyProps
+  return null == component ? null : h(component, props)
+}
 
-  if(component && 'renderField' in component.props) props.renderField = renderField.bind(null, instance)
-  if(field.conf?.custom === true && component != null) return h(component, props)
+function renderField(instance: XFormViewerInstance, field: XField){
+  const conf = Store.getConfig()
+  const value = conf.formatter(field, instance.$props, instance)
 
-  const XFormItem = resolveComponent('xform-item') as ComponentOptions
-  const itemProps = { key: field.name, field }
+  const props = { field, value, model: instance.model }
+  const content = renderContent(instance, props, field)
 
+  if(field.conf?.custom === true) return content
+
+  const XFormItem = resolveComponent('xform-item')
+  const itemProps = { key: field.name, field, validation: false }
   return h(XFormItem, itemProps, function(){
-    const slots = instance.$slots
-
-    const nameSlotFunc = slots[`name_${field.name}`]
-    const nameSlot: VNode[] = typeof nameSlotFunc == 'function' && nameSlotFunc(props)
-    if(nameSlot.length > 0) return nameSlot
-
-    const typeSlotFunc = slots[`type_${field.type}`]
-    const typeSlot: VNode[] = typeof typeSlotFunc == 'function' && typeSlotFunc(props)
-    if(typeSlot.length > 0) return typeSlot
-
-    return null == component ? instance.formatter(field) : h(component, props)
+    return content ?? value
   })
 }
 
@@ -88,19 +87,15 @@ export default defineComponent({
     }
   },
   setup(props: XFormViewerInstance){
-    function formatter(field: XField){
-      const model = props.model
-      const value = model[field.name]
+    const instance = getCurrentInstance()
 
-      if(isNull(value) || isEmpty(value)) return props.schema.viewerPlaceholder ?? ''
-      return Array.isArray(value) ? value.join('，') : value
-    }
+    provide<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    provide<XFormViewerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
+      type: 'viewer',
+      renderField: renderField.bind(null, instance.proxy)
+    })
 
-    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
-
-    return {
-      formatter
-    }
+    return {}
   },
   render(instance: XFormViewerInstance){
     const schema: XFormSchema = instance.schema

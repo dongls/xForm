@@ -1,3 +1,5 @@
+import './non-standard-prop-compat'
+
 import { App } from 'vue'
 import { XFormOption } from './model'
 import store from './store'
@@ -18,29 +20,21 @@ const install = function(app: App, options: XFormOption){
 }
 
 const XForm = {
-  version,
   install,
-  store
-}
-
-export {
-  GlobalDragContext,
-  GlobalDragEvent,
-  DragModeEnum,
-  XField,
-  XFieldConf,
-  XFormModel,
-  XFormOption,
-  XFormPreset,
-  XFormSchema,
-} from './model'
-
-export {
-  version,
   store,
-  install
+  version,
 }
 
-export * from './model/constant'
+export {
+  XFormBuilder,
+  XFormDesigner,
+  XFormItem,
+  XFormViewer,
+  install,
+  store,
+  version,
+}
+
+export * from './model/exports'
 export * from './api'
 export default XForm

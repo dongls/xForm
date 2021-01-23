@@ -159,5 +159,6 @@ export default {
       options: [],
       attributes: {}
     }
-  ]
+  ],
+  viewerPlaceholder: '--'
 }

@@ -18,6 +18,15 @@ const common = {
     alias: {
       '@config': path.resolve(__dirname, `../env/${NODE_ENV}.js`)
     }
+  },
+  module: {
+    rules: [{
+      test: /\.md$/,
+      use: [
+        'html-loader',
+        path.resolve(__dirname, './loaders/markdown-loader')
+      ]
+    }]
   }
 }
 

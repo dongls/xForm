@@ -4,7 +4,7 @@ import icon from '@common/svg/divider.svg'
 import divider from './divider.vue'
 import setting from './setting.vue'
 
-export default new XFieldConf({
+export default XFieldConf.create({
   icon: icon,
   type: 'divider',
   title: '分割线',

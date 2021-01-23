@@ -3,10 +3,8 @@ import useDragging from './dragging'
 
 import { 
   ComponentInternalInstance,
-  ComponentOptions,
   ComponentPublicInstance,
   Slots,
-  VNode,
   computed,
   defineComponent,
   getCurrentInstance,
@@ -23,22 +21,25 @@ import {
   XFieldConf,
   XFormSchema,
   ModeGroup,
+  RawProps,
+  ComponentEnum,
   DragModeEnum,
-  ATTRS, 
-  RawProps
-} from '@core/model'
+  ATTRS,
+  XFormDesignerContext
+} from '@model'
 
-import { isHidden, normalizeWheel } from '@core/util/dom'
-import { XFORM_FORM_SCHEMA_PROVIDE_KEY, SELECTOR, CLASS } from '@core/model/constant'
-import { ComponentEnum } from '@core/model/XFieldConf'
-import { getFieldComponent } from '@core/util/component'
+import { isHidden, findScope, normalizeWheel } from '@core/util/dom'
+import { XFORM_FORM_SCHEMA_PROVIDE_KEY, SELECTOR, CLASS, PROPS, XFORM_CONTEXT_PROVIDE_KEY } from '@core/model/constant'
+import { getFieldComponent, buildComponentProps, genEventName, getHtmlElement } from '@core/util/component'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
 import XFormTip from '@core/assets/img/xform-tip.png'
+import { isFunction } from '@core/util/lang'
 
 const IS_BASE64 = /^\s*data:(?:[a-z]+\/[a-z0-9-+.]+(?:;[a-z-]+=[a-z0-9-]+)?)?(?:;base64)?,([a-z0-9!$&',()*+;=\-._~:@/?%\s]*?)\s*$/i
 const IS_SVG = /<svg(\s[^>]*)?>[\s\S]*<\/svg>/
+const SETTING_FORM_SLOT = 'setting_form'
 
 interface XFormDesignerProps {
   mode: string;
@@ -73,38 +74,27 @@ export interface XFormDesignerRefs{
 
 export type XFormDesignerInstance = ComponentPublicInstance & XFormDesignerProps & XFormDesignerSetupState;
 
-function findFieldScope(field: XField, schema: XFormSchema, list: unknown){
-  const fieldEl = (list as Element).querySelector(`[xfield-name="${field.name}"`)
-  const scopedEl = fieldEl.closest(SELECTOR.SCOPED)
-  const scopedFieldName = (
-    null != scopedEl && fieldEl != scopedEl 
-      ? scopedEl.getAttribute(ATTRS.XFIELD_NAME)
-      : null
-  )
-  
-  return (
-    scopedFieldName == null 
-      ? schema
-      : schema.fields.find(f => f.name == scopedFieldName)
-  ) 
-}
-
-function buildProps(keys: string[], props: any){
-  return keys.reduce((acc, key) => {
-    acc[key] = props[key]
-    return acc
-  }, {} as any)
+const EVENTS = {
+  REMOVE: 'remove',
+  UPDATE_SCHEMA: 'update:schema' 
 }
 
 function shwoSelectedField(instance: ComponentInternalInstance){
   return nextTick(() => {
-    const scroll = instance.refs.scroll as HTMLElement
-    const target = (instance.refs.list as HTMLElement).querySelector(SELECTOR.IS_SELECTED) as HTMLElement
+    const scroll = getHtmlElement(instance.refs, 'scroll')
+    const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED) 
 
     if(isHidden(target, scroll)) scroll.scrollTop = target.offsetTop
   })
 }
 
+/**
+ * 字段图标支持以下几种：
+ * 1. vnode
+ * 2. base64编码的图片
+ * 3. svg
+ * 4. css class
+ */
 function renderIcon(fc: XFieldConf){
   const icon = typeof fc.icon == 'function' ? fc.icon(fc) : fc.icon
 
@@ -124,7 +114,7 @@ function renderFieldPanel(groups: ModeGroup[], dragstart: Function){
         'class': 'xform-designer-field xform-draggable xform-template',
         'key': fc.type,
         'onMousedown': (e: Event) => dragstart(e, DragModeEnum.INSERT),
-        [ATTRS.XFIELD_TYPE]: fc.type,
+        [ATTRS.XFIELD_TYPE]: fc.type
       }
 
       return (
@@ -144,33 +134,62 @@ function renderFieldPanel(groups: ModeGroup[], dragstart: Function){
   })
 }
 
-function renderItem(field: XField, mode: string, renderField: Function){
+/**
+ * 根据字段渲染对应的预览组件，按以下顺序逐次匹配：
+ * 1. 检索是否有名为`preview_name_[name]`的slot
+ * 2. 检索是否有名为`preview_type_[type]`的slot
+ * 3. 检索字段对应的`XFieldConf`中配置的`preview`或`build`组件
+ */
+function renderContent(instance: XFormDesignerInstance, props: RawProps, field: XField){
+  const slots = instance.$slots
+
+  const nameSlot = slots[`preview_name_${field.name}`]
+  if(isFunction(nameSlot)) return nameSlot({ field })
+
+  const typeSlot = slots[`preview_type_${field.type}`]
+  if(isFunction(typeSlot)) return typeSlot({ field })
+
+  const mode = instance.mode
   const component = getFieldComponent(field, ComponentEnum.PREVIEW, mode) || getFieldComponent(field, ComponentEnum.BUILD, mode)
-  const allProps = { field, renderField, behavior: 'designer' }
-  
-  if(field.conf?.custom === true && null != component) {
-    return h(component, buildProps(Object.keys(component.props || {}), allProps))
-  }
-
-  if(null == component) {
-    console.warn(`field[${field.title}: ${field.name}] not implement preview component`)
-    return <p class="xform-is-unknown">暂不支持的字段类型</p>
-  }
-
-  const XFormItem = resolveComponent('xform-item') as ComponentOptions
-  return h(XFormItem, { field, validation: false }, () => h(component, buildProps(Object.keys(component.props || {}), allProps)))
+  return component == null ? null : h(component, buildComponentProps(component.props, props))
 }
 
-function renderPreview(instance: XFormDesignerInstance, field: XField){
+function renderItem(instance: XFormDesignerInstance, field: XField){
+  const allProps = { field, behavior: 'designer' }
+  const content = renderContent(instance, allProps, field)
+  
+  if(field.conf?.custom === true ) return content
+
+  const XFormItem = resolveComponent('xform-item')
+  const itemProps = { field, validation: false }
+  return h(XFormItem, itemProps, function(){
+    if(null == content) {
+      console.warn(`field[${field.title}: ${field.name}] not implement preview component`)
+      return <p class="xform-is-unknown">暂不支持的字段类型</p>
+    }
+
+    return content
+  })
+}
+
+/** 渲染字段预览组件 */
+function renderFieldPreview(instance: XFormDesignerInstance, field: XField){
   const { selectedField, icon, clone, remove, dragstart, chooseField } = instance
+  const buttons = []
 
-  const buttons = [
-    <button type="button" title="复制" onClick={clone.bind(null, field)} innerHTML={icon.clone}/>
-  ]
+  if(field.allowClone !== false){
+    buttons.push(<button type="button" title="复制" onClick={clone.bind(null, field)} innerHTML={icon.clone}/>)
+  }
 
-  if(field.attributes.remove !== false) {
+  if(field.allowRemove !== false) {
     buttons.push(<button type="button" title="删除" onClick={remove.bind(null, field)} innerHTML={icon.remove}/>)
   }
+
+  const operate = (
+    buttons.length > 0 
+      ? <div class="xform-preview-operate">{buttons}</div> 
+      : null
+  )
 
   const props = {
     'class': {
@@ -179,19 +198,18 @@ function renderPreview(instance: XFormDesignerInstance, field: XField){
       'xform-draggable': true,
       'xform-droppable': true,
       'xform-is-selected': field == selectedField,
-      [CLASS.SCOPED]: field.conf?.scoped ?? false
+      [CLASS.SCOPE]: field.conf?.scoped ?? false
     },
     'key': field.name,
-    [ATTRS.XFIELD_TYPE]: field.type,
-    [ATTRS.XFIELD_NAME]: field.name
+    [PROPS.XFIELD]: field,
+    [PROPS.SCOPE]: field
   }
 
   return (
     <div {...props}>
-      {renderItem(field, instance.mode, renderPreview.bind(null, instance))}
-
+      {renderItem(instance, field)}
       <div class="xform-preview-addition">
-        <div class="xform-preview-operate">{buttons}</div>
+        {operate}       
         <div class="xform-preview-cover" onMousedown={e => dragstart(e, DragModeEnum.SORT, field)} onClick={chooseField.bind(null, field)}/>
       </div>
     </div>
@@ -199,15 +217,27 @@ function renderPreview(instance: XFormDesignerInstance, field: XField){
 }
 
 function renderPreviewList(instance: XFormDesignerInstance, fields: XField[]){
-  if(fields.length == 0) return renderEmptyTip()
+  const content = (
+    fields.length == 0 
+      ? renderEmptyTip() 
+      : fields.map(field => renderFieldPreview(instance, field))
+  )
+  
+  const props = {
+    ref: 'list',
+    'class': {
+      'xform-designer-list': true,
+      'xform-is-empty': fields.length == 0
+    }
+  }
 
-  return fields.map(field => renderPreview(instance, field))
+  return h('div', props, [content])
 }
 
 /**
  * 根据字段创建对应的设置组件，按以下顺序逐次匹配：
- * 1. 检索是否有名为`setting_name_[name]`对应的slot
- * 2. 检索是否有名为`setting_type_[type]`对应的slot
+ * 1. 检索是否有名为`setting_name_[name]`的slot
+ * 2. 检索是否有名为`setting_type_[type]`的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
 function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesignerInstance){
@@ -215,16 +245,15 @@ function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesigner
 
   const props: RawProps = { field: field, key: field.name }
 
-  const nameSlotFunc = slots[`setting_name_${field.name}`]
-  const nameSlot: VNode[] = typeof nameSlotFunc == 'function' && nameSlotFunc(props)
-  if(nameSlot.length > 0) return nameSlot
+  const nameSlot = slots[`setting_name_${field.name}`]
+  if(isFunction(nameSlot)) return nameSlot(props)
 
-  const typeSlotFunc = slots[`setting_type_${field.type}`]
-  const typeSlot: VNode[] = typeof typeSlotFunc == 'function' && typeSlotFunc(props)
-  if(typeSlot.length > 0) return typeSlot
+  const typeSlot = slots[`setting_type_${field.type}`]
+  if(isFunction(typeSlot)) return typeSlot(props)
 
-  if(field.conf.setting == null) {
-    console.warn(`field[${field.title}: ${field.name}] not implement setting component`)
+  const component = getFieldComponent(field, ComponentEnum.SETTING, instance.mode)
+  if(component == null) {
+    console.warn(`[xform] field not implement setting component: ${field.title}(${field.name})`)
     return null
   }
 
@@ -240,17 +269,14 @@ function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesigner
     instance.updateSchema()
   }
 
-  const component = getFieldComponent(field, ComponentEnum.SETTING, instance.mode)
   return h(component, props)
 }
 
 function renderFormSetting(slots: Slots, schema: XFormSchema, instance: XFormDesignerInstance){
-  const { setting } = slots
-  const vnodes: VNode[] = typeof setting == 'function' ? setting({ schema }) : []
-  if(vnodes.length > 0) return vnodes
+  if(isFunction(slots[SETTING_FORM_SLOT])) return slots[SETTING_FORM_SLOT]({ schema })
 
   const preset = Store.getPreset()
-  if(preset && preset.slots.setting) return h(preset.slots.setting, {
+  if(preset?.slots?.[SETTING_FORM_SLOT]) return h(preset.slots[SETTING_FORM_SLOT], {
     schema,
     'onUpdate:prop': function(event: any){
       const { prop, value } = event
@@ -311,23 +337,15 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update:schema'],
+  emits: Object.values(EVENTS),
   setup(props: XFormDesignerProps, { emit }){
     const instance = getCurrentInstance()
     const selectedField = ref<XField>(null)
     const selectedTab = ref<string>('form')
-
-    const groups = computed(() => {
-      const mode = Store.findMode(props.mode)
-      if(null == mode || mode.length == 0) return []
-
-      const group = (typeof mode[0] != 'object' ? [{ types: mode, title: '' }] : mode) as ModeGroup[]
-      for(const g of group) g.fieldConfs = g.types.map(Store.findFieldConf)
-      return group
-    })
+    const groups = computed(() => Store.findFieldGroups(props.mode))
 
     const updateSchema = function(schema: XFormSchema = props.schema){
-      emit('update:schema', schema)
+      emit(EVENTS.UPDATE_SCHEMA, schema)
     }
 
     const chooseTab = function(tab: string){
@@ -348,28 +366,42 @@ export default defineComponent({
       scroll.scrollTop += pixelY
     }
 
-    const clone = function(field: XField){
-      const scope = findFieldScope(field, props.schema, instance.refs.list)
-      const clone = field.clone()
-      scope.fields.splice(scope.fields.indexOf(field) + 1, 0, clone)
+    const clone = function(field: XField, event: Event){
+      if(field.allowClone === false) return
+
+      const scope = findScope(event.target as Element) ?? props.schema
+      const newField = field.clone()
+      scope.fields.splice(scope.fields.indexOf(field) + 1, 0, newField)
       updateSchema(props.schema)
-      chooseField(clone)
+      chooseField(newField)
     }
     
-    const remove = function(field: XField){
-      const message = `确定要删除字段[${field.title}]?`
-      return Store.getConfig().confirm(message).then(res => {
-        if(res === true) {
-          const scope = findFieldScope(field, props.schema, instance.refs.list)
-          scope.fields.splice(scope.fields.indexOf(field), 1)
-          updateSchema(props.schema)
-        }
-      })
+    const remove = function(field: XField, event: Event){
+      if(field.allowRemove === false) return
+
+      const name = genEventName(EVENTS.REMOVE)
+      const listener = instance.vnode?.props?.[name]
+      const defaultAction = function(){
+        const scope = findScope(event.target as Element) ?? props.schema
+        scope.fields.splice(scope.fields.indexOf(field), 1)
+        updateSchema(props.schema)
+
+        nextTick(() => {
+          const hook = field.conf?.onRemoved
+          isFunction(hook) && hook(field, instance) 
+        })
+      }
+      
+      isFunction(listener) ? emit(EVENTS.REMOVE, { field, defaultAction }): defaultAction()
     }
 
-    const { dragstart } = useDragging(instance, chooseField)
+    const { dragstart } = useDragging(instance)
 
-    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    provide<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    provide<XFormDesignerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
+      type: 'designer',
+      renderField: renderFieldPreview.bind(null, instance.proxy)
+    })
   
     return {
       clone,
@@ -387,32 +419,29 @@ export default defineComponent({
   },
   render(instance: XFormDesignerInstance){
     const slots = instance.$slots
-    const schema: XFormSchema = instance.schema
-    const groups: ModeGroup[] = instance.groups as ModeGroup[]
+    const schema = instance.schema
+    const groups = instance.groups as ModeGroup[]
     const fields: XField[] = Array.isArray(schema.fields) ? schema.fields : []
-
-    const listClassName = {
-      'xform-designer-list': true,
-      'xform-is-empty': fields.length == 0
-    }
 
     return (
       <div class="xform-designer" ref="root">
-        <div class="xform-designer-panel">{ renderFieldPanel(groups, instance.dragstart) }</div>
+        <div class="xform-designer-panel">
+          { renderFieldPanel(groups, instance.dragstart) }
+        </div>
         <div class="xform-designer-main">
-          { typeof slots.tool == 'function' && slots.tool() }
+          { isFunction(slots.tool) && slots.tool() }
           <div ref="scroll" class="xform-designer-scroll xform-is-scroll">
-            <div ref="list" class={listClassName}>
-              { renderPreviewList(instance, fields) }
-            </div>
+            { renderPreviewList(instance, fields) }
           </div>
         </div>
-        <div class="xform-designer-setting">{ renderSetting(slots, schema, instance) }</div>
-        <div ref="ghost" key="xform-ghost" class="xform-designer-ghost" onWheel={instance.doScroll}>
+        <div class="xform-designer-setting">
+          { renderSetting(slots, schema, instance) }
+        </div>
+        <div ref="ghost" key="xform-designer-ghost" class="xform-designer-ghost" onWheel={instance.doScroll}>
           <div class="xform-designer-ghost-template" ref="template"/>
           <div class="xform-designer-cover"/>
         </div>
-        <div ref="mark" key="xform-mark" class="xform-designer-mark"/>
+        <div ref="mark" key="xform-designer-mark" class="xform-designer-mark"/>
       </div>
     )
   }

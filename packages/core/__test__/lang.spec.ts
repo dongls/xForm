@@ -3,7 +3,7 @@ import {
   mergePlainObject
 } from '../util/lang'
 
-test('test clone plain object', () => {
+test('lang: clonePlainObject', () => {
   const origin = { 
     a: 1, 
     b: false,
@@ -25,13 +25,15 @@ test('test clone plain object', () => {
 
 describe('lang: mergePlainObject', () => {
   test('simple', () => {
-    const x = { a: 1, b: false }
-    const y = { b: 2 }
-    const z = { a: 0, c: 'c', b: null } as any
+    const x = { a: 1, b: false, e: function(){/* */}, f: [1, 3] }
+    const y = { b: 2, e: function(){/* */} }
+    const z = { a: 0, c: 'c', b: null, f: [1, 2, 3] } as any
     const o = mergePlainObject({}, x, y, z)
 
     expect(o).not.toBe(x)
     expect(o.a).toBe(0)
     expect(o.b).toBe(2)
+    expect(o.e).toBe(y.e)
+    expect(o.f).toBe(z.f)
   })
 })

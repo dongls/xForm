@@ -4,7 +4,7 @@ import icon from '@common/svg/date.svg'
 import date from './date.vue'
 import setting from './setting.vue'
 
-export default new XFieldConf({
+export default XFieldConf.create({
   icon: icon,
   type: 'date',
   title: '日期',

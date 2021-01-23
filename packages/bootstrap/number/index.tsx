@@ -32,7 +32,7 @@ const build = defineComponent({
   }
 })
 
-export default new XFieldConf({
+export default XFieldConf.create({
   icon,
   type: 'number',
   title: '数字',

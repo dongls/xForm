@@ -1,22 +1,17 @@
 import { 
   isRegExp, 
   isEmpty, 
-  isFunction
+  isFunction,
+  checkPromise
 } from './lang'
 
 import { 
   XField, 
   XFormModel,
   ValidStatusEnum
-} from '@core/model'
+} from '@model'
 
 import { ComputedRef } from 'vue'
-
-function checkPromise(p: unknown){
-  if(p instanceof Promise) return p
-
-  throw new Error('validator must return Promise')
-}
 
 function parseError(error: any){
   if(null == error) return null

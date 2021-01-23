@@ -1,20 +1,20 @@
-import XField from './XField'
+import { XField } from '.'
 
 import { ComponentInternalInstance } from 'vue'
 import { DragModeEnum, DirectionEnum, SELECTOR, ATTRS, CLASS } from './constant'
 import { getHtmlElement } from '@core/util/component'
+import { XFormDesignerInstance } from '@core/component/XFormDesigner/component'
 
-export interface GlobalDragContext {  
-  instance: ComponentInternalInstance;
+export interface GlobalDragContext { 
+  getInternalInstance: () => ComponentInternalInstance;
+  getPublicInstance: () => XFormDesignerInstance;
 
-  chooseField: Function;
   resetStatus: Function;
   moveMark: Function;
-  sort: Function;
-  updateSchema: Function;
+  moveField: (a: number, b: number, fields: XField[]) => void;
 }
 
-export class GlobalDragEvent{
+export class InternalDragEvent{
   init = false;
 
   // 拖拽的元素
@@ -69,10 +69,10 @@ export class GlobalDragEvent{
     this.clientY = y
   }
 
-  updateDragStatus(event: MouseEvent){
+  move(event: MouseEvent){
     if(!this.init) this.initDrag()
 
-    const instance = this.context.instance
+    const instance = this.context.getInternalInstance()
     const left = event.clientX - this.deltaX
     const top = event.clientY - this.deltaY
     const ghost = getHtmlElement(instance.refs, 'ghost')
@@ -86,7 +86,7 @@ export class GlobalDragEvent{
   }
 
   private initDrag(){
-    const instance = this.context.instance
+    const instance = this.context.getInternalInstance()
     const template = getHtmlElement(instance.refs, 'template')
     const ghost = getHtmlElement(instance.refs, 'ghost')
     const list = getHtmlElement(instance.refs, 'list')
@@ -123,3 +123,5 @@ export class GlobalDragEvent{
     )
   }
 }
+
+export type GlobalDragEvent = InstanceType<typeof InternalDragEvent>

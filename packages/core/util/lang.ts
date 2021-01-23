@@ -1,5 +1,14 @@
+const OBJECT_TO_STRING = Object.prototype.toString
 const OBJECT_TO_STRING_TAG = {
   RegExp: '[object RegExp]'
+}
+
+function getObjectTag(value: unknown): string{
+  if (value == null) {
+    return value === undefined ? '[object Undefined]' : '[object Null]'
+  }
+
+  return OBJECT_TO_STRING.call(value)
 }
 
 export function isString(value: unknown): value is string{
@@ -26,11 +35,29 @@ export function isObject(value: unknown){
 
 /** 是否为正则表达式 */
 export function isRegExp(value: unknown): value is RegExp{
-  return isObject(value) && Object.prototype.toString.call(value) == OBJECT_TO_STRING_TAG.RegExp
+  return isObject(value) && getObjectTag(value) == OBJECT_TO_STRING_TAG.RegExp
 }
 
 export function isFunction(value: unknown): value is Function{
   return typeof value == 'function'
+}
+
+/** 是否为简单对象 @see https://github.com/lodash/lodash/blob/master/isPlainObject.js */
+export function isPlainObject(value: unknown) {
+  if (value == null || typeof value != 'object' || getObjectTag(value) != '[object Object]') {
+    return false
+  }
+
+  if (Object.getPrototypeOf(value) === null) {
+    return true
+  }
+
+  let proto = value
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto)
+  }
+
+  return Object.getPrototypeOf(value) === proto
 }
 
 /**
@@ -66,15 +93,15 @@ function merge(target: any, source: any){
       continue
     }
 
-    const tarValue = target[prop]    
-    target[prop] = merge(typeof tarValue != 'object' ? {} : tarValue, value)
+    const tarValue = target[prop]
+    target[prop] = merge(isObject(tarValue) ? tarValue : {}, value)
   }
 
   return target
 }
 
 /** 合并简单对象 */
-export function mergePlainObject(...source: any[]): any{
+export function mergePlainObject(...source: any[]){
   if(source.length < 2) return source[0]
   
   let target = source[0]
@@ -88,4 +115,10 @@ export function mergePlainObject(...source: any[]): any{
 export function toNumber(val: any){
   const n = parseFloat(val)
   return isNaN(n) ? val : n
+}
+
+export function checkPromise(p: unknown, message = 'need a Promise instance'){
+  if(p instanceof Promise) return p
+
+  return Promise.reject(message)
 }

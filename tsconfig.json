@@ -9,10 +9,12 @@
     "noImplicitAny": true,
     "outDir": "./dist/",
     "paths": {
+      "@model": ["packages/core/model/index"],
       "@core/*": ["packages/core/*"],
-      "@packages/*": ["packages/*"],
       "@common/*": ["packages/common/*"],
-      "@dongls/xform": ["packages/core/index"],
+      "@packages/*": ["packages/*"],
+      "@document/*": ["document/*"],
+      "@dongls/xform": ["packages/core/index"]
     },
     "target": "ESNext"
   },
@@ -20,6 +22,6 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "packages/**.d.ts",
-    "document/**/*.ts"
+    "document/**/*.ts",
   ]
 }

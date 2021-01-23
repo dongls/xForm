@@ -1,4 +1,4 @@
-import { watch, computed, reactive } from 'vue'
+import { watch, computed, ref } from 'vue'
 import { XFormModel } from '@core/model'
 import { createSchema } from '@core/index'
 
@@ -58,13 +58,11 @@ export function useLocalSchema(){
 
 export function useLocalModel(readonly = false){
   const localModel = getLocalModel()
-  const value = reactive<XFormModel>(localModel)
-  const o: any = { value, reset: null }
+  const model = ref<XFormModel>(localModel)
 
   if(!readonly) {
-    watch(value, () => saveToLocalStorage(XFORM_MODEL_STORAGE_KEY, JSON.stringify(value)), { deep: true })
-    o.reset = () => Object.keys(value).forEach(prop => delete value[prop])
+    watch(model, () => saveToLocalStorage(XFORM_MODEL_STORAGE_KEY, JSON.stringify(model.value)), { deep: true })
   }
 
-  return o
+  return model
 }

@@ -313,7 +313,7 @@
   display: block;
 }
 
-.xform-is-silence .xform-designer-operate{
+.xform-is-silence .xform-preview-operate{
   display: none !important;
 }
 
@@ -423,6 +423,6 @@
   margin-right: 10px;
 }
 
-.xform-scoped .xform-preview{
+.xform-is-scope .xform-preview{
   z-index: 9;
 }

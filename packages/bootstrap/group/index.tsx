@@ -1,30 +1,30 @@
 import { defineComponent, ref } from 'vue'
 
 import { 
-  GlobalDragEvent, 
+  GlobalDragEvent,
   XField,
   XFieldConf, 
-  SELECTOR,
-  store,
-  ATTRS,
   XFormSchema,
   findElementFromPoint,
-  getRef
+  getRef,
+  getXField,
+  store,
+  constant,
+  useContext,
 } from '@dongls/xform'
 
-import CollapseIcon from '!!raw-loader!../assets/svg/collapse.svg'
-import ExpandIcon from '!!raw-loader!../assets/svg/expand.svg'
 import icon from '@common/svg/group.svg'
 import setting from './setting.vue'
 
+const { SELECTOR } = constant
 const GROUP_LIST_CLASS = 'xform-bs-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
-const MATCH_PATCHS = ['.xform-designer-mark', '.xform-droppable', `.${GROUP_LIST_CLASS}`, '.xform-scoped']
+const MATCH_PATCHS = ['.xform-designer-mark', SELECTOR.DROPPABLE, `.${GROUP_LIST_CLASS}`, SELECTOR.SCOPE]
 
 function useHeader(){
   const collasped = ref(false)
 
-  function toggle(event: Event){
+  function toggle(){
     collasped.value = !collasped.value
   }
 
@@ -37,15 +37,14 @@ function useHeader(){
           <button 
             type="button" 
             title={collasped.value ? '展开' : '收起'} 
-            class="btn xform-bs-group-toggle" 
+            class="btn btn-link xform-bs-group-toggle" 
             onClick={toggle} 
-            v-html={collasped.value ? ExpandIcon : CollapseIcon}
-          />
+          >{collasped.value ? '展开' : '收起'}</button>
         )
         : null
     )
   
-    return <h6 class="card-header">{ btn }<span>{ field.title }</span></h6>
+    return <h6 class="card-header"><span>{ field.title }</span>{ btn }</h6>
   }
 
   return { collasped, renderHeader }
@@ -58,10 +57,6 @@ const build = defineComponent({
       type: XField,
       required: true
     },
-    renderField: {
-      type: Function,
-      default: null
-    },
     behavior: {
       type: String,
       default: null
@@ -69,9 +64,9 @@ const build = defineComponent({
   },
   setup(props){
     const { collasped, renderHeader } = useHeader()
+    const { renderField } = useContext()
 
     return function(){
-      const renderItem = props.renderField as any
       const fields = props.field.fields
       const className = {
         'xform-item': true,
@@ -84,7 +79,7 @@ const build = defineComponent({
           <div class="card">
             { renderHeader(props.field) }          
             <div class="card-body xform-bs-group-list">
-              { fields.map(renderItem) }
+              { fields.map(renderField) }
             </div>
             { props.behavior == 'designer'  && fields.length == 0 && <p class="xform-bs-group-empty">请将左侧控件拖动到此处</p> }
           </div>
@@ -100,17 +95,13 @@ const view = defineComponent({
     field: {
       type: XField,
       required: true
-    },
-    renderField: {
-      type: Function,
-      default: null
     }
   },
   setup(props){
+    const { renderField } = useContext()
     const { collasped, renderHeader } = useHeader()
 
     return function(){
-      const renderField = props.renderField as any
       const fields = props.field.fields
       const className = {
         'xform-item': true,
@@ -132,7 +123,7 @@ const view = defineComponent({
   }
 })
 
-export default new XFieldConf({
+export default XFieldConf.create({
   icon: icon,
   type: 'group',
   title: '分组',
@@ -151,44 +142,44 @@ export default new XFieldConf({
     if(target == hookEl) return false
 
     const context = event.context
-    const listEl = hookEl.querySelector('.' + GROUP_LIST_CLASS)
-    const mark = getRef<HTMLElement>(context.instance.refs, 'mark')
+    const instance = context.getInternalInstance()
+    const listEl = hookEl.querySelector(GROUP_LIST_SELECTOR)
+    const mark = getRef<HTMLElement>(instance.refs, 'mark')
     context.moveMark(event.direction, target, mark, listEl, hookEl)
   },
   onDrop(event: GlobalDragEvent){
     const context = event.context
-    const schema = context.instance.props.schema as XFormSchema
-    const markEl = context.instance.refs.mark as HTMLElement
+    const instance = context.getInternalInstance()
+    const pInstance = context.getPublicInstance()
+    const schema = instance.props.schema as XFormSchema
+    const markEl = instance.refs.mark as HTMLElement
     const dropEl = event.dropElement
-    const name = dropEl.getAttribute(ATTRS.XFIELD_NAME)
-    const group = schema.fields.find(f => f.name == name)
+    const group = getXField(dropEl)
 
     // 插入时直接在对应位置添加新字段即可
     if(event.mode == 'insert'){
       const type = event.data.type
       const fc = store.findFieldConf(type)
       const index = Array.prototype.indexOf.call(dropEl.children, markEl)
-      const newField = new XField(fc, group)
+      const newField = new XField(fc)
       group.fields.splice(index, 0, newField)
-      context.updateSchema()
-      return context.chooseField(newField)
+      pInstance.updateSchema()
+      pInstance.chooseField(newField)
+      return
     }
 
     // 排序时需要处理字段的来源
     if(event.mode == 'sort'){
       const field = event.data.field
-      const root = context.instance.refs.root as HTMLElement
       // 先查询原字段
-      const originEl = root.querySelector(`${SELECTOR.DRAGGABLE}[xfield-name="${field.name}"]`)
-      const originScopedEl = originEl.closest(SELECTOR.SCOPED)
+      const originScopedEl = event.target.closest(SELECTOR.SCOPE)
       const schemaIndex = schema.fields.indexOf(field)
       const list = dropEl.querySelector(GROUP_LIST_SELECTOR).children
       const newIndex = Array.prototype.indexOf.call(list, markEl)
 
       // 如果原字段在scope中, 需要调用对应字段类型的onRemove方法
       if(null != originScopedEl && originScopedEl != dropEl){
-        const name = originScopedEl.getAttribute(ATTRS.XFIELD_NAME)
-        const scopedField = schema.fields.find(f => f.name == name)
+        const scopedField = getXField(originScopedEl)
         
         const oldIndex = scopedField.fields.indexOf(field)
         scopedField.fields.splice(oldIndex, 1)
@@ -200,11 +191,11 @@ export default new XFieldConf({
         group.fields.splice(newIndex, 0, field)
       } else {
         const oldIndex = group.fields.indexOf(field)
-        context.sort(oldIndex, newIndex, group.fields)
+        context.moveField(oldIndex, newIndex, group.fields)
       }
 
-      context.updateSchema()
-      return context.chooseField(field)
+      pInstance.updateSchema()
+      return pInstance.chooseField(field)
     }
   }
 })

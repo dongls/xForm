@@ -21,7 +21,7 @@ function render(tokens, idx){
 }
 
 module.exports = function(md){
-  md.use(Container, 'container', { validate, render })
+  md.use(Container, 'alert', { validate, render })
   md.use(Container, 'code-box', {
     validate(params) {
       return params.trim().match(CODEBOX_REG)

@@ -1,3 +1,1 @@
-window.confirm = function(){
-  return true
-}
+window.__VERSION__ = require('../../package.json').version

@@ -8,18 +8,10 @@ declare module '@config'{
   }
 
   export const website: config
-  // TODO: delete
-  export const doc: config
 }
 
 interface Document {
   msElementsFromPoint(x: number, y: number): Element[];
-}
-
-declare module '*.vue' {
-	import { ComponentOptions } from 'vue'
-	const component: ComponentOptions
-	export default component
 }
 
 declare module '*.bmp' {
@@ -62,7 +54,6 @@ declare module '*.md' {
   export default src
 }
 
-
 declare module '*.css' {
   const src: string
   export default src
@@ -81,4 +72,10 @@ declare module '*.module.scss' {
 declare module '*.module.sass' {
   const classes: { readonly [key: string]: string }
   export default classes
+}
+
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<{}, {}, any>
+  export default component
 }

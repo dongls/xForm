@@ -4,7 +4,7 @@ import icon from '@common/svg/text.svg'
 import text from './text.vue'
 import setting from './setting.vue'
 
-export default new XFieldConf({
+export default XFieldConf.create({
   icon: icon,
   type: 'text',
   title: '单行文本',

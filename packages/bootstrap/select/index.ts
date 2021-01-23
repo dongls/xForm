@@ -4,7 +4,7 @@ import icon from '@common/svg/select.svg'
 import select from './select.vue'
 import setting from './setting.vue'
 
-export default new XFieldConf({
+export default XFieldConf.create({
   icon: icon,
   type: 'select',
   title: '下拉框',
@@ -16,7 +16,7 @@ export default new XFieldConf({
     if(field.required && isEmpty) return Promise.reject('必填')
     return Promise.resolve()
   },
-  onCreated(field: XField, params: any){
+  onCreate(field: XField, params: any){
     const options = Array.isArray(params.options) ? params.options : []
     if(options.length == 0) options.push({ value: '选项1' })
     field.options = options

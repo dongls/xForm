@@ -11,17 +11,18 @@ import {
 
 import { 
   AnyProps,
-  ComponentEnum,
-  PositionEnum,
-  ValidStatusEnum,
-  XFORM_BUILDER_CONTEXT_PROVIDE_KEY,
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
-  XFORM_MODEL_PROVIDE_KEY,
   XField, 
   XFormBuilderContext,
   XFormModel,
   XFormSchema,
-} from '@core/model'
+  PositionEnum,
+  ValidStatusEnum,
+  XFORM_CONTEXT_PROVIDE_KEY,
+  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  XFORM_MODEL_PROVIDE_KEY,
+  ComponentEnum,
+  XFormContext,
+} from '@model'
 
 import { isFunction } from '@core/util/lang'
 import { createValidator } from '@core/util/validator'
@@ -33,6 +34,10 @@ type XFormItemProps = {
   title: string;
   type: string;
   name: string;
+}
+
+function isBuilderContext(context: XFormContext): context is XFormBuilderContext {
+  return null != context && context.type == 'builder'
 }
 
 function renderLabelSuffix(suffix: string){
@@ -48,13 +53,13 @@ function renderMessage(field: XField){
   return null
 }
 
-function renderContent(slots: Slots, field: XField, model: XFormModel, context: XFormBuilderContext){
+function renderContent(slots: Slots, field: XField, model: XFormModel, context: XFormContext){
   if(isFunction(slots.default)) return slots.default()
 
   const component = getFieldComponent(field, ComponentEnum.BUILD)
   const props = { field: field } as AnyProps
 
-  if(null != context){
+  if(isBuilderContext(context)){
     props.value = model[field.name]
     props['onUpdate:value'] = context.updateFieldValue
   }
@@ -73,6 +78,7 @@ function patchField(field: XField, o: any){
 function normalizeField(props: XFormItemProps, attrs: any): ComputedRef<XField>{
   if(null != props.field) return computed(() => props.field)
 
+  // 为保证视图更新和数据格式一致性，这里使用reactive包裹虚拟字段
   const virtualField = reactive(new XField()) as XField
   return computed(() => {
     patchField(virtualField, { ...props, ...attrs })
@@ -107,22 +113,22 @@ export default defineComponent({
   },
   setup(props: XFormItemProps, { slots, attrs }){
     const schema = inject<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY)
-    const context = inject<XFormBuilderContext>(XFORM_BUILDER_CONTEXT_PROVIDE_KEY, null)
+    const context = inject<XFormContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
 
     const fieldRef = normalizeField(props, attrs)
     const validation = computed(() => props.validation)
     const model = inject<XFormModel>(XFORM_MODEL_PROVIDE_KEY, null)
 
-    if(null != context){
+    if(isBuilderContext(context)){
       const validator = createValidator(fieldRef, validation, model)
-      context.registerField(fieldRef.value.name, validator)
+      context.registerField(fieldRef, validator)
       onUnmounted(() => context.removeField(fieldRef.value.name))
     }
     
     return function(){
       const field = fieldRef.value
       const labelPosition = schema.labelPosition ?? PositionEnum.LEFT
-      const labelSuffix: string = schema.labelSuffix
+      const labelSuffix = schema.labelSuffix
 
       const className =  {
         'xform-item': true,

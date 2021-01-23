@@ -3,7 +3,7 @@ module.exports = {
   globals: {
     "ts-jest": {
       babelConfig: true,
-      tsConfig: {
+      tsconfig: {
         module: 'commonjs'
       }
     }
@@ -15,6 +15,7 @@ module.exports = {
   },
   moduleFileExtensions: ["vue", "js", "jsx", "ts", "tsx"],
   moduleNameMapper: {
+    "@model": "<rootDir>/packages/core/model/index",
     "@core/(.*)": "<rootDir>/packages/core/$1",
     "@common/(.*)": "<rootDir>/packages/common/$1",
   },

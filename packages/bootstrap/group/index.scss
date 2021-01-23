@@ -34,6 +34,14 @@
   font-size: 14px;
   font-weight: 700;
   align-items: center;
+  margin-top: 0;
+
+  span{
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .xform-bs-group-toggle{
@@ -41,18 +49,10 @@
   margin: 0;
   background-color: transparent;
   padding: 0;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-  margin-right: 5px;
-
-  & > svg{
-    width: 18px;
-    height: 18px;
-    vertical-align: middle;
-  }
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
 }
-
 
 .xform-bs-group .xform-bs-group-list{
   padding: 10px;

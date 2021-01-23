@@ -1,12 +1,5 @@
-export { 
-  default as XField
-} from './XField'
-
-export { 
-  default as XFieldConf,
-  ComponentEnum
-} from './XFieldConf'
-
-export * from './drag'
 export * from './common'
+export * from './drag'
+export * from './XField'
+export * from './XFieldConf'
 export * from './constant'
