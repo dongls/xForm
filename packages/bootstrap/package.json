@@ -1,6 +1,6 @@
 {
   "name": "@dongls/xform.bootstrap",
-  "version": "0.5.2",
+  "version": "0.5.6",
   "description": "基于Bootstrap的xForm字段库。",
   "main": "dist/index.js",
   "style": "dist/index.css",
