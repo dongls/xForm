@@ -9,6 +9,10 @@ const VERSION_REG = /^[0-9]+\.[0-9]+\.[0-9]+$/
 const EXIT_REG = /[nN]/
 const EXIT_MESSAGE = '终止发布'
 
+function cleanCode(){
+  execa.commandSync('npm run clean')
+}
+
 function getPackageVersion(){
   return require('../package.json').version
 }
@@ -55,15 +59,18 @@ async function releaseCode(){
 
   if(!yes) return console.log(EXIT_MESSAGE)
 
+  process.env.RELEASE_VERSION = version
+  cleanCode()
+
   // 测试
   execa.commandSync('npm run test', { stdio: 'inherit' })
   console.log('已完成代码测试\n')
-  
-  // build
-  for(const package of packageNames) buildPackage(package, version)
 
   // document
   buildDocument()
+  
+  // build package
+  for(const package of packageNames) buildPackage(package, version)
 
   // commit
   execa.commandSync('git add .')
@@ -76,7 +83,7 @@ async function releaseCode(){
     console.log('已发布包：' + chalk.green.bold(`${package}@${version}\n`))
   }
 
-  // push
+  // tag
   execa.sync('git', ['tag', `v${version}`])
   execa.sync('git', ['push', 'origin', `v${version}`])
   execa.commandSync('git push')
@@ -90,6 +97,7 @@ function buildDocument(){
 }
 
 function releaseDocument(){
+  cleanCode()
   buildDocument()
   execa.commandSync('git add .')
   execa.sync('git', ['commit', '-m', 'docs: build document'])
