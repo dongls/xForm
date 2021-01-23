@@ -40,7 +40,7 @@ function buildPackage(package, version){
   if(package == 'core') updatePackageJson(path.resolve(__dirname, '../package.json'), version)
   
   execa.commandSync(`npm run build:${package}`, { stdio: 'inherit' })
-  console.log('已构建包：' + chalk.green.bold(package))
+  console.log('已构建包：' + chalk.green.bold(package) + '\n')
 }
 
 async function releaseCode(){
@@ -55,10 +55,9 @@ async function releaseCode(){
 
   if(!yes) return console.log(EXIT_MESSAGE)
 
-  // 检查代码格式
-
   // 测试
-  execa.commandSync('npm run test')
+  execa.commandSync('npm run test', { stdio: 'inherit' })
+  console.log('已完成代码测试\n')
   
   // build
   for(const package of packageNames) buildPackage(package, version)
@@ -74,7 +73,7 @@ async function releaseCode(){
   for(const package of packageNames){
     const cwd = path.resolve(__dirname, '../packages', package)
     execa.commandSync('npm publish', { stdio: 'inherit', cwd })
-    console.log('已发布包：' + chalk.green.bold(`${package}@${version}`))
+    console.log('已发布包：' + chalk.green.bold(`${package}@${version}\n`))
   }
 
   // push
@@ -82,12 +81,12 @@ async function releaseCode(){
   execa.sync('git', ['push', 'origin', `v${version}`])
   execa.commandSync('git push')
 
-  console.log(`========== ${chalk.green.bold('发布完成')} ==========`)
-  console.log()
+  console.log(`========== ${chalk.green.bold('发布完成')} ==========\n`)
 }
 
 function buildDocument(){
   execa.commandSync('npm run build:document', { stdio: 'inherit' })
+  console.log('已构建文档\n')
 }
 
 function releaseDocument(){
@@ -95,6 +94,7 @@ function releaseDocument(){
   execa.commandSync('git add .')
   execa.sync('git', ['commit', '-m', 'docs: build document'])
   execa.commandSync('git push')
+  console.log('已发布文档\n')
 }
 
 async function release(){

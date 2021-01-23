@@ -48,6 +48,7 @@ export class InternalDragEvent{
   constructor(event: MouseEvent, mode: DragModeEnum, field: XField, context: GlobalDragContext){
     const target = (event.target as Element).closest(SELECTOR.DRAGGABLE)
     const rect = target.getBoundingClientRect()
+    const type = field?.type ?? target.getAttribute(ATTRS.XFIELD_TYPE)
 
     this.mode = mode
     this.target = target
@@ -55,7 +56,7 @@ export class InternalDragEvent{
     this.deltaX = mode == DragModeEnum.INSERT ? event.clientX - rect.left : 72
     this.deltaY = mode == DragModeEnum.INSERT ? event.clientY - rect.top : 17
 
-    this.data = { type: target.getAttribute(ATTRS.XFIELD_TYPE), field }
+    this.data = { type, field }
     
     this.originEvent = event
     this.context = context
