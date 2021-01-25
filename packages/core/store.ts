@@ -114,12 +114,17 @@ export function isImmediateValidate(){
   return store.config.validation.immediate !== false
 }
 
+export function isEnableValidate(){
+  return store.config.validation.enable === true
+}
+
 export default {
   findFieldConf,
   findFieldGroups,
   getConfig,
   getPreset,
   hasField,
+  isEnableValidate,
   isImmediateValidate,
   registerField,
   registerManyField,

@@ -53,7 +53,8 @@ export interface ModeConf {
 }
 
 interface ValidationConf {
-  immediate?: boolean;
+  enable: boolean;
+  immediate: boolean;
 }
 
 export interface XFormConfigBase{
@@ -63,7 +64,9 @@ export interface XFormConfigBase{
   formatter: (field: XField, props: RawProps, instance: ComponentPublicInstance) => any
 }
 
-export type XFormConfig = Partial<XFormConfigBase>
+export type XFormConfig = {
+  [P in keyof XFormConfigBase]?: XFormConfigBase[P] extends ValidationConf ? Partial<XFormConfigBase[P]> : XFormConfigBase[P];
+}
 
 export type WrappedValidator = () => Promise<any>
 

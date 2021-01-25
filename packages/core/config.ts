@@ -4,6 +4,7 @@ import { isEmpty, isNull } from './util/lang'
 const config: XFormConfigBase = {
   modes: null,
   validation: {
+    enable: true,
     immediate: true
   },
   genName(){

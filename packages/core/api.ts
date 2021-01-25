@@ -14,6 +14,8 @@ import {
   XFormContext
 } from '@model'
 
+import Store from './store'
+
 export {
   findElementFromPoint,
   getProperty,
@@ -40,4 +42,12 @@ export function createSchema(origin?: any){
   if(schema.fields.length > 0) schema.fields = schema.fields.map(XField.create)
 
   return reactive(schema as XFormSchema)
+}
+
+export function disableValidate(){
+  Store.getConfig().validation.enable = false
+}
+
+export function enableValidate(){
+  Store.getConfig().validation.enable = true
 }

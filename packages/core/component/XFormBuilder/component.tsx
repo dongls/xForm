@@ -11,6 +11,7 @@ import {
   watch,
   getCurrentInstance,
   ComputedRef,
+  nextTick,
 } from 'vue'
 
 import { 
@@ -29,6 +30,7 @@ import {
 
 import { getFieldComponent } from '@core/util/component'
 import { isFunction, isString } from '@core/util/lang'
+import { disableValidate, enableValidate } from '@core/api'
 
 interface XFormBuilderProps{
   mode: string;
@@ -119,7 +121,7 @@ export default defineComponent({
 
     function registerField(fieldRef: ComputedRef<XField>, validator: WrappedValidator){
       const key = fieldRef.value.name
-      const stopHandle = watch(() => props.model[key], () => Store.isImmediateValidate() && validator())
+      const stopHandle = watch(() => props.model[key], () => Store.isEnableValidate() && Store.isImmediateValidate() && validator())
 
       REGISTERED_FIELDS.set(key, { fieldRef, validator, stopHandle })
     }
@@ -173,8 +175,12 @@ export default defineComponent({
       },
       resetValidate,
       reset(){
-        resetValidate()
+        disableValidate()
         emit(EVENTS.UPDATE_MODEL, {})
+        nextTick(() => {
+          resetValidate()
+          enableValidate()
+        })
       },
       update,
       registerField,
