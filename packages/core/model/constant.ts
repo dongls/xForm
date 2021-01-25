@@ -10,7 +10,8 @@ export const CLASS = {
   LIST_SILENCE: 'xform-is-silence',
   SCOPE: 'xform-is-scope',
   DRAGGABLE: 'xform-draggable',
-  DROPPABLE: 'xform-droppable'
+  DROPPABLE: 'xform-droppable',
+  PREVIEW: 'xform-preview'
 }
 
 export const SELECTOR = {
@@ -20,7 +21,8 @@ export const SELECTOR = {
   IS_SELECTED: `.${CLASS.IS_SELECTED}`,
   SCOPE: `.${CLASS.SCOPE}`,
   TEMPLATE: '.xform-template',
-  FIELD: '.xform-designer-field'
+  FIELD: '.xform-designer-field',
+  PREVIEW: `.${CLASS.PREVIEW}`
 }
 
 export const MATCH_PATHS = ['.xform-designer-mark', SELECTOR.DROPPABLE, '.xform-designer-list']

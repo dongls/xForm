@@ -72,7 +72,7 @@ export function getXField(element: Element){
 }
 
 /** 查询元素所在的scope */
-export function findScope(element: Element){
-  const el = element.closest(SELECTOR.SCOPE)
-  return null == el ? null : getProperty<XFormScope>(el, PROPS.SCOPE)
+export function findScope(element: Element){  
+  const scope = element.closest(SELECTOR.SCOPE)
+  return (null == scope || scope == element) ? null : getProperty<XFormScope>(scope, PROPS.SCOPE)
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="state.loading" class="loading">loading...</div>
+  <div v-if="state.loading" class="loading">Loading...</div>
   <div v-else class="example">
     <div class="header">
       <div class="header-left">

@@ -369,7 +369,8 @@ export default defineComponent({
     const clone = function(field: XField, event: Event){
       if(field.allowClone === false) return
 
-      const scope = findScope(event.target as Element) ?? props.schema
+      const target = (event.target as Element).closest(SELECTOR.PREVIEW)
+      const scope = findScope(target) ?? props.schema
       const newField = field.clone()
       scope.fields.splice(scope.fields.indexOf(field) + 1, 0, newField)
       updateSchema(props.schema)
@@ -382,7 +383,8 @@ export default defineComponent({
       const name = genEventName(EVENTS.REMOVE)
       const listener = instance.vnode?.props?.[name]
       const defaultAction = function(){
-        const scope = findScope(event.target as Element) ?? props.schema
+        const target = (event.target as Element).closest(SELECTOR.PREVIEW)
+        const scope = findScope(target) ?? props.schema
         scope.fields.splice(scope.fields.indexOf(field), 1)
         updateSchema(props.schema)
 
