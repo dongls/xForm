@@ -1,8 +1,19 @@
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const { RELEASE_PACKAGE } = require('./args')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
+const { RELEASE_PACKAGE } = require('./args')
 const { packages } = require('../packages')
+
+const FMT_OPTIONS = {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+}
 
 const CSS_LOADER = {
   loader: 'css-loader',
@@ -45,5 +56,17 @@ module.exports = {
       library: rp == 'core' ? 'XForm' : ['XForm', rp],
       libraryExport: rp == 'core' ? undefined : 'default'
     }
+  },
+  genHtmlWebpackPlugin(filename, options = {}){
+    const defMeta = {
+      'xform:date': (new Date()).toLocaleDateString('zh-CN', FMT_OPTIONS)
+    }
+    const meta = Object.assign({}, defMeta, options.meta || {})
+
+    return new HtmlWebpackPlugin({
+      template: options.template || './document/index.html',
+      filename,
+      meta
+    })
   }
 }
