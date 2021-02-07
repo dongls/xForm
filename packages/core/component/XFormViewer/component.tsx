@@ -4,7 +4,9 @@ import {
   h,
   resolveComponent,
   ComponentPublicInstance,
-  getCurrentInstance
+  getCurrentInstance,
+  toRef,
+  createVNode
 } from 'vue'
 
 import { 
@@ -13,13 +15,13 @@ import {
   XFormSchema,
   ComponentEnum,
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
-  RawProps,
   XFORM_CONTEXT_PROVIDE_KEY,
-  XFormViewerContext
+  XFormViewerContext,
+  PatchProps
 } from '@core/model'
 
 import { isFunction } from '@core/util/lang'
-import { getFieldComponent } from '@core/util/component'
+import { fillComponentProps, getFieldComponent } from '@core/util/component'
 import Store from '@core/store'
 
 interface XFormViewerProps{
@@ -41,25 +43,26 @@ type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormVie
  * 2. 检索是否有名为`type_[type]`对应的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderContent(instance: XFormViewerInstance, props: RawProps, field: XField){
+function renderContent(instance: XFormViewerInstance, field: XField, value: any, patch?: PatchProps){
   const slots = instance.$slots
 
   const nameSlot = slots[`name_${field.name}`]
-  if(isFunction(nameSlot)) return nameSlot(props)
+  if(isFunction(nameSlot)) return nameSlot({ field, value })
 
   const typeSlot = slots[`type_${field.type}`]
-  if(isFunction(typeSlot)) return typeSlot(props)
-
+  if(isFunction(typeSlot)) return typeSlot({ field, value })
   const component = getFieldComponent(field, ComponentEnum.VIEW, instance.mode)
-  return null == component ? null : h(component, props)
+  if(component == null) return null
+
+  const props = fillComponentProps(component, { field, value, model: instance.model })
+  return createVNode(component, isFunction(patch) ? patch(props) : props)
 }
 
-function renderField(instance: XFormViewerInstance, field: XField){
+function renderField(instance: XFormViewerInstance, field: XField, patch?: PatchProps){
   const conf = Store.getConfig()
   const value = conf.formatter(field, instance.$props, instance)
 
-  const props = { field, value, model: instance.model }
-  const content = renderContent(instance, props, field)
+  const content = renderContent(instance, field, value, patch)
 
   if(field.conf?.custom === true) return content
 
@@ -89,7 +92,7 @@ export default defineComponent({
   setup(props: XFormViewerInstance){
     const instance = getCurrentInstance()
 
-    provide<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormViewerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'viewer',
       renderField: renderField.bind(null, instance.proxy)

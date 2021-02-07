@@ -32,11 +32,11 @@ export default defineComponent({
     <header>属性：</header>
     <div class="xform-setting-inline">
       <div class="xform-setting-inline-item custom-control custom-checkbox">
-        <input :id="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @change="updateField($event, 'required')">
+        <input :id="`${field.name}-required`" :name="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @change="updateField($event, 'required')">
         <label class="custom-control-label" :for="`${field.name}-required`">必填</label>
       </div>
       <div class="xform-setting-inline-item custom-control custom-checkbox">
-        <input :id="`${field.name}-integer`" :checked="field.attributes.integer" type="checkbox" class="custom-control-input" @change="updateField($event, 'integer', 'attributes')">
+        <input :id="`${field.name}-integer`" :name="`${field.name}-integer`" :checked="field.attributes.integer" type="checkbox" class="custom-control-input" @change="updateField($event, 'integer', 'attributes')">
         <label class="custom-control-label" :for="`${field.name}-integer`">整数</label>
       </div>
     </div>

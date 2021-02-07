@@ -1,0 +1,43 @@
+.xform-bs-tabs{
+  display: block;
+
+  .tab-pane{
+    padding: 5px;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    min-height: 200px;
+  }
+
+  .nav-tabs-title{
+    padding: .5rem 10px;
+  }
+}
+
+.xform-viewer{
+  .nav-tabs-title{
+    padding-left: 0;
+  }
+}
+
+.xform-preview-tabs{
+  .nav-tabs .nav-link{
+    position: relative;
+    z-index: 9;
+  }
+
+  .tab-pane{
+    position: relative;
+    min-height: 200px;
+    padding: 5px 0 0 0;
+
+    .xform-preview:first-child{
+      margin-top: 0px;
+    }
+  }
+}
+
+.xform-preview-tabs.xform-is-selected > .xform-preview-cover,
+.xform-preview-tabs:hover > .xform-preview-cover{
+  background-color: rgb(253, 213, 138);
+}

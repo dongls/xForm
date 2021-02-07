@@ -47,7 +47,6 @@ export default {
       title: '序列号',
       placeholder: 'IMEI/MEID/SN',
       required: true,
-      options: [],
       attributes: {}
     },
     {
@@ -57,7 +56,6 @@ export default {
       placeholder: '详细描述问题',
       defaultValue: '111',
       required: true,
-      options: [],
       attributes: {}
     },
     {
@@ -66,7 +64,6 @@ export default {
       title: '预约时间',
       placeholder: '服务人员会在预约时间上门处理',
       required: true,
-      options: [],
       attributes: {
         type: 'datetime'
       }
@@ -126,7 +123,6 @@ export default {
       title: '备注',
       placeholder: '如有其他需求，请在此填写',
       required: false,
-      options: [],
       attributes: {}
     },
     {
@@ -134,7 +130,6 @@ export default {
       name: 'field_ba61015f',
       title: '个人信息',
       required: false,
-      options: [],
       attributes: {
         type: 'double',
         top: 50,
@@ -147,7 +142,6 @@ export default {
       title: '姓名',
       placeholder: '请填写姓名，方便我们与您联系',
       required: true,
-      options: [],
       attributes: {}
     },
     {
@@ -156,9 +150,8 @@ export default {
       title: '联系方式',
       placeholder: '电话号码、手机号、邮箱皆可',
       required: true,
-      options: [],
       attributes: {}
     }
   ],
-  viewerPlaceholder: '--'
+  viewerPlaceholder: '--',
 }

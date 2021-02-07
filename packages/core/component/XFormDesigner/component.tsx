@@ -14,6 +14,9 @@ import {
   provide,
   ref,
   resolveComponent,
+  toRef,
+  ConcreteComponent,
+  createVNode,
 } from 'vue'
 
 import { 
@@ -24,13 +27,31 @@ import {
   RawProps,
   ComponentEnum,
   DragModeEnum,
-  ATTRS,
-  XFormDesignerContext
+  XFormDesignerContext,
+  PatchProps
 } from '@model'
 
-import { isHidden, findScope, normalizeWheel } from '@core/util/dom'
-import { XFORM_FORM_SCHEMA_PROVIDE_KEY, SELECTOR, CLASS, PROPS, XFORM_CONTEXT_PROVIDE_KEY } from '@core/model/constant'
-import { getFieldComponent, buildComponentProps, genEventName, getHtmlElement } from '@core/util/component'
+import { 
+  isHidden, 
+  findScope, 
+  normalizeWheel 
+} from '@core/util/dom'
+
+import {
+  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  SELECTOR,
+  CLASS,
+  PROPS,
+  XFORM_CONTEXT_PROVIDE_KEY,
+  BehaviorEnum,
+} from '@core/model/constant'
+
+import {
+  getFieldComponent,
+  genEventName,
+  getHtmlElement,
+  fillComponentProps,
+} from '@core/util/component'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
@@ -55,7 +76,6 @@ interface XFormDesignerSetupState {
   clone?: Function;
   remove?: Function;
   doScroll?: (event: WheelEvent) => void;
-  dragstart?: Function;
   chooseTab?: Function;
   chooseField?: Function;
   updateSchema?: Function;
@@ -83,6 +103,7 @@ function shwoSelectedField(instance: ComponentInternalInstance){
   return nextTick(() => {
     const scroll = getHtmlElement(instance.refs, 'scroll')
     const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED) 
+    if(null == target) return
 
     if(isHidden(target, scroll)) scroll.scrollTop = target.offsetTop
   })
@@ -105,16 +126,16 @@ function renderIcon(fc: XFieldConf){
   return <i class={icon}/>
 }
 
-function renderFieldPanel(groups: ModeGroup[], dragstart: Function){
+function renderFieldPanel(groups: ModeGroup[]){
   return groups.map((group, i) => {
     const title = group.title ? <h3>{group.title}</h3> : null
     const fcs = group.fieldConfs
     const types = fcs.filter(fc => fc != null).map(fc => {
       const props = {
-        'class': 'xform-designer-field xform-draggable xform-template',
+        'class': `${CLASS.FIELD} xform-template-${fc.type} ${CLASS.DRAGGABLE}`,
         'key': fc.type,
-        'onMousedown': (e: Event) => dragstart(e, DragModeEnum.INSERT),
-        [ATTRS.XFIELD_TYPE]: fc.type
+        [PROPS.XFIELD_TYPE]: fc.type,
+        [PROPS.DRAG_MODE]: DragModeEnum.INSERT
       }
 
       return (
@@ -140,7 +161,7 @@ function renderFieldPanel(groups: ModeGroup[], dragstart: Function){
  * 2. 检索是否有名为`preview_type_[type]`的slot
  * 3. 检索字段对应的`XFieldConf`中配置的`preview`或`build`组件
  */
-function renderContent(instance: XFormDesignerInstance, props: RawProps, field: XField){
+function renderContent(instance: XFormDesignerInstance, field: XField, patch?: PatchProps){
   const slots = instance.$slots
 
   const nameSlot = slots[`preview_name_${field.name}`]
@@ -151,12 +172,14 @@ function renderContent(instance: XFormDesignerInstance, props: RawProps, field: 
 
   const mode = instance.mode
   const component = getFieldComponent(field, ComponentEnum.PREVIEW, mode) || getFieldComponent(field, ComponentEnum.BUILD, mode)
-  return component == null ? null : h(component, buildComponentProps(component.props, props))
+  if(component == null) return null
+
+  const props = fillComponentProps(component, { field, behavior: BehaviorEnum.DESIGNER })
+  return createVNode(component, isFunction(patch) ? patch(props) : props)
 }
 
-function renderItem(instance: XFormDesignerInstance, field: XField){
-  const allProps = { field, behavior: 'designer' }
-  const content = renderContent(instance, allProps, field)
+function renderItem(instance: XFormDesignerInstance, field: XField, patch?: PatchProps){
+  const content = renderContent(instance, field, patch)
   
   if(field.conf?.custom === true ) return content
 
@@ -173,8 +196,8 @@ function renderItem(instance: XFormDesignerInstance, field: XField){
 }
 
 /** 渲染字段预览组件 */
-function renderFieldPreview(instance: XFormDesignerInstance, field: XField){
-  const { selectedField, icon, clone, remove, dragstart, chooseField } = instance
+function renderFieldPreview(instance: XFormDesignerInstance, field: XField, patch?: PatchProps, wrap = true){
+  const { selectedField, icon, clone, remove, chooseField } = instance
   const buttons = []
 
   if(field.allowClone !== false){
@@ -191,27 +214,28 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: XField){
       : null
   )
 
+  const content = renderItem(instance, field, patch)
+  if(wrap === false) return content
+
   const props = {
     'class': {
       'xform-preview': true,
-      ['xform-preview-' + field.type]: true,
       'xform-draggable': true,
       'xform-droppable': true,
+      ['xform-preview-' + field.type]: true,
       'xform-is-selected': field == selectedField,
       [CLASS.SCOPE]: field.conf?.scoped ?? false
     },
     'key': field.name,
     [PROPS.XFIELD]: field,
-    [PROPS.SCOPE]: field
+    [PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
   }
 
   return (
     <div {...props}>
-      {renderItem(instance, field)}
-      <div class="xform-preview-addition">
-        {operate}       
-        <div class="xform-preview-cover" onMousedown={e => dragstart(e, DragModeEnum.SORT, field)} onClick={chooseField.bind(null, field)}/>
-      </div>
+      {content}
+      {operate}
+      <div class="xform-preview-cover" onClick={chooseField.bind(null, field)}/>
     </div>
   )
 }
@@ -222,16 +246,18 @@ function renderPreviewList(instance: XFormDesignerInstance, fields: XField[]){
       ? renderEmptyTip() 
       : fields.map(field => renderFieldPreview(instance, field))
   )
-  
+
   const props = {
-    ref: 'list',
-    'class': {
-      'xform-designer-list': true,
-      'xform-is-empty': fields.length == 0
-    }
+    'ref': 'list',
+    'class': ['xform-designer-list', CLASS.DROPPABLE],
+    [PROPS.SCOPE]: instance.schema
   }
 
-  return h('div', props, [content])
+  return (
+    <div class="xform-designer-responsive xform-is-pc xform-is-scroll" ref="scroll">
+      <div {...props}>{content}</div>
+    </div>
+  )
 }
 
 /**
@@ -269,14 +295,14 @@ function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesigner
     instance.updateSchema()
   }
 
-  return h(component, props)
+  return createVNode(component, props)
 }
 
 function renderFormSetting(slots: Slots, schema: XFormSchema, instance: XFormDesignerInstance){
   if(isFunction(slots[SETTING_FORM_SLOT])) return slots[SETTING_FORM_SLOT]({ schema })
 
   const preset = Store.getPreset()
-  if(preset?.slots?.[SETTING_FORM_SLOT]) return h(preset.slots[SETTING_FORM_SLOT], {
+  if(preset?.slots?.[SETTING_FORM_SLOT]) return h(preset.slots[SETTING_FORM_SLOT] as ConcreteComponent, {
     schema,
     'onUpdate:prop': function(event: any){
       const { prop, value } = event
@@ -317,7 +343,7 @@ function renderSetting(slots: Slots, schema: XFormSchema, instance: XFormDesigne
 
 function renderEmptyTip(){
   return (
-    <div class="xform-preview-tip">
+    <div class={[CLASS.IS_EMPTY_TIP, 'xform-preview-empty-tip']}>
       <img src={XFormTip}/>
       <p>请将左侧控件拖动到此处</p>
     </div>
@@ -354,6 +380,7 @@ export default defineComponent({
 
     const chooseField = function(field: XField){
       selectedField.value = field
+      if(null == field) return
 
       chooseTab('field')
       shwoSelectedField(instance)
@@ -386,20 +413,26 @@ export default defineComponent({
         const target = (event.target as Element).closest(SELECTOR.PREVIEW)
         const scope = findScope(target) ?? props.schema
         scope.fields.splice(scope.fields.indexOf(field), 1)
+        chooseField(null)
         updateSchema(props.schema)
 
         nextTick(() => {
           const hook = field.conf?.onRemoved
-          isFunction(hook) && hook(field, instance) 
+          isFunction(hook) && hook(field, scope, instance) 
         })
       }
       
       isFunction(listener) ? emit(EVENTS.REMOVE, { field, defaultAction }): defaultAction()
     }
 
-    const { dragstart } = useDragging(instance)
+    
+    function reset(){
+      emit(EVENTS.UPDATE_SCHEMA, {})
+    }
 
-    provide<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    useDragging()
+
+    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormDesignerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'designer',
       renderField: renderFieldPreview.bind(null, instance.proxy)
@@ -408,15 +441,15 @@ export default defineComponent({
     return {
       clone,
       chooseField,
+      chooseTab,
       doScroll,
-      dragstart,
-      remove,
       groups,
       icon: { clone: IconClone, remove: IconRemove },
+      remove,
+      reset,
       selectedField,
       selectedTab,
-      chooseTab,
-      updateSchema
+      updateSchema,
     }
   },
   render(instance: XFormDesignerInstance){
@@ -428,11 +461,11 @@ export default defineComponent({
     return (
       <div class="xform-designer" ref="root">
         <div class="xform-designer-panel">
-          { renderFieldPanel(groups, instance.dragstart) }
+          { renderFieldPanel(groups) }
         </div>
         <div class="xform-designer-main">
           { isFunction(slots.tool) && slots.tool() }
-          <div ref="scroll" class="xform-designer-scroll xform-is-scroll">
+          <div class="xform-designer-board">
             { renderPreviewList(instance, fields) }
           </div>
         </div>

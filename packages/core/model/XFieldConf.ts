@@ -1,8 +1,9 @@
-import { markRaw, VNode } from 'vue'
-import { VueComponent, XFormModel } from './common'
-import { GlobalDragEvent } from './drag'
-import { isFunction, isNull } from '@core/util/lang'
+import { ComponentInternalInstance, markRaw, VNode } from 'vue'
+import { VueComponent, XFormModel, XFormScope } from './common'
+import { InternalDragEvent } from './drag'
+import { isFunction, isNull, isPlainObject, toArray } from '@core/util/lang'
 import { XField } from '.'
+import { DragHookEnum } from './constant'
 
 export interface Rule{
   max?: number;
@@ -10,29 +11,38 @@ export interface Rule{
 }
 
 export type ValidateFn = (field: XField, model: XFormModel) => Promise<any>
-export type Validator = Function ;
+export type Validator = ValidateFn | Function;
 
-type XFieldConfComponent = (
-  VueComponent | 
-  ((field: XField, mode: string) => VueComponent | VNode)
-)
-type DragHookFn = (dragEvent: GlobalDragEvent) => void | boolean;
+type DragHookFn = (e: InternalDragEvent) => void | boolean;
 
 class Hook{
   // 字段创建时调用
-  onCreate?: (field: XField, params: any) => XField;
+  onCreate?: (field: XField, params: any, init: boolean) => void;
   // 字段删除后时调用
-  onRemoved?: Function;
+  onRemoved?: (field: XField, scope: XFormScope, instance: ComponentInternalInstance) => void;
   // 字段拖到该字段上方时调用
-  onDragOver?: DragHookFn;
+  [DragHookEnum.DRAGOVER]?: DragHookFn;
   // 字段放到该字段上调用, 只对scoped值为true的字段生效
-  onDrop?: DragHookFn;
+  [DragHookEnum.DROP]?: DragHookFn;
 
   constructor(options: any = {}){
     this.onCreate = isFunction(options.onCreate) ? options.onCreate : null
     this.onRemoved = isFunction(options.onRemoved) ? options.onRemoved : null
-    this.onDragOver = isFunction(options.onDragOver) ? options.onDragOver : null
-    this.onDrop = isFunction(options.onDrop) ? options.onDrop : null
+    this[DragHookEnum.DRAGOVER] = isFunction(options[DragHookEnum.DRAGOVER]) ? options[DragHookEnum.DRAGOVER] : null
+    this[DragHookEnum.DROP] = isFunction(options[DragHookEnum.DROP]) ? options[DragHookEnum.DROP] : null
+  }
+}
+
+export class FieldComponent{
+  factory?: (field: XField, mode: string) => VueComponent | VNode;
+  // [mode][_[field.name]]?
+  extension: {
+    [prop: string]: VueComponent
+  }
+
+  constructor(options: Partial<FieldComponent>){
+    this.factory = isFunction(options.factory) ? options.factory : null
+    this.extension = isPlainObject(options.extension) ? options.extension : {}
   }
 }
 
@@ -50,13 +60,15 @@ export class XFieldConf extends Hook{
 
   scoped?: boolean;
   custom?: boolean;
-  extension?: object;
   validator?: Validator;
 
-  setting?: XFieldConfComponent;
-  preview?: XFieldConfComponent;
-  build?: XFieldConfComponent;
-  view?: XFieldConfComponent;
+  setting?: VueComponent | FieldComponent;
+  preview?: VueComponent | FieldComponent;
+  build?: VueComponent | FieldComponent;
+  view?: VueComponent | FieldComponent;
+
+  // 依赖的子组件
+  dependencies: XFieldConf[];
 
   constructor(options: Partial<XFieldConf>){
     super(options)
@@ -68,13 +80,14 @@ export class XFieldConf extends Hook{
 
     this.scoped = options.scoped === true
     this.custom = options.custom === true
-    this.extension = options.extension || {}
     this.validator = options.validator
 
     this.setting = isNull(options.setting) ? null : markRaw(options.setting)
     this.preview = isNull(options.preview) ? null : markRaw(options.preview)
     this.build = isNull(options.build) ? null : markRaw(options.build)
     this.view = isNull(options.view) ? null : markRaw(options.view)
+    
+    this.dependencies = toArray(options.dependencies)
   }
 
   /** 
@@ -111,5 +124,9 @@ export class XFieldConf extends Hook{
         )
       }
     })
+  }
+
+  static createFieldComponent(o: unknown){
+    return new FieldComponent(o)
   }
 }

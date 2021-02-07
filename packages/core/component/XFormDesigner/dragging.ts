@@ -1,211 +1,226 @@
-import Store from '@core/store'
-
-import { ComponentInternalInstance } from 'vue'
 import { 
-  findElementFromPoint, 
-  findHookEl, 
-  getXField 
-} from '@core/util/dom'
+  getCurrentInstance,
+  onMounted, 
+  onUnmounted 
+} from 'vue'
 
 import { 
-  GlobalDragContext,
-  InternalDragEvent,
-  XField, 
-  XFormSchema,
-  ATTRS,
   CLASS,
   DirectionEnum,
-  DragModeEnum,
-  MATCH_PATHS,
-  SELECTOR,
+  InternalDragContext,
+  InternalDragUtils,
+  PROPS, 
+  SELECTOR, 
+  XField, 
+  XFormSchema,
+  XFormScope
 } from '@model'
 
-import { getHtmlElement } from '@core/util/component'
 import { XFormDesignerInstance } from './component'
+import { findElementsFromPoint, getProperty } from '@core/util/dom'
+import { getHtmlElement } from '@core/util/component'
+import store from '@core/store'
 
-function checkMode(mode: string){
-  return mode == DragModeEnum.INSERT || mode == DragModeEnum.SORT
-}
+export default function useDragging(){
+  const utils = {
+    getInternalInstance,
+    getPublicInstance,
+    resetDragStatus,
+    getMarkEl,
+    moveMarkEl,
+    getRootScopeEl,
+    moveField
+  } as InternalDragUtils
 
-/** 
- * 移动字段位置
- * @param {number} a - 原位置
- * @param {number} b - 新位置
- * @param {XField[]} fields - 待排序的字段
- */
-function moveField(a: number, b: number, fields: XField[]){
-  if(a < 0 || b < 0 || a == b) return
-  const item = fields.splice(a, 1)[0]
-  fields.splice(b > a ? b - 1 : b, 0, item)
-}
-
-/** 移动标记 */
-function moveMark(direction: string, target: Element, mark: Element, scope: Element){ 
-  if(target == scope) {
-    if(!scope.contains(mark)) scope.appendChild(mark)
-    return
-  }
-
-  const reference = direction == DirectionEnum.UP ? target : target.nextElementSibling
-  if(
-    reference == mark || 
-    (null != reference && reference.previousElementSibling == mark)
-  ) return
-
-  reference ? scope.insertBefore(mark, reference) : scope.appendChild(mark)
-}
-
-export default function useDragging(instance: ComponentInternalInstance){
-  const GLOBAL = { 
-    EVENT: null as InternalDragEvent,
-    CONTEXT: Object.freeze({
-      getInternalInstance,
-      getPublicInstance,
-
-      resetStatus,
-      moveMark,
-      moveField
-    }) as GlobalDragContext
+  const GLOBAL = {
+    instance: getCurrentInstance(),
+    context: null as InternalDragContext,
   }
 
   function getInternalInstance(){
-    return instance
+    return GLOBAL.instance
   }
 
   function getPublicInstance(){
-    return instance.proxy as XFormDesignerInstance
+    return GLOBAL.instance.proxy as XFormDesignerInstance
   }
 
-  // 重置拖拽状态
-  function resetStatus(){
-    const list = getHtmlElement(instance.refs, 'list')
-    const ghost = getHtmlElement(instance.refs, 'ghost')
-    const mark = getHtmlElement(instance.refs, 'mark')
-    const root = getHtmlElement(instance.refs, 'root')
+  function getMarkEl(){
+    return getHtmlElement(GLOBAL.instance.refs, 'mark')
+  }
 
-    list.classList.remove(CLASS.LIST_SILENCE)
-    ghost.classList.remove(CLASS.IS_SHOW)
-    root.appendChild(mark)
+  function getRootScopeEl(){
+    return getHtmlElement(GLOBAL.instance.refs, 'list')
+  }
 
-    GLOBAL.EVENT.target.classList.remove(CLASS.IS_DRAGGING)
-    GLOBAL.EVENT = null
+  function moveMarkEl(direction: number, target: Element, scope: Element, mark = getMarkEl()){ 
+    if(target == scope) {
+      if(Array.prototype.indexOf.call(scope.children, mark) < 0) {
+        const tip = scope.querySelector(`:scope > ${SELECTOR.IS_EMPTY_TIP}`)
+        scope.insertBefore(mark, tip)
+      }
+      return
+    }
   
-    // 清空鼠标事件
+    const reference = direction == DirectionEnum.UP ? target : target.nextElementSibling
+    if(
+      reference == mark || 
+      (null != reference && reference.previousElementSibling == mark)
+    ) return
+  
+    if(null == reference) {
+      scope.appendChild(mark)
+      return
+    }
+  
+    scope.insertBefore(mark, reference)
+  }
+
+  function resetDragStatus(){
+    GLOBAL.context.reset(GLOBAL.instance)
+
+    GLOBAL.context = null
     document.removeEventListener('mousemove', dragging)
     document.removeEventListener('mouseup', dragend)
   }
 
-  function dragstart(event: MouseEvent, mode: DragModeEnum, field?: XField){
-    // 屏蔽非鼠标左键的点击事件
-    if(event.button !== 0 || !checkMode(mode)) return
+  function findDropPath(element: Element, scope?: Element){
+    if(!(element instanceof Element)) return []
+    scope = scope instanceof Element ? scope : document.body
     
-    GLOBAL.EVENT = new InternalDragEvent(event, mode, field,  GLOBAL.CONTEXT)
+    const path = []
+    let parent = element.parentElement
+    while(parent != null && scope.contains(parent)){
+      if(parent.matches(SELECTOR.DROPPABLE)){
+        path.push(parent)
+      }
+
+      parent = parent.parentElement
+    }
+
+    return path
+  }
+
+  /** 
+   * 移动字段位置
+   * @param {number} a - 原位置
+   * @param {number} b - 新位置
+   * @param {XField[]} fields - 待排序的字段
+   */
+  function moveField(a: number, b: number, fields: XField[]){
+    if(a < 0 || b < 0 || a == b) return
+
+    const i = b > a ? b - 1 : b
+    if(a == i) return
+
+    const item = fields.splice(a, 1)[0]
+    fields.splice(i, 0, item)
+  }
+
+  function dragstart(event: MouseEvent){
+    // 屏蔽非鼠标左键的点击事件
+    if(event.button !== 0) return
+    
+    // 检测目标是否可以拖动
+    const dragElement = (event.target as Element).closest(SELECTOR.DRAGGABLE)
+    if(null == dragElement) return
+
+    // 保存当前环境
+    GLOBAL.context = new InternalDragContext(event, dragElement)
+
     // 监听鼠标移动事件
-    document.addEventListener('mousemove', dragging)
+    document.addEventListener('mousemove', dragging, { passive: true })
     document.addEventListener('mouseup', dragend)
   }
 
   function dragging(event: MouseEvent){
-    const EVENT = GLOBAL.EVENT
-    if(EVENT == null) return
+    const { context, instance } = GLOBAL
+    context.move(event, instance)
 
-    // 更新拖拽状态
-    EVENT.move(event)
-    // 移动距离小于2,不触发计算
-    if(Math.abs(event.clientY - EVENT.clientY) < 2) return
-  
-    EVENT.updateDirection(event.clientY)
     // 判断是否有可插入的节点
     const ghost = getHtmlElement(instance.refs, 'ghost')
     const root = getHtmlElement(instance.refs, 'root')
     const mark = getHtmlElement(instance.refs, 'mark')
-    const target = findElementFromPoint(event.clientX, event.clientY, MATCH_PATHS, root)
+    const path = findElementsFromPoint(event.clientX, event.clientY, SELECTOR.DROPPABLE, root)
     // 如果target为null说明在容器外
-    if(null == target){
+    if(null == path || path.length == 0){
       root.appendChild(mark)
       ghost.classList.add(CLASS.GHOST_NOT_ALLOW)
       return
     }
-  
+
     ghost.classList.remove(CLASS.GHOST_NOT_ALLOW)
-    
-    // 查询需要触发DragOver hook的元素
-    const hookEl = findHookEl(target)
-    const fc = getXField(hookEl)?.conf
-    if(fc && typeof fc.onDragOver == 'function') {
-      EVENT.hookElement = hookEl
-      // 阻止默认行为
-      if(fc.onDragOver(EVENT) !== false) return
-    }
+
+    // 触发dragover事件
+    const dragOverEvent = context.createDragOverEvent(path, event, { ...utils })
+    context.trigger(dragOverEvent)
+    if(dragOverEvent.defaultPrevented) return
 
     const list = getHtmlElement(instance.refs, 'list')
-    moveMark(EVENT.direction, hookEl, mark, list)
+    moveMarkEl(context.directionY, path[0], list, mark)
   }
-  
-  // TODO: 重构
+
   function dragend(event: MouseEvent){
-    const EVENT = GLOBAL.EVENT
-    EVENT.setOriginEvent(event)
+    const { instance, context } = GLOBAL
 
-    const target = EVENT.target
-    const schema = instance.props.schema as XFormSchema
     const mark = getHtmlElement(instance.refs, 'mark')
+    const root = getHtmlElement(instance.refs, 'root')
+
+    const path = findDropPath(mark, root)
+    const dropEvent = context.createDropEvent(path, event, { ...utils })
+    context.trigger(dropEvent)
+    if(dropEvent.defaultPrevented) return
+
+    const schema = instance.props.schema as XFormSchema
     const list = getHtmlElement(instance.refs, 'list') 
-
-    // 如果mark在某一scope内，触发对应元素的onDrop钩子
-    const scopeEl = mark.closest(SELECTOR.SCOPE)
-    if(null != scopeEl){
-      const fc = getXField(scopeEl)?.conf
-      if(fc && typeof fc.onDrop == 'function'){
-        EVENT.dropElement = scopeEl
-        fc.onDrop(EVENT)
-        resetStatus()
-        return
-      }
-    }
-
-    const newIndex = (
-      EVENT.mode == 'insert' && !EVENT.init
-        ? schema.fields.length
-        : Array.prototype.indexOf.call(list.children, mark)
-    )
-    if(newIndex < 0) return resetStatus()
-
     const pInstance = getPublicInstance()
-    if(EVENT.mode == 'sort'){
-      const field = EVENT.data.field
-      const targetScopeEl = target.closest(SELECTOR.SCOPE)
-      
-      // 如果新位置在某一scope内
-      if(null != targetScopeEl && target != targetScopeEl){
-        const scope = getXField(targetScopeEl)
-        const oldIndex = scope.fields.indexOf(field)
+    const newIndex = context.isImmediateInsert ? -1 : Array.prototype.indexOf.call(list.children, mark)
+    if(newIndex < 0) return resetDragStatus()
 
-        scope.fields.splice(oldIndex, 1)
-        schema.fields.splice(newIndex, 0, field)
-      } else {
-        const oldIndex = schema.fields.indexOf(field)
-        moveField(oldIndex, newIndex, schema.fields)
-      }
-      
-      pInstance.updateSchema()
-      pInstance.chooseField(field)
-      return resetStatus()
-    }
-
-    if(EVENT.mode == 'insert'){
-      const type = target.getAttribute(ATTRS.XFIELD_TYPE)
-      const fc = Store.findFieldConf(type)
-      if(null != fc) {
+    // 新插入
+    if(context.isInsert){
+      const fc = store.findFieldConf(context.fieldType)
+      if(null != fc){
         const field = new XField(fc)
         schema.fields.splice(newIndex, 0, field)
-
         pInstance.updateSchema()
         pInstance.chooseField(field)
-        return resetStatus()
       }
+
+      return resetDragStatus()
     }
+
+    // 原有字段重新排序
+    if(context.isSort){
+      const originScopeEl = context.dragElement.parentElement.closest(SELECTOR.SCOPE) ?? list
+      const targetScopeEl = mark.closest(SELECTOR.SCOPE) ?? list
+      const field = context.field
+
+      if(originScopeEl == targetScopeEl){
+        const scope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
+        const oldIndex = scope.fields.indexOf(field)
+        moveField(oldIndex, newIndex, scope.fields)
+      } else {
+        const oldScope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
+        const newScope = getProperty<XFormScope>(targetScopeEl, PROPS.SCOPE)
+
+        const oldIndex = oldScope.fields.indexOf(field)
+        oldScope.fields.splice(oldIndex, 1)
+        newScope.fields.splice(newIndex, 0, field)
+      }
+      pInstance.updateSchema()
+      pInstance.chooseField(field)
+      return resetDragStatus()
+    }
+
+    resetDragStatus()
   }
 
-  return { dragstart }
+  onMounted(() => {
+    document.addEventListener('mousedown', dragstart)
+  })
+
+  onUnmounted(() => {
+    document.removeEventListener('mousedown', dragstart)
+  })
 }

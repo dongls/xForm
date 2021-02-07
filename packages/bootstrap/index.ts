@@ -12,6 +12,7 @@ import Checkbox from './checkbox'
 import Date from './date'
 import Divider from './divider'
 import Group from './group'
+import Tabs from './tabs'
 
 const bootstrap: XFormPreset = {
   name: 'bootstrap',
@@ -28,7 +29,8 @@ const bootstrap: XFormPreset = {
     Checkbox,
     Date,
     Divider,
-    Group
+    Group,
+    Tabs
   ]
 }
 

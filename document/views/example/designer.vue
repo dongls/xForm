@@ -1,19 +1,25 @@
 <script lang="ts">
 import { XField } from '@core/index'
-import { useLocalSchema } from '@document/util/common'
-import { defineComponent } from 'vue'
+import { createDefaultSchema, useLocalSchema } from '@document/util/common'
+import { defineComponent, unref } from 'vue'
 
 export default defineComponent({
   name: 'designer-view',
   emits: ['view'],
   setup(){
-    const { schema, schemaJSON, reset } = useLocalSchema()    
+    const { schema, schemaJSON } = useLocalSchema()    
+
     return {
       schema,
       schemaJSON,
-      reset,
+      reset(){
+        schema.value = unref(createDefaultSchema())
+      },
+      clear(){
+        schema.value.fields = []
+      },
       viewJson(){
-        this.$emit('view', { title: 'Field JSON', json: schemaJSON })
+        this.$emit('view', { title: 'Field JSON', json: schemaJSON.value })
       },
       remove(e: { field: XField, defaultAction: Function }){
         window.confirm(`确定要删除字段[${e.field.title}]?`) && e.defaultAction()
@@ -27,7 +33,8 @@ export default defineComponent({
   <xform-designer v-model:schema="schema" mode="example" @remove="remove">
     <template #tool>
       <div class="designer-tool">
-        <button type="button" class="btn btn-link btn-text btn-sm" @click="reset">清空</button>
+        <button type="button" class="btn btn-link btn-text btn-sm" @click="reset">重置</button>
+        <button type="button" class="btn btn-link btn-text btn-sm" @click="clear">清空</button>
         <button type="button" class="btn btn-link btn-text btn-sm" @click="viewJson">查看JSON</button>
       </div>
     </template>

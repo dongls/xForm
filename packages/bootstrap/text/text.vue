@@ -4,7 +4,7 @@
     :name="field.name"
     type="text"
     :value="value"
-    :class="clasName"
+    :class="className"
     :placeholder="field.placeholder"
     @input="updateValue"
   >
@@ -27,14 +27,14 @@ export default defineComponent({
       default: null
     }
   },
-  setup(props: any, { emit }){
+  emits: ['update:value'],
+  setup(props, { emit }){
     return { 
       updateValue: updateValue.bind(null, emit, props.field.name),
-      clasName: computed(() => {
+      className: computed(() => {
         return {
           'form-control': true,
-          'form-control-sm': true,
-          'is-invalid': props.field.valid == 'error'
+          'form-control-sm': true
         }
       })
     }

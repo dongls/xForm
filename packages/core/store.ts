@@ -19,6 +19,8 @@ import {
 
 import CONFIG from './config'
 
+const DELIMITER = '.'
+
 const store = {
   preset: null as XFormPreset,
   config: clonePlainObject(CONFIG) as XFormConfigBase,
@@ -56,6 +58,10 @@ export function resetConfig(){
   store.config = clonePlainObject(CONFIG)
 }
 
+export function resetField(){
+  store.fields.clear()
+}
+
 export function reset(option?: XFormOption){
   resetPreset()
   resetConfig()
@@ -78,11 +84,15 @@ export function hasField(type: string){
   return store.fields.has(type)
 }
 
-export function findFieldConf(type: string){
-  if(isNull(type) || isEmpty(type)) return null
+export function findFieldConf(path: string){
+  if(isNull(path) || isEmpty(path)) return null
 
+  const index = path.indexOf(DELIMITER)
+  const type = index >= 0 ? path.slice(0, index) : path
   const fc = store.fields.get(type)
-  return fc instanceof XFieldConf ? fc : null
+  if(isNull(fc) || index < 0) return fc
+
+  return fc.dependencies.find(f => f.type == path)
 }
 
 function findMode(mode?: string){
@@ -98,7 +108,7 @@ export function findFieldGroups(name?: string){
   if(mode.length == 0) return []
 
   const groups = (typeof mode[0] != 'object' ? [{ types: mode }] : mode) as ModeGroup[]
-  for(const g of groups) g.fieldConfs = g.types.map(findFieldConf)
+  for(const g of groups) g.fieldConfs = g.types.map(findFieldConf).filter(f => f && f.available)
   return groups
 }
 
@@ -130,7 +140,9 @@ export default {
   registerManyField,
   reset,
   resetConfig,
+  resetField,
   resetPreset,
   use,
   useConfig,
+  usePreset,
 }

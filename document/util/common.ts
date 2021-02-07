@@ -11,6 +11,11 @@ function saveToLocalStorage(key: string, value: string){
   localStorage.setItem(key, value)
 }
 
+export function createDefaultSchema(){
+  const o = JSON.parse(JSON.stringify(DEFAULT_SCHEMA))
+  return createSchema(o)
+}
+
 function getLocalSchema(){
   const str = localStorage.getItem(XFORM_SCHEMA_STORAGE_KEY)
   try {
@@ -24,8 +29,7 @@ function getLocalSchema(){
 
     return createSchema(schema)
   } catch (error) {
-    const source = JSON.parse(JSON.stringify(DEFAULT_SCHEMA))
-    const schema = createSchema(source)
+    const schema = createDefaultSchema()
     saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(schema))
     return schema
   }
@@ -42,17 +46,16 @@ function getLocalModel(){
 
 export function useLocalSchema(){
   const schema = getLocalSchema()
-  watch(schema, value => {
-    saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(value))
-  }, { deep: true })
+
+  watch(
+    schema, 
+    value => saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(value)), 
+    { deep: true }
+  )
 
   return {
     schema,
-    schemaJSON: computed(() => JSON.stringify(schema, null, '  ')),
-    reset: () => Object.keys(schema).forEach(prop => {
-      if(prop == 'fields') schema[prop] = []
-      else delete schema[prop]
-    })
+    schemaJSON: computed(() => JSON.stringify(schema.value, null, '  '))
   }
 }
 

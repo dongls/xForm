@@ -17,6 +17,7 @@ const build = defineComponent({
       default: null
     }
   },
+  emits: ['update:value'],
   setup(props, { emit }){
     return function(){
       return (

@@ -1,4 +1,3 @@
-
 import { isFunction } from '@core/util/lang'
 import { findFieldConf, getConfig } from '../store'
 import { ValidStatusEnum } from './constant'
@@ -18,6 +17,16 @@ interface Option {
   value: string;
 }
 
+function clean(o: any){
+  delete o.name
+  
+  if(Array.isArray(o.fields)){
+    const fields = o.fields.filter((i: any) => i.allowClone !== false)
+    fields.forEach(clean)
+    o.fields = fields
+  }
+}
+
 /** 
  * 描述字段数据的类，XForm就是用它与后端进行数据交换。
  * 
@@ -33,6 +42,7 @@ export class XField implements XFormScope{
   required?: boolean;
   options?: Option[];
 
+  // 各字段类型的私有属性都存储在此
   attributes?: { [prop: string]: any };
   fields: XField[];
 
@@ -54,8 +64,8 @@ export class XField implements XFormScope{
     excludeProps: string[];
   } & AnyProps;
 
-  constructor(o: any = {}){
-    const params = o instanceof XFieldConf ? o.toParams() : o
+  constructor(o: unknown = {}){
+    const params = (o instanceof XFieldConf ? o.toParams() : o) as Partial<XField>
 
     this.type = params.type
     this.name = params.name ?? getConfig().genName(o)
@@ -86,7 +96,8 @@ export class XField implements XFormScope{
     })
 
     const fc = this.conf
-    if(fc && isFunction(fc.onCreate)) fc.onCreate(this, params)
+    // 如果从XFormConf创建时，需要初始化
+    if(fc && isFunction(fc.onCreate)) fc.onCreate(this, params, o instanceof XFieldConf)
   }
 
   /** 查询该字段对应的字段类型对象, 不存在返回null */
@@ -108,7 +119,7 @@ export class XField implements XFormScope{
   /** 复制该对象, `name`字段除外 */
   clone() {
     const data = JSON.parse(JSON.stringify(this))
-    delete data.name
+    clean(data)
     return new XField(data)
   }
 

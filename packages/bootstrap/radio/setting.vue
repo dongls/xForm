@@ -54,15 +54,10 @@ export default defineComponent({
     <input :value="field.title" type="text" class="form-control form-control-sm" placeholder="请输入标题..." @input="updateField($event, 'title')">
   </section>
 
-  <!-- <section class="xform-setting">
-    <header>提示：</header>
-    <textarea :value="field.placeholder" class="form-control form-control-sm" placeholder="请输入提示信息..." rows="3" @input="updateField($event, 'placeholder')"/>
-  </section> -->
-
   <section class="xform-setting">
     <header>属性：</header>
     <div class="custom-control custom-checkbox">
-      <input :id="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @input="updateField($event, 'required')">
+      <input :id="`${field.name}-required`" :name="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @input="updateField($event, 'required')">
       <label class="custom-control-label" :for="`${field.name}-required`">必填</label>
     </div>
   </section>

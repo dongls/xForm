@@ -100,10 +100,6 @@ ul{
   padding-left: 34px;
 }
 
-ul > li + li{
-  margin-top: 4px;
-}
-
 ul.doc-ul{
   list-style: none;
 }

@@ -1,10 +1,14 @@
-import { RawProps, XField, ComponentEnum } from '@core/model'
-import { isFunction } from './lang'
+import { RawProps, XField, ComponentEnum, FieldComponent } from '@core/model'
+import { isFunction, isObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
 export function getFieldComponent(field: XField, target: ComponentEnum, mode?: string){
   const component = field.conf?.[target]
-  return isFunction(component) ? component(field, mode) : component
+  if(!(component instanceof FieldComponent)) return component
+
+  if(isFunction(component.factory)) return component.factory(field, mode)
+
+  return component.extension[`${mode}_${field.name}`] || component.extension[mode]
 }
  
 /**
@@ -30,15 +34,42 @@ export function getHtmlElement(refs: Record<string, unknown>, key: string){
   return getRef<HTMLElement>(refs, key)
 }
 
-export function buildComponentProps(defs: unknown, props: any){
-  if(null == defs || typeof defs != 'object') return {}
+export function fillComponentProps(component: unknown, all: RawProps, base: RawProps = {}){
+  const { props, emits } = component as { props?: object, emits?: string[] }
 
-  return Object.keys(defs).reduce((acc, key) => {
-    acc[key] = props[key]
-    return acc
-  }, {} as RawProps)
+  let defs: string[] = []
+  if(null != props){
+    defs = defs.concat(Object.keys(props))
+  }
+
+  if(Array.isArray(emits)){
+    defs = defs.concat(emits.map(genEventName))
+  }
+
+  return defs.reduce((acc, key) => {
+    const v = all[key]
+    if(v != null) acc[key] = v
+    return acc  
+  }, base)
 }
 
 export function genEventName(name: string){
   return 'on' + name[0].toUpperCase() + name.slice(1)
+}
+
+export function normalizeClass(value: unknown){
+  if(isObject(value)) return value
+
+  if(isString(value)){
+    value = value.split(' ').filter(v => v)
+  }
+
+  if(Array.isArray(value)){
+    return value.reduce((acc, v) => {
+      acc[v] = true
+      return acc
+    }, {} as any)
+  }
+
+  return {}
 }

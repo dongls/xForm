@@ -12,6 +12,8 @@ import {
   getCurrentInstance,
   ComputedRef,
   nextTick,
+  toRef,
+  createVNode,
 } from 'vue'
 
 import { 
@@ -24,11 +26,11 @@ import {
   XFORM_MODEL_PROVIDE_KEY, 
   XFORM_CONTEXT_PROVIDE_KEY, 
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
-  RawProps,
   XFormBuilderContext,
+  PatchProps,
 } from '@model'
 
-import { getFieldComponent } from '@core/util/component'
+import { fillComponentProps, getFieldComponent } from '@core/util/component'
 import { isFunction, isString } from '@core/util/lang'
 import { disableValidate, enableValidate } from '@core/api'
 
@@ -56,27 +58,30 @@ const EVENTS = {
  * 2. 检索是否有名为`type_[type]`的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderContent(instance: XFormBuilderInstance, props: RawProps, field: XField){
+function renderContent(instance: XFormBuilderInstance, field: XField, patch?: PatchProps){
   const slots = instance.$slots
+  const value = instance.model[field.name]
 
   const nameSlot = slots[`name_${field.name}`]
-  if(isFunction(nameSlot)) return nameSlot(props)
+  if(isFunction(nameSlot)) return nameSlot({ field, value })
 
   const typeSlot = slots[`type_${field.type}`]
-  if(isFunction(typeSlot)) return typeSlot(props)
+  if(isFunction(typeSlot)) return typeSlot({ field, value })
 
-  const component = getFieldComponent(field, ComponentEnum.BUILD, instance.mode)
-  return component == null ? null : h(component, props)
-}
-
-function renderField(instance: XFormBuilderInstance, field: XField){
-  const props = {
-    field: field,
-    value: instance.model[field.name],
+  const all = {
+    field,
+    value,
     'onUpdate:value': instance.update
   }
+  const component = getFieldComponent(field, ComponentEnum.BUILD, instance.mode)
+  if(null == component) return null
 
-  const content = renderContent(instance, props, field)
+  const props = fillComponentProps(component, all)
+  return createVNode(component, isFunction(patch) ? patch(props) : props)
+}
+
+function renderField(instance: XFormBuilderInstance, field: XField, patch?: PatchProps){
+  const content = renderContent(instance, field, patch)
   // 字段完全自定义时不使用xform-item包裹
   if(field.conf?.custom === true) return content
 
@@ -121,7 +126,9 @@ export default defineComponent({
 
     function registerField(fieldRef: ComputedRef<XField>, validator: WrappedValidator){
       const key = fieldRef.value.name
-      const stopHandle = watch(() => props.model[key], () => Store.isEnableValidate() && Store.isImmediateValidate() && validator())
+      const stopHandle = watch(() => props.model[key], () => {
+        Store.isEnableValidate() && Store.isImmediateValidate() && validator()
+      })
 
       REGISTERED_FIELDS.set(key, { fieldRef, validator, stopHandle })
     }
@@ -152,8 +159,8 @@ export default defineComponent({
       }
     }
 
-    provide(XFORM_MODEL_PROVIDE_KEY, props.model)
-    provide<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY, props.schema)
+    provide(XFORM_MODEL_PROVIDE_KEY, toRef(props, 'model'))
+    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormBuilderContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'builder',
       registerField, 
@@ -163,6 +170,7 @@ export default defineComponent({
     })
 
     return {
+      // 验证整个表单
       async validate(){
         if(pending.value) return Promise.reject('[xform error]: validate pending...')
         
@@ -173,14 +181,24 @@ export default defineComponent({
         
         return { messages, valid: messages.every(i => i === true) }
       },
+      // 验证单个字段
+      validateField(...args: string[]){
+        const names = args.flat()
+        if(names.length == 0) return
+
+        for(const name of names){
+          const r = REGISTERED_FIELDS.get(name)
+          r && r.validator()
+        }
+      },
+      // 重置表单验证
       resetValidate,
+      // 重置表单
       reset(){
         disableValidate()
         emit(EVENTS.UPDATE_MODEL, {})
-        nextTick(() => {
-          resetValidate()
-          enableValidate()
-        })
+        resetValidate()
+        nextTick(enableValidate)
       },
       update,
       registerField,

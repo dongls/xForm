@@ -8,10 +8,6 @@
 .xform-item + .xform-item{
   margin-top: 10px;
 }
-
-.xform-item.xform-template{
-  padding: 8px;
-}
   
 .xform-item.xform-is-required .xform-item-label{
   font-weight: 700;

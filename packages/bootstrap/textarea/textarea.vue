@@ -24,8 +24,9 @@ export default defineComponent({
 
 <template>
   <textarea 
-    :id="field.name" :name="field.name" :value="value"
-    rows="3" class="form-control form-control-sm"
+    :id="field.name" :name="field.name" 
+    :value="value" rows="3" 
+    class="form-control form-control-sm" 
     :placeholder="field.placeholder"
     @input="updateValue"
   />

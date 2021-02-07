@@ -13,7 +13,7 @@ const MODES = {
     },
     {
       title: '辅助字段',
-      types: ['divider', 'group']
+      types: ['divider', 'group', 'tabs']
     }
   ],
   simple: ['text', 'textarea', 'number', 'select']
@@ -22,10 +22,10 @@ const MODES = {
 const CONFIGS = {
   'bootstrap': {
     source: [
-      ['https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css', TYPE.STYLE],
+      ['https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css', TYPE.STYLE],
       ['https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js', TYPE.SCRIPT],
-      ['https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js', TYPE.SCRIPT],
-      ['https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js', TYPE.SCRIPT]
+      ['https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js', TYPE.SCRIPT],
+      ['https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js', TYPE.SCRIPT]
     ],
     factory(){
       return import(/* webpackPrefetch: true */ '@packages/bootstrap').then(r => r.default)

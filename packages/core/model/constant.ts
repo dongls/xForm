@@ -11,21 +11,20 @@ export const CLASS = {
   SCOPE: 'xform-is-scope',
   DRAGGABLE: 'xform-draggable',
   DROPPABLE: 'xform-droppable',
-  PREVIEW: 'xform-preview'
+  PREVIEW: 'xform-preview',
+  FIELD: 'xform-designer-field',
+  IS_EMPTY_TIP: 'xform-is-empty-tip'
 }
 
 export const SELECTOR = {
   DRAGGABLE: `.${CLASS.DRAGGABLE}`,
   DROPPABLE: `.${CLASS.DROPPABLE}`,
-  GHOST_TEMPLATE: '.xform-designer-ghost-template',
+  FIELD: `.${CLASS.FIELD}`,
   IS_SELECTED: `.${CLASS.IS_SELECTED}`,
+  PREVIEW: `.${CLASS.PREVIEW}`,
   SCOPE: `.${CLASS.SCOPE}`,
-  TEMPLATE: '.xform-template',
-  FIELD: '.xform-designer-field',
-  PREVIEW: `.${CLASS.PREVIEW}`
+  IS_EMPTY_TIP: `.${CLASS.IS_EMPTY_TIP}`
 }
-
-export const MATCH_PATHS = ['.xform-designer-mark', SELECTOR.DROPPABLE, '.xform-designer-list']
 
 export const ATTRS = {
   XFIELD_TYPE: 'xfield-type',
@@ -33,9 +32,11 @@ export const ATTRS = {
 }
 
 export const PROPS = {
-  XFIELD: '__xform_dom_field__',
-  SCHEMA: '__xform_dom_schema__',
-  SCOPE: '__xform_dom_scope__'
+  XFIELD: 'xform_prop:field',
+  SCHEMA: 'xform_prop:schema',
+  SCOPE: 'xform_prop:scope',
+  XFIELD_TYPE: 'xform_prop:xfield_type',
+  DRAG_MODE: 'xform_prop:drag_mode'
 }
 
 export enum DragModeEnum {
@@ -50,8 +51,10 @@ export enum PositionEnum {
 }
 
 export enum DirectionEnum{
-  UP = 'up',
-  DOWN = 'down'
+  UP = -1,
+  DOWN = 1,
+  LEFT = -1,
+  RIGHT = 1
 }
 
 export enum ValidStatusEnum{
@@ -65,4 +68,19 @@ export enum ComponentEnum {
   PREVIEW = 'preview',
   BUILD = 'build',
   VIEW = 'view'
+}
+
+export enum DragEventTypesEnum{
+  DRAGOVER = 'dragover',
+  DROP = 'drop'
+}
+
+export enum DragHookEnum{
+  DRAGOVER = 'onDragOver',
+  DROP = 'onDrop',
+}
+
+export enum BehaviorEnum{
+  DESIGNER = 'designer',
+  BUILDER = 'builder'
 }

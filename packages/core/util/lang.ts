@@ -117,6 +117,10 @@ export function toNumber(val: any){
   return isNaN(n) ? val : n
 }
 
+export function toArray<T>(value: unknown){
+  return (Array.isArray(value) ? value : []) as Array<T>
+}
+
 export function checkPromise(p: unknown, message = 'need a Promise instance'){
   if(p instanceof Promise) return p
 

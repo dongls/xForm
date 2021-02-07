@@ -1,6 +1,7 @@
 import { 
   inject,
-  reactive
+  ref,
+  Ref
 } from 'vue'
 
 import { isObject } from './util/lang'
@@ -18,6 +19,7 @@ import Store from './store'
 
 export {
   findElementFromPoint,
+  findElementsFromPoint,
   getProperty,
   getXField
 } from './util/dom'
@@ -28,7 +30,7 @@ export {
 
 
 export function useModel(){
-  return inject(XFORM_MODEL_PROVIDE_KEY) as XFormModel
+  return inject(XFORM_MODEL_PROVIDE_KEY, null) as Ref<XFormModel>
 }
 
 export function useContext<T = XFormContext>(){
@@ -41,7 +43,7 @@ export function createSchema(origin?: any){
   if(!Array.isArray(schema.fields)) schema.fields = []
   if(schema.fields.length > 0) schema.fields = schema.fields.map(XField.create)
 
-  return reactive(schema as XFormSchema)
+  return ref<XFormSchema>(schema)
 }
 
 export function disableValidate(){

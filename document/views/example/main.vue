@@ -6,10 +6,10 @@
         <div class="logo">xForm<small>v{{ version }}</small></div>
       </div>
       
-      <nav class="nav">
-        <router-link to="/example/designer" class="nav-link"><strong>1. </strong>设计表单</router-link>
-        <router-link to="/example/builder" class="nav-link"><strong>2. </strong>填写表单</router-link>
-        <router-link to="/example/viewer" class="nav-link"><strong>3. </strong>查看表单</router-link>
+      <nav class="example-nav">
+        <router-link to="/example/designer" class="example-nav-link"><strong>1. </strong>设计表单</router-link>
+        <router-link to="/example/builder" class="example-nav-link"><strong>2. </strong>填写表单</router-link>
+        <router-link to="/example/viewer" class="example-nav-link"><strong>3. </strong>查看表单</router-link>
       </nav>
 
       <div class="header-right">
@@ -124,7 +124,7 @@ textarea.example-value{
   font-size: 15px;
 }
 
-.nav{
+.example-nav{
   display: flex;
   flex-flow: row nowrap;
   margin: 0 auto;
@@ -202,7 +202,7 @@ textarea.example-value{
   }
 }
 
-.nav-link{
+.example-nav-link{
   display: block;
   position: relative;
   width: 100px;
@@ -262,7 +262,7 @@ textarea.example-value{
     content: none;
   }
 
-  & + .nav-link{
+  & + .example-nav-link{
     margin-left: 4px;
   }
 }

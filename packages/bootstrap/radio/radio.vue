@@ -35,7 +35,8 @@ export default defineComponent({
       <input 
         :id="field.name + '_' + i" :name="field.name" 
         :value="option.value" :checked="value == option.value" 
-        type="radio" class="custom-control-input"
+        type="radio" 
+        class="custom-control-input"
         @change="updateValue"
       >
       <label class="custom-control-label" :for="field.name + '_' + i">{{ option.value }}</label>

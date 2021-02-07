@@ -61,7 +61,7 @@ export default defineComponent({
   <section class="xform-setting">
     <header>属性：</header>
     <div class="custom-control custom-checkbox">
-      <input :id="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @input="updateField($event, 'required')">
+      <input :id="`${field.name}-required`" :name="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @input="updateField($event, 'required')">
       <label class="custom-control-label" :for="`${field.name}-required`">必填</label>
     </div>
   </section>
@@ -78,19 +78,3 @@ export default defineComponent({
     <button type="text" class="btn btn-link btn-sm" @click="addOption">添加选项</button>
   </section>
 </template>
-
-<style>
-.xform-bs-setting-option{
-  display: flex;
-  flex-flow: row nowrap;
-}
-
-.xform-bs-setting-option > button{
-  width: 80px;
-  font-size: 14px;
-}
-
-.xform-bs-setting-option + .xform-bs-setting-option{
-  margin-top: 5px;
-}
-</style>

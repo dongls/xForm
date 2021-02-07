@@ -1,5 +1,5 @@
 import type { 
-  ComponentOptions,
+  Component,
   ComponentPublicInstance,
   Ref,
   VNode,
@@ -17,7 +17,7 @@ export interface AnyProps {
 }
 
 export type RawProps = VNodeProps & AnyProps
-export type VueComponent = ComponentOptions<any>
+export type VueComponent = Component
 
 export type XFormModel = AnyProps
 
@@ -76,6 +76,9 @@ export interface ValidateOptions {
   stopHandle: WatchStopHandle;
 }
 
+export type PatchProps = (props: RawProps) => RawProps
+export type RenderField = (field: XField, pathProps?: PatchProps, wrap?: boolean) => VNode
+
 export interface XFormBuilderContext{
   type: 'builder';
   // 注册字段
@@ -85,19 +88,19 @@ export interface XFormBuilderContext{
   // 更新字段值
   updateFieldValue: (event: any) => void;
   // 渲染字段
-  renderField: (field: XField) => VNode;
+  renderField: RenderField
 }
 
 export interface XFormDesignerContext{
   type: 'designer',
   // 渲染字段
-  renderField: (field: XField) => VNode;
+  renderField: RenderField
 }
 
 export interface XFormViewerContext{
   type: 'viewer',
   // 渲染字段
-  renderField: (field: XField) => VNode;
+  renderField: RenderField
 }
 
 export type XFormContext = XFormBuilderContext | XFormDesignerContext | XFormViewerContext;

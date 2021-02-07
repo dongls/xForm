@@ -16,11 +16,10 @@ export default XFieldConf.create({
     if(field.required && isEmpty) return Promise.reject('必填')
     return Promise.resolve()
   },
-  onCreate(field: XField, params: any){
+  onCreate(field, params, init){
     const options = Array.isArray(params.options) ? params.options : []
-    if(options.length == 0) options.push({ value: '选项1' })
-    field.options = options
+    if(init) options.push({ value: '选项1' })
 
-    return field
+    field.options = options
   }
 })

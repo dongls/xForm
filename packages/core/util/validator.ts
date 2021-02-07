@@ -11,7 +11,7 @@ import {
   ValidStatusEnum
 } from '@model'
 
-import { ComputedRef } from 'vue'
+import { ComputedRef, Ref } from 'vue'
 
 function parseError(error: any){
   if(null == error) return null
@@ -23,19 +23,19 @@ function parseError(error: any){
 export function createValidator(
   fieldRef: ComputedRef<XField>,
   validationRef: ComputedRef<boolean | Function>, 
-  model: XFormModel
+  model: Ref<XFormModel>
 ){
   function validator(){
     if(validationRef.value === false) return Promise.resolve()
 
     if(typeof validationRef.value == 'function'){
-      const promise = validationRef.value(fieldRef.value, model)
+      const promise = validationRef.value(fieldRef.value, model.value)
       return checkPromise(promise)
     }
 
     const fc = fieldRef.value.conf
     if(fc && isFunction(fc.validator)) {
-      const promise = fc.validator(fieldRef.value, model)
+      const promise = fc.validator(fieldRef.value, model.value)
       return checkPromise(promise)
     }
 

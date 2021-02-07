@@ -20,7 +20,14 @@ export default defineComponent({
     return {
       updateValue: updateValue.bind(null, emit, props.field.name),
       placeholder: computed(() => props.field.placeholder ? `---- ${ props.field.placeholder } ----` : ''),
-      isEmpty: computed(() => null == props.value || (typeof props.value == 'string' && props.value.length == 0))
+      className: computed(() => {
+        return {
+          'custom-select': true,
+          'custom-select-sm': true,
+          'xform-bs-select': true,
+          'xform-bs-is-empty': null == props.value || (typeof props.value == 'string' && props.value.length == 0)
+        }
+      })
     }
   }
 })
@@ -30,8 +37,7 @@ export default defineComponent({
   <select
     :id="field.name"
     :name="field.name"
-    class="form-control form-control-sm"
-    :class="{'xform-bs-is-empty': isEmpty}"
+    :class="className"
     :value="value" @change="updateValue"
   >
     <option v-if="placeholder" class="xform-bs-is-placeholer" value>{{ placeholder }}</option>
@@ -50,7 +56,11 @@ export default defineComponent({
   color: #6c757d;
 }
 
-option.xform-bs-is-placeholer{
+.xform-bs-select option{
+  color: #495057;
+}
+
+.xform-bs-select  option.xform-bs-is-placeholer{
   color: #6c757d;
 }
 </style>

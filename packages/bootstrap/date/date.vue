@@ -15,6 +15,7 @@ export default defineComponent({
       default: null
     }
   },
+  emits: ['update:value'],
   setup(props: any, { emit }){
     return { updateValue: updateValue.bind(null, emit, props.field.name) }
   }

@@ -1,25 +1,21 @@
 import { defineComponent, ref } from 'vue'
 
 import { 
-  GlobalDragEvent,
   XField,
   XFieldConf, 
-  XFormSchema,
-  findElementFromPoint,
-  getRef,
-  getXField,
-  store,
+  XFormScope,
   constant,
+  getProperty,
+  store,
   useContext,
 } from '@dongls/xform'
 
 import icon from '@common/svg/group.svg'
 import setting from './setting.vue'
 
-const { SELECTOR } = constant
+const { SELECTOR, CLASS, BehaviorEnum, DragModeEnum, PROPS } = constant
 const GROUP_LIST_CLASS = 'xform-bs-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
-const MATCH_PATCHS = ['.xform-designer-mark', SELECTOR.DROPPABLE, `.${GROUP_LIST_CLASS}`, SELECTOR.SCOPE]
 
 function useHeader(){
   const collasped = ref(false)
@@ -68,20 +64,36 @@ const build = defineComponent({
 
     return function(){
       const fields = props.field.fields
+      const inDesigner = props.behavior == BehaviorEnum.DESIGNER
       const className = {
         'xform-item': true,
         'xform-bs-group': true,
         'xform-is-collasped': collasped.value
       }
 
+      const tip = (
+        inDesigner && fields.length == 0 
+          ? <p class={[CLASS.IS_EMPTY_TIP, 'xform-bs-empty-tip']}>请将左侧控件拖动到此处</p>
+          : null
+      )
+
+      const bodyProps = {
+        class: {
+          'card-body': true, 
+          [GROUP_LIST_CLASS]: true,
+          [CLASS.DROPPABLE]: inDesigner
+        },
+        [PROPS.XFIELD]: inDesigner ? props.field : undefined
+      }
+
       return (
         <div class={className}>
           <div class="card">
             { renderHeader(props.field) }          
-            <div class="card-body xform-bs-group-list">
-              { fields.map(renderField) }
+            <div {...bodyProps}>
+              { tip }
+              { fields.map(f => renderField(f)) }
             </div>
-            { props.behavior == 'designer'  && fields.length == 0 && <p class="xform-bs-group-empty">请将左侧控件拖动到此处</p> }
           </div>
         </div>
       )
@@ -113,8 +125,8 @@ const view = defineComponent({
         <div class={className}>
           <div class="card">
             { renderHeader(props.field) }          
-            <div class="card-body xform-bs-group-list">
-              { fields.map(renderField) }
+            <div class={['card-body', GROUP_LIST_CLASS]}>
+              { fields.map(f => renderField(f)) }
             </div>  
           </div>
         </div>
@@ -133,69 +145,64 @@ export default XFieldConf.create({
   setting,
   build,
   view,
-  onDragOver(event: GlobalDragEvent){
-    if(event.data.type == 'group') return false
-    
-    const hookEl = event.hookElement
-    const originEvent = event.originEvent as MouseEvent
-    const target = findElementFromPoint(originEvent.clientX, originEvent.clientY, MATCH_PATCHS, hookEl)
-    if(target == hookEl) return false
+  onDragOver(event){
+    const current = event.currentTarget
+    if(!current.matches(GROUP_LIST_SELECTOR)) return
 
-    const context = event.context
-    const instance = context.getInternalInstance()
-    const listEl = hookEl.querySelector(GROUP_LIST_SELECTOR)
-    const mark = getRef<HTMLElement>(instance.refs, 'mark')
-    context.moveMark(event.direction, target, mark, listEl, hookEl)
+    event.stopPropagation()
+    event.preventDefault()
+
+    const { directionY, moveMarkEl } = event.context
+    const isMockDef = event.dragElement.contains(current)
+    const target = isMockDef ? event.dragElement : event.target
+    const scope = isMockDef ? event.dragElement.parentElement.closest(SELECTOR.DROPPABLE) : current
+
+    moveMarkEl(directionY, target, scope)
   },
-  onDrop(event: GlobalDragEvent){
-    const context = event.context
-    const instance = context.getInternalInstance()
-    const pInstance = context.getPublicInstance()
-    const schema = instance.props.schema as XFormSchema
-    const markEl = instance.refs.mark as HTMLElement
-    const dropEl = event.dropElement
-    const group = getXField(dropEl)
+  onDrop(event){
+    const current = event.currentTarget
+    if(!current.matches(SELECTOR.SCOPE)) return
 
-    // 插入时直接在对应位置添加新字段即可
-    if(event.mode == 'insert'){
-      const type = event.data.type
-      const fc = store.findFieldConf(type)
-      const index = Array.prototype.indexOf.call(dropEl.children, markEl)
-      const newField = new XField(fc)
-      group.fields.splice(index, 0, newField)
-      pInstance.updateSchema()
-      pInstance.chooseField(newField)
-      return
+    event.stopPropagation()
+    event.preventDefault()
+
+    const context = event.context
+    const mark = context.getMarkEl()
+    const originScopeEl = event.dragElement.parentElement.closest(SELECTOR.SCOPE) ?? context.getRootScopeEl()
+    const body = current.querySelector(GROUP_LIST_SELECTOR)
+    const index = Array.prototype.indexOf.call(body.children, mark)
+    const scope = getProperty<XFormScope>(current, PROPS.SCOPE)
+    const pInstance = context.getPublicInstance()
+
+    if(context.mode == DragModeEnum.INSERT){
+      const fc = store.findFieldConf(context.fieldType)
+      if(null != fc){
+        const field = new XField(fc)
+        scope.fields.splice(index, 0, field)
+        pInstance.updateSchema()
+        pInstance.chooseField(field)
+      }
+
+      return context.resetDragStatus()
     }
 
-    // 排序时需要处理字段的来源
-    if(event.mode == 'sort'){
-      const field = event.data.field
-      // 先查询原字段
-      const originScopedEl = event.target.closest(SELECTOR.SCOPE)
-      const schemaIndex = schema.fields.indexOf(field)
-      const list = dropEl.querySelector(GROUP_LIST_SELECTOR).children
-      const newIndex = Array.prototype.indexOf.call(list, markEl)
-
-      // 如果原字段在scope中, 需要调用对应字段类型的onRemove方法
-      if(null != originScopedEl && originScopedEl != dropEl){
-        const scopedField = getXField(originScopedEl)
-        
-        const oldIndex = scopedField.fields.indexOf(field)
-        scopedField.fields.splice(oldIndex, 1)
-
-        group.fields.splice(newIndex, 0, field)
-      } else if(schemaIndex >= 0){
-        // 如果原字段在顶层schema中
-        schema.fields.splice(schemaIndex, 1)
-        group.fields.splice(newIndex, 0, field)
+    if(context.mode == DragModeEnum.SORT){
+      const field = context.field
+      if(originScopeEl == current){
+        const oldIndex = scope.fields.indexOf(field)
+        context.moveField(oldIndex, index, scope.fields)
       } else {
-        const oldIndex = group.fields.indexOf(field)
-        context.moveField(oldIndex, newIndex, group.fields)
+        const oldScope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
+        const oldIndex = oldScope.fields.indexOf(field)
+        oldScope.fields.splice(oldIndex, 1)
+        scope.fields.splice(index, 0, field)
       }
 
       pInstance.updateSchema()
-      return pInstance.chooseField(field)
+      pInstance.chooseField(field)
+      return context.resetDragStatus()
     }
+
+    context.resetDragStatus()
   }
 })

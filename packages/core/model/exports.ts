@@ -5,14 +5,17 @@ export {
   XFormBuilderContext,
   XFormDesignerContext,
   XFormViewerContext,
-  XFormContext
+  XFormContext,
+  RawProps,
+  XFormScope
 } from './common'
 
-export {
-  GlobalDragContext,
-  GlobalDragEvent
-} from './drag'
+export { 
+  XField
+} from './XField'
 
-export * from './XField'
-export * from './XFieldConf'
+export {
+  XFieldConf
+} from './XFieldConf'
+
 export * as constant from './constant'

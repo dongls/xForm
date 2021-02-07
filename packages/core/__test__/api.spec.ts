@@ -1,15 +1,16 @@
 import { createSchema } from '../api'
 import { XField } from '@model'
+import { isRef } from 'vue'
 
 describe('api: createShema', () => {
   test('edge cases', () => {
     const params = [null, undefined, 1, '', 'abc', false, true, NaN]
     for(const param of params){
       const schema = createSchema(param)
-      expect(schema).not.toBeNull()
-      expect(Object.keys(schema).length).toBe(1)
-      expect(schema.fields).toBeInstanceOf(Array)
-      expect(schema.fields.length).toBe(0)
+      expect(isRef(schema)).toBeTruthy()
+      expect(Object.keys(schema.value).length).toBe(1)
+      expect(schema.value.fields).toBeInstanceOf(Array)
+      expect(schema.value.fields.length).toBe(0)
     }
   })
 
@@ -23,11 +24,11 @@ describe('api: createShema', () => {
       test: '1'
     })
 
-    expect(schema).not.toBeNull()
-    expect(schema.labelSuffix).toBe(':')
-    expect(schema.test).toBe('1')
+    expect(isRef(schema)).toBeTruthy()
+    expect(schema.value.labelSuffix).toBe(':')
+    expect(schema.value.test).toBe('1')
 
-    expect(schema.fields).toBeInstanceOf(Array)
-    expect(schema.fields[0]).toBeInstanceOf(XField)
+    expect(schema.value.fields).toBeInstanceOf(Array)
+    expect(schema.value.fields[0]).toBeInstanceOf(XField)
   })
 })

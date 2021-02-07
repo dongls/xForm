@@ -19,7 +19,6 @@ describe('store: reset', () => {
 
   test('resetPreset', () => {
     store.resetPreset()
-    // TODO: test preset field
     expect(store.getPreset()).toBeNull()
   })
 })
@@ -57,5 +56,28 @@ describe('store: findFieldGroups', () => {
     const group = groups[0]
     expect(group.types).toEqual(types)
     expect(group.title).toBeUndefined()
+  })
+})
+
+describe('store: findFieldConf', () => {
+  test('subtype', () => {
+    store.resetField()
+
+    const subtype = XFieldConf.create({
+      type: 'super.subtype'
+    })
+
+    const supertype = XFieldConf.create({
+      type: 'super',
+      dependencies: [subtype]
+    })
+
+    store.registerField(supertype)
+    
+    const sup = store.findFieldConf('super')
+    const sub = store.findFieldConf('super.subtype')
+
+    expect(sup).toBe(supertype)
+    expect(sub).toBe(subtype)
   })
 })

@@ -57,7 +57,7 @@ export default defineComponent({
   <section class="xform-setting">
     <header>属性：</header>
     <div class="custom-control custom-checkbox">
-      <input :id="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @input="updateField($event, 'required')">
+      <input :id="`${field.name}-required`" :name="`${field.name}-required`" :checked="field.required" type="checkbox" class="custom-control-input" @input="updateField($event, 'required')">
       <label class="custom-control-label" :for="`${field.name}-required`">必填</label>
     </div>
   </section>

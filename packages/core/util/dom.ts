@@ -4,6 +4,7 @@ import {
   SELECTOR,
   PROPS
 } from '@model'
+import { isString } from './lang'
 
 /**
 * 判断元素是否不可见
@@ -22,21 +23,35 @@ export function isHidden(el: HTMLElement, container: HTMLElement){
  * 查找坐标点下第一个符合的元素
  * @param {number} x - 坐标点的水平坐标值
  * @param {number} y - 坐标点的垂向坐标值
- * @param {string[]} selectors - 目标选择器
+ * @param {string[]} selector - 目标选择器
  * @returns {Element | null} 
  */
-export function findElementFromPoint(x: number, y: number, selectors: string[], scope: Element){
+export function findElementFromPoint(x: number, y: number, selector: string | string[], scope?: Element){
   const elementsFromPoint = document.elementsFromPoint || document.msElementsFromPoint
   if(typeof elementsFromPoint !== 'function') return null
 
-  let elements: Element[] = elementsFromPoint.call(document, x, y)
-  if(scope != null) elements = elements.filter(e => scope.contains(e))
-
+  const elements: Element[] = elementsFromPoint.call(document, x, y)  
   for(const element of elements){
-    if(selectors.some(selector => element.matches(selector))) return element
+    if(scope != null && !scope.contains(element)) continue
+    if(isString(selector) && element.matches(selector)) return element
+    if(Array.isArray(selector) && selector.some(selector => element.matches(selector))) return element
   }
 
   return null
+}
+
+/** 查询坐标点下符合条件的元素 */
+export function findElementsFromPoint(x: number, y: number, selector: string | string[], scope?: Element){
+  const elementsFromPoint = document.elementsFromPoint || document.msElementsFromPoint
+  if(typeof elementsFromPoint !== 'function') return null
+
+  const elements: Element[] = elementsFromPoint.call(document, x, y)
+  return elements.filter(element => {
+    if(scope != null && !scope.contains(element)) return false
+    if(isString(selector)) return element.matches(selector)
+    if(Array.isArray(selector)) return selector.some(selector => element.matches(selector))
+    return false
+  })
 }
 
 /**

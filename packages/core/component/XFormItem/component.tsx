@@ -3,10 +3,11 @@ import {
   Slots,
   computed,
   defineComponent, 
-  h,
   inject,
   onUnmounted,
   reactive,
+  Ref,
+  createVNode,
 } from 'vue'
 
 import { 
@@ -19,7 +20,6 @@ import {
   ValidStatusEnum,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
-  XFORM_MODEL_PROVIDE_KEY,
   ComponentEnum,
   XFormContext,
 } from '@model'
@@ -27,6 +27,7 @@ import {
 import { isFunction } from '@core/util/lang'
 import { createValidator } from '@core/util/validator'
 import { getFieldComponent } from '@core/util/component'
+import { useModel } from '@core/api'
 
 type XFormItemProps = {
   field: XField;
@@ -64,7 +65,7 @@ function renderContent(slots: Slots, field: XField, model: XFormModel, context: 
     props['onUpdate:value'] = context.updateFieldValue
   }
 
-  return h(component, props)
+  return createVNode(component, props)
 }
 
 function patchField(field: XField, o: any){
@@ -112,12 +113,12 @@ export default defineComponent({
     }
   },
   setup(props: XFormItemProps, { slots, attrs }){
-    const schema = inject<XFormSchema>(XFORM_FORM_SCHEMA_PROVIDE_KEY)
+    const schema = inject<Ref<XFormSchema>>(XFORM_FORM_SCHEMA_PROVIDE_KEY)
     const context = inject<XFormContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
 
     const fieldRef = normalizeField(props, attrs)
     const validation = computed(() => props.validation)
-    const model = inject<XFormModel>(XFORM_MODEL_PROVIDE_KEY, null)
+    const model = useModel()
 
     if(isBuilderContext(context)){
       const validator = createValidator(fieldRef, validation, model)
@@ -127,8 +128,8 @@ export default defineComponent({
     
     return function(){
       const field = fieldRef.value
-      const labelPosition = schema.labelPosition ?? PositionEnum.LEFT
-      const labelSuffix = schema.labelSuffix
+      const labelPosition = schema.value.labelPosition ?? PositionEnum.LEFT
+      const labelSuffix = schema.value.labelSuffix
 
       const className =  {
         'xform-item': true,
