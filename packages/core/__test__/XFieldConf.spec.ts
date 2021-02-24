@@ -13,7 +13,7 @@ test('XFieldConf: alias', () => {
         return h('div', null, 'mock setting component')
       }
     },
-    validator(){/* */}
+    validator(){ return Promise.resolve() }
   })
 
   const email = XFieldConf.create({
@@ -21,7 +21,7 @@ test('XFieldConf: alias', () => {
     title: '邮箱',
     icon: 'icon-email',
     alias: text,
-    validator(){/* */},
+    validator(){ return Promise.resolve() },
     onRemoved(){/* */}
   })
   

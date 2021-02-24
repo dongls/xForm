@@ -9,7 +9,8 @@ import {
   clonePlainObject, 
   mergePlainObject, 
   isNull, 
-  isEmpty
+  isEmpty,
+  flat
 } from './util/lang'
 
 import { 
@@ -77,7 +78,7 @@ export function registerField(fc: XFieldConf){
 
 /** 注册任意个字段 */
 export function registerManyField(...fcs: Array<unknown>){
-  fcs.flat().forEach(f => f instanceof XFieldConf && registerField(f))  
+  flat(fcs).forEach(f => f instanceof XFieldConf && registerField(f))  
 }
 
 export function hasField(type: string){

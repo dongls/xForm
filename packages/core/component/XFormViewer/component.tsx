@@ -10,14 +10,14 @@ import {
 } from 'vue'
 
 import { 
+  EnumComponent,
+  PatchProps,
+  XFORM_CONTEXT_PROVIDE_KEY,
+  XFORM_FORM_SCHEMA_PROVIDE_KEY,
   XField, 
   XFormModel, 
   XFormSchema,
-  ComponentEnum,
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
-  XFORM_CONTEXT_PROVIDE_KEY,
   XFormViewerContext,
-  PatchProps
 } from '@core/model'
 
 import { isFunction } from '@core/util/lang'
@@ -51,7 +51,7 @@ function renderContent(instance: XFormViewerInstance, field: XField, value: any,
 
   const typeSlot = slots[`type_${field.type}`]
   if(isFunction(typeSlot)) return typeSlot({ field, value })
-  const component = getFieldComponent(field, ComponentEnum.VIEW, instance.mode)
+  const component = getFieldComponent(field, EnumComponent.VIEW, instance.mode)
   if(component == null) return null
 
   const props = fillComponentProps(component, { field, value, model: instance.model })
@@ -63,9 +63,6 @@ function renderField(instance: XFormViewerInstance, field: XField, patch?: Patch
   const value = conf.formatter(field, instance.$props, instance)
 
   const content = renderContent(instance, field, value, patch)
-
-  if(field.conf?.custom === true) return content
-
   const XFormItem = resolveComponent('xform-item')
   const itemProps = { key: field.name, field, validation: false }
   return h(XFormItem, itemProps, function(){

@@ -2,16 +2,25 @@ import { ComponentInternalInstance, markRaw, VNode } from 'vue'
 import { VueComponent, XFormModel, XFormScope } from './common'
 import { InternalDragEvent } from './drag'
 import { isFunction, isNull, isPlainObject, toArray } from '@core/util/lang'
-import { XField } from '.'
-import { DragHookEnum } from './constant'
+import { XField } from './XField'
+import { EnumDragHook, EnumValidateMode } from './constant'
 
-export interface Rule{
-  max?: number;
-  [prop: string]: any;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Rule{}
+
+export interface ValidResult{
+  valid: boolean;
+  message: string;
+  name: string;
+  title: string;
+  type: string;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fields?: ValidResult[]
 }
 
-export type ValidateFn = (field: XField, model: XFormModel) => Promise<any>
-export type Validator = ValidateFn | Function;
+export type ValidateFunc = (field: XField, model: XFormModel) => Promise<string>;
+export type ValidateOptions = { mode: EnumValidateMode, validator: ValidateFunc }
+type Validator = ValidateFunc | ValidateOptions | Rule | Rule[] | false
 
 type DragHookFn = (e: InternalDragEvent) => void | boolean;
 
@@ -21,15 +30,15 @@ class Hook{
   // 字段删除后时调用
   onRemoved?: (field: XField, scope: XFormScope, instance: ComponentInternalInstance) => void;
   // 字段拖到该字段上方时调用
-  [DragHookEnum.DRAGOVER]?: DragHookFn;
+  [EnumDragHook.DRAGOVER]?: DragHookFn;
   // 字段放到该字段上调用, 只对scoped值为true的字段生效
-  [DragHookEnum.DROP]?: DragHookFn;
+  [EnumDragHook.DROP]?: DragHookFn;
 
   constructor(options: any = {}){
     this.onCreate = isFunction(options.onCreate) ? options.onCreate : null
     this.onRemoved = isFunction(options.onRemoved) ? options.onRemoved : null
-    this[DragHookEnum.DRAGOVER] = isFunction(options[DragHookEnum.DRAGOVER]) ? options[DragHookEnum.DRAGOVER] : null
-    this[DragHookEnum.DROP] = isFunction(options[DragHookEnum.DROP]) ? options[DragHookEnum.DROP] : null
+    this[EnumDragHook.DRAGOVER] = isFunction(options[EnumDragHook.DRAGOVER]) ? options[EnumDragHook.DRAGOVER] : null
+    this[EnumDragHook.DROP] = isFunction(options[EnumDragHook.DROP]) ? options[EnumDragHook.DROP] : null
   }
 }
 

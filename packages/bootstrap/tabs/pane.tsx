@@ -10,7 +10,7 @@ import {
   useContext,
 } from '@dongls/xform'
 
-const { SELECTOR, CLASS, DragModeEnum, PROPS } = constant
+const { SELECTOR, CLASS, EnumDragMode, PROPS } = constant
 
 export default XFieldConf.create({
   type: 'tabs.pane',
@@ -95,7 +95,7 @@ export default XFieldConf.create({
     const scope = getProperty<XFormScope>(current, PROPS.SCOPE)
     const pInstance = context.getPublicInstance()
 
-    if(context.mode == DragModeEnum.INSERT){
+    if(context.mode == EnumDragMode.INSERT){
       const fc = store.findFieldConf(context.fieldType)
       if(null != fc){
         const field = new XField(fc)
@@ -107,7 +107,7 @@ export default XFieldConf.create({
       return context.resetDragStatus()
     }
 
-    if(context.mode == DragModeEnum.SORT){
+    if(context.mode == EnumDragMode.SORT){
       const field = context.field
       if(originScopeEl == current){
         const oldIndex = scope.fields.indexOf(field)

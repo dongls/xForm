@@ -13,7 +13,7 @@ import {
 import icon from '@common/svg/group.svg'
 import setting from './setting.vue'
 
-const { SELECTOR, CLASS, BehaviorEnum, DragModeEnum, PROPS } = constant
+const { SELECTOR, CLASS, EnumBehavior, EnumDragMode, PROPS } = constant
 const GROUP_LIST_CLASS = 'xform-bs-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
 
@@ -64,7 +64,7 @@ const build = defineComponent({
 
     return function(){
       const fields = props.field.fields
-      const inDesigner = props.behavior == BehaviorEnum.DESIGNER
+      const inDesigner = props.behavior == EnumBehavior.DESIGNER
       const className = {
         'xform-item': true,
         'xform-bs-group': true,
@@ -174,7 +174,7 @@ export default XFieldConf.create({
     const scope = getProperty<XFormScope>(current, PROPS.SCOPE)
     const pInstance = context.getPublicInstance()
 
-    if(context.mode == DragModeEnum.INSERT){
+    if(context.mode == EnumDragMode.INSERT){
       const fc = store.findFieldConf(context.fieldType)
       if(null != fc){
         const field = new XField(fc)
@@ -186,7 +186,7 @@ export default XFieldConf.create({
       return context.resetDragStatus()
     }
 
-    if(context.mode == DragModeEnum.SORT){
+    if(context.mode == EnumDragMode.SORT){
       const field = context.field
       if(originScopeEl == current){
         const oldIndex = scope.fields.indexOf(field)

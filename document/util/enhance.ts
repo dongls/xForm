@@ -23,9 +23,9 @@ export function scrollTo(selector: string){
 
 
 function renderToc(article: Element, meta: any){
-  const toc = article.parentNode.querySelector(':scope .article-toc')
+  const toc = article.parentNode.querySelector('.article-toc')
 
-  toc.innerHTML = meta.toc === false ? '' : [...article.querySelectorAll(':scope h2.head-anchor')].map(head => {
+  toc.innerHTML = meta.toc === false ? '' : [...article.querySelectorAll('h2.head-anchor')].map(head => {
     const id = head.id
     return `<li><a href="#${id}">${id}</a></li>`
   }).join('')

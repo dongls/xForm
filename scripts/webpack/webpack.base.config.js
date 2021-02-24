@@ -6,7 +6,7 @@ const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
-  target: IS_PRODUCTION ? 'browserslist' : 'web',
+  target: IS_PRODUCTION ? 'browserslist:production' : 'web',
   module: {
     rules: [
       {

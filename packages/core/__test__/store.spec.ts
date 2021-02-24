@@ -1,14 +1,7 @@
 import store from '@core/store'
 import CONFIG from '@core/config'
 import { XFieldConf } from '@model'
-
-function mockField(){
-  return [
-    { type: 'text', title: '单行文本' }, 
-    { type: 'textarea', title: '多行文本' },
-    { type: 'select', title: '下拉框' }
-  ].map(XFieldConf.create)
-}
+import { mockFieldConfs } from './mock/index'
 
 describe('store: reset', () => {
   test('resetConfig', () => {
@@ -45,7 +38,7 @@ describe('store: useConfig', () => {
 
 describe('store: findFieldGroups', () => {
   test('mode is undefined', () => {
-    const fields = mockField()
+    const fields = mockFieldConfs()
     const types = fields.map(i => i.type)
     store.resetConfig()
     store.useConfig({})

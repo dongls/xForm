@@ -2,13 +2,13 @@ import { XField } from '.'
 
 import { ComponentInternalInstance } from 'vue'
 import {
-  DragModeEnum,
-  DirectionEnum,
-  SELECTOR,
   CLASS,
+  EnumDragDirection,
+  EnumDragEventType,
+  EnumDragHook,
+  EnumDragMode,
   PROPS,
-  DragEventTypesEnum,
-  DragHookEnum,
+  SELECTOR,
 } from './constant'
 import { getHtmlElement } from '@core/util/component'
 import { XFormDesignerInstance } from '@core/component/XFormDesigner/component'
@@ -32,8 +32,8 @@ export interface InternalDragUtils{
 export interface InternalDragEventContext extends InternalDragUtils, AnyProps{
   directionY?: number;
   directionX?: number;
-  mode?: DragModeEnum;
-  hook?: DragHookEnum;
+  mode?: EnumDragMode;
+  hook?: EnumDragHook;
   field?: XField;
   fieldType?: string;
 }
@@ -76,7 +76,7 @@ export class InternalDragContext{
   field?: XField; // 字段
   fieldType: string; // 字段类型
   init = false; // 是否初始化
-  mode: DragModeEnum; // 拖拽模式
+  mode: EnumDragMode; // 拖拽模式
   directionY: number;
   directionX: number;
 
@@ -96,17 +96,17 @@ export class InternalDragContext{
     this.dragElement = dragElement
     this.field = field
     this.fieldType = fieldType
-    this.mode = mode == DragModeEnum.INSERT ? DragModeEnum.INSERT : DragModeEnum.SORT
+    this.mode = mode == EnumDragMode.INSERT ? EnumDragMode.INSERT : EnumDragMode.SORT
     this.deltaX = isFieldEl ? event.clientX - rect.left : rect ? rect.width / 2 : DELTA_X
     this.deltaY = isFieldEl ? event.clientY - rect.top : rect ? rect.height / 2 : DELTA_Y
   }
 
   get isInsert(){
-    return this.mode == DragModeEnum.INSERT
+    return this.mode == EnumDragMode.INSERT
   }
 
   get isSort(){
-    return this.mode == DragModeEnum.SORT
+    return this.mode == EnumDragMode.SORT
   }
 
   get isImmediateInsert(){
@@ -121,7 +121,7 @@ export class InternalDragContext{
     const ghost = getHtmlElement(instance.refs, 'ghost')
     ghost.style.transform = `translate(${left}px, ${top}px)`
     
-    this.directionY = event.clientY < this.clientY ? DirectionEnum.UP : DirectionEnum.DOWN
+    this.directionY = event.clientY < this.clientY ? EnumDragDirection.UP : EnumDragDirection.DOWN
     this.clientY = event.clientY
   }
 
@@ -139,12 +139,12 @@ export class InternalDragContext{
   }
 
   createDragOverEvent(path: Element[], originEvent: Event, context: InternalDragEventContext){
-    const event = new InternalDragEvent(DragEventTypesEnum.DRAGOVER, path, originEvent, this.dragElement)
+    const event = new InternalDragEvent(EnumDragEventType.DRAGOVER, path, originEvent, this.dragElement)
 
     context.directionY = this.directionY
     context.directionX = this.directionX
     context.mode = this.mode
-    context.hook = DragHookEnum.DRAGOVER
+    context.hook = EnumDragHook.DRAGOVER
     context.fieldType = this.fieldType
 
     event.context = context
@@ -152,10 +152,10 @@ export class InternalDragContext{
   }
 
   createDropEvent(path: Element[], originEvent: Event, context: InternalDragEventContext){
-    const event = new InternalDragEvent(DragEventTypesEnum.DROP, path, originEvent, this.dragElement)
+    const event = new InternalDragEvent(EnumDragEventType.DROP, path, originEvent, this.dragElement)
     
     context.mode = this.mode
-    context.hook = DragHookEnum.DROP
+    context.hook = EnumDragHook.DROP
     context.field = this.field
     context.fieldType = this.fieldType
 
@@ -191,7 +191,7 @@ export class InternalDragContext{
     ghost.classList.add(CLASS.IS_SHOW)
     list.classList.add(CLASS.LIST_SILENCE)
   
-    if(this.mode == DragModeEnum.SORT) {
+    if(this.mode == EnumDragMode.SORT) {
       this.dragElement.classList.add(CLASS.IS_DRAGGING)
     }
 

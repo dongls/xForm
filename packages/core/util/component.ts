@@ -1,8 +1,8 @@
-import { RawProps, XField, ComponentEnum, FieldComponent } from '@core/model'
+import { RawProps, XField, EnumComponent, FieldComponent, XFormScope } from '@core/model'
 import { isFunction, isObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
-export function getFieldComponent(field: XField, target: ComponentEnum, mode?: string){
+export function getFieldComponent(field: XField, target: EnumComponent, mode?: string){
   const component = field.conf?.[target]
   if(!(component instanceof FieldComponent)) return component
 
@@ -72,4 +72,17 @@ export function normalizeClass(value: unknown){
   }
 
   return {}
+}
+
+export function getAllFields(scope: XFormScope): XField[] {
+  return scope.fields.reduce((acc, f) => {
+    acc.push(f)
+
+    if(Array.isArray(f.fields) && f.fields.length > 0){
+      const sub = getAllFields(f)
+      return acc.concat(sub)
+    }
+
+    return acc
+  }, []) as XField[]
 }

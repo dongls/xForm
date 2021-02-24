@@ -7,7 +7,7 @@ import setting from './setting.vue'
 export default XFieldConf.create({
   icon: icon,
   type: 'radio',
-  title: '单选框',
+  title: '单选',
   setting: setting,
   build: radio,
   validator(field: XField, model: XFormModel){

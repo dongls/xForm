@@ -20,15 +20,21 @@ import {
 } from 'vue'
 
 import { 
+  CLASS,
+  EnumBehavior,
+  EnumComponent,
+  EnumDragMode,
+  ModeGroup,
+  PROPS,
+  PatchProps,
+  RawProps,
+  SELECTOR,
+  XFORM_CONTEXT_PROVIDE_KEY,
+  XFORM_FORM_SCHEMA_PROVIDE_KEY,
   XField, 
   XFieldConf,
-  XFormSchema,
-  ModeGroup,
-  RawProps,
-  ComponentEnum,
-  DragModeEnum,
   XFormDesignerContext,
-  PatchProps
+  XFormSchema,
 } from '@model'
 
 import { 
@@ -36,15 +42,6 @@ import {
   findScope, 
   normalizeWheel 
 } from '@core/util/dom'
-
-import {
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
-  SELECTOR,
-  CLASS,
-  PROPS,
-  XFORM_CONTEXT_PROVIDE_KEY,
-  BehaviorEnum,
-} from '@core/model/constant'
 
 import {
   getFieldComponent,
@@ -135,7 +132,7 @@ function renderFieldPanel(groups: ModeGroup[]){
         'class': `${CLASS.FIELD} xform-template-${fc.type} ${CLASS.DRAGGABLE}`,
         'key': fc.type,
         [PROPS.XFIELD_TYPE]: fc.type,
-        [PROPS.DRAG_MODE]: DragModeEnum.INSERT
+        [PROPS.DRAG_MODE]: EnumDragMode.INSERT
       }
 
       return (
@@ -171,18 +168,15 @@ function renderContent(instance: XFormDesignerInstance, field: XField, patch?: P
   if(isFunction(typeSlot)) return typeSlot({ field })
 
   const mode = instance.mode
-  const component = getFieldComponent(field, ComponentEnum.PREVIEW, mode) || getFieldComponent(field, ComponentEnum.BUILD, mode)
+  const component = getFieldComponent(field, EnumComponent.PREVIEW, mode) || getFieldComponent(field, EnumComponent.BUILD, mode)
   if(component == null) return null
 
-  const props = fillComponentProps(component, { field, behavior: BehaviorEnum.DESIGNER })
+  const props = fillComponentProps(component, { field, behavior: EnumBehavior.DESIGNER })
   return createVNode(component, isFunction(patch) ? patch(props) : props)
 }
 
 function renderItem(instance: XFormDesignerInstance, field: XField, patch?: PatchProps){
   const content = renderContent(instance, field, patch)
-  
-  if(field.conf?.custom === true ) return content
-
   const XFormItem = resolveComponent('xform-item')
   const itemProps = { field, validation: false }
   return h(XFormItem, itemProps, function(){
@@ -277,7 +271,7 @@ function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesigner
   const typeSlot = slots[`setting_type_${field.type}`]
   if(isFunction(typeSlot)) return typeSlot(props)
 
-  const component = getFieldComponent(field, ComponentEnum.SETTING, instance.mode)
+  const component = getFieldComponent(field, EnumComponent.SETTING, instance.mode)
   if(component == null) {
     console.warn(`[xform] field not implement setting component: ${field.title}(${field.name})`)
     return null

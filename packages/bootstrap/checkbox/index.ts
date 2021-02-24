@@ -7,7 +7,7 @@ import setting from './setting.vue'
 export default XFieldConf.create({
   icon: icon,
   type: 'checkbox',
-  title: '多选框',
+  title: '多选',
   setting: setting,
   build: checkbox,
   validator(field: XField, model: XFormModel){

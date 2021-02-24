@@ -7,7 +7,7 @@ import setting from './setting.vue'
 export default XFieldConf.create({
   icon: icon,
   type: 'select',
-  title: '下拉框',
+  title: '下拉选择',
   setting: setting,
   build: select,
   validator(field: XField, model: XFormModel){

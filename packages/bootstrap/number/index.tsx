@@ -40,7 +40,7 @@ export default XFieldConf.create({
   setting,
   build,
   validator(field: XField, model: XFormModel){
-    const value = model[field.name]
+    const value = typeof model[field.name] == 'string' ? parseFloat(model[field.name]) : model[field.name]
     const isEmpty = null == value || typeof value == 'number' && (isNaN(value) || !isFinite(value))
     if(field.required && isEmpty) return Promise.reject('必填')
     if(field.attributes.integer && !/^[-+]?[1-9]\d*$/.test(value))  return Promise.reject('请输入整数')

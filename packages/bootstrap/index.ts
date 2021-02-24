@@ -13,6 +13,7 @@ import Date from './date'
 import Divider from './divider'
 import Group from './group'
 import Tabs from './tabs'
+import Subform from './subform'
 
 const bootstrap: XFormPreset = {
   name: 'bootstrap',
@@ -30,7 +31,8 @@ const bootstrap: XFormPreset = {
     Date,
     Divider,
     Group,
-    Tabs
+    Tabs,
+    Subform
   ]
 }
 

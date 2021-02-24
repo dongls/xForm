@@ -36,6 +36,5 @@ export {
 }
 
 export * from './model/exports'
-export * as util from './util/exports'
 export * from './api'
 export default XForm

@@ -25,7 +25,8 @@ export {
 } from './util/dom'
 
 export {
-  getRef
+  getRef,
+  normalizeClass
 } from './util/component'
 
 
@@ -43,7 +44,11 @@ export function createSchema(origin?: any){
   if(!Array.isArray(schema.fields)) schema.fields = []
   if(schema.fields.length > 0) schema.fields = schema.fields.map(XField.create)
 
-  return ref<XFormSchema>(schema)
+  return schema as XFormSchema
+}
+
+export function createSchemaRef(origin?: any){
+  return ref(createSchema(origin))
 }
 
 export function disableValidate(){

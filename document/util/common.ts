@@ -27,9 +27,9 @@ function getLocalSchema(){
       schema.fields.length == 0
     ) throw new Error
 
-    return createSchema(schema)
+    return ref(createSchema(schema))
   } catch (error) {
-    const schema = createDefaultSchema()
+    const schema = ref(createDefaultSchema())
     saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(schema))
     return schema
   }

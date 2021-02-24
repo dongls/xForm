@@ -1,6 +1,7 @@
 import {
   clonePlainObject,
-  mergePlainObject
+  mergePlainObject,
+  flat
 } from '../util/lang'
 
 test('lang: clonePlainObject', () => {
@@ -36,4 +37,11 @@ describe('lang: mergePlainObject', () => {
     expect(o.e).toBe(y.e)
     expect(o.f).toBe(z.f)
   })
+})
+
+test('flat', () => {
+  expect(flat(null)).toStrictEqual([])
+  expect(flat([1, 2, 3])).toStrictEqual([1, 2, 3])
+  expect(flat([1, [2, 3]])).toStrictEqual([1, 2, 3])
+  expect(flat([1, [2], [[3]]])).toStrictEqual([1, 2, [3]])
 })

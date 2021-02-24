@@ -10,29 +10,32 @@ import {
   ComponentPublicInstance,
   watch,
   getCurrentInstance,
-  ComputedRef,
   nextTick,
   toRef,
   createVNode,
+  Ref,
 } from 'vue'
 
 import { 
-  XFormModel,
-  XFormSchema,
-  XField,
-  ValidateOptions,
-  WrappedValidator,
-  ComponentEnum,
-  XFORM_MODEL_PROVIDE_KEY, 
+  EnumComponent,
+  PatchProps,
   XFORM_CONTEXT_PROVIDE_KEY, 
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  XFORM_MODEL_PROVIDE_KEY, 
+  XField,
   XFormBuilderContext,
-  PatchProps,
+  XFormModel,
+  XFormSchema,
+  ValidateFunc,
+  RawProps,
+  ValidResult,
+  EnumValidateMode,
 } from '@model'
 
-import { fillComponentProps, getFieldComponent } from '@core/util/component'
-import { isFunction, isString } from '@core/util/lang'
+import { fillComponentProps, getFieldComponent, normalizeClass } from '@core/util/component'
+import { flat, ignoreError, isFunction, isString, isValidArray } from '@core/util/lang'
 import { disableValidate, enableValidate } from '@core/api'
+import { useValidator } from '@core/validator'
 
 interface XFormBuilderProps{
   mode: string;
@@ -43,13 +46,19 @@ interface XFormBuilderProps{
 
 interface XFormBuilderSetupState{
   update: Function;
+  validate: () => Promise<{
+    result: ValidResult[],
+    valid: boolean
+  }>,
+  reset: Function;
 }
 
 type XFormBuilderInstance = ComponentPublicInstance & XFormBuilderProps & XFormBuilderSetupState;
 
 const EVENTS = {
   CHANGE: 'change',
-  UPDATE_MODEL: 'update:model'
+  UPDATE_MODEL: 'update:model',
+  SUBMIT: 'submit'
 }
 
 /**
@@ -73,7 +82,7 @@ function renderContent(instance: XFormBuilderInstance, field: XField, patch?: Pa
     value,
     'onUpdate:value': instance.update
   }
-  const component = getFieldComponent(field, ComponentEnum.BUILD, instance.mode)
+  const component = getFieldComponent(field, EnumComponent.BUILD, instance.mode)
   if(null == component) return null
 
   const props = fillComponentProps(component, all)
@@ -82,9 +91,6 @@ function renderContent(instance: XFormBuilderInstance, field: XField, patch?: Pa
 
 function renderField(instance: XFormBuilderInstance, field: XField, patch?: PatchProps){
   const content = renderContent(instance, field, patch)
-  // 字段完全自定义时不使用xform-item包裹
-  if(field.conf?.custom === true) return content
-
   const XFormItem = resolveComponent('xform-item')
   const itemProps = { key: field.name, field, validation: true }
 
@@ -100,6 +106,7 @@ function renderField(instance: XFormBuilderInstance, field: XField, patch?: Patc
 
 export default defineComponent({
   name: 'xform-builder',
+  inheritAttrs: false,
   props: {
     mode: {
       type: String,
@@ -118,26 +125,44 @@ export default defineComponent({
       default: 'form'
     }
   },
-  emits: [EVENTS.CHANGE, EVENTS.UPDATE_MODEL],
+  emits: [
+    EVENTS.CHANGE, 
+    EVENTS.UPDATE_MODEL,
+    EVENTS.SUBMIT
+  ],
   setup(props: XFormBuilderProps, { emit }){
     const instance = getCurrentInstance()
     const pending = ref(false)
-    const REGISTERED_FIELDS = new Map<string, ValidateOptions>()
+    const validator = useValidator()
 
-    function registerField(fieldRef: ComputedRef<XField>, validator: WrappedValidator){
+    function registerField(fieldRef: Ref<XField>, validationRef: Ref<boolean | ValidateFunc>){      
       const key = fieldRef.value.name
       const stopHandle = watch(() => props.model[key], () => {
-        Store.isEnableValidate() && Store.isImmediateValidate() && validator()
+        if(!Store.isImmediateValidate() || pending.value) return
+        ignoreError(validator.validateField(fieldRef.value, props.model))
       })
 
-      REGISTERED_FIELDS.set(key, { fieldRef, validator, stopHandle })
+      const eventHandle = () => {
+        if(pending.value) return
+        ignoreError(validator.validateField(fieldRef.value, props.model, { mode: EnumValidateMode.SLEF }))
+      }
+
+      if(fieldRef.value && isValidArray(fieldRef.value.fields)){
+        fieldRef.value.fields.forEach(sub => sub.on(XField.EVENT_VALID_CHANGE, eventHandle))
+      }
+
+      validator.registerField(key, { fieldRef, validationRef, stopHandle, eventHandle })
     }
     
     function removeField(key: string){
-      const o = REGISTERED_FIELDS.get(key)
-      if(null != o) {
-        REGISTERED_FIELDS.delete(key)
-        isFunction(o.stopHandle) && o.stopHandle()
+      const state = validator.removeField(key)
+      if(null != state) {
+        const field = state.fieldRef.value
+        state.stopHandle()
+
+        if(isValidArray(field.fields)){
+          field?.fields.forEach(sub => sub.off(XField.EVENT_VALID_CHANGE, state.eventHandle))
+        }
       }
     }
 
@@ -153,9 +178,9 @@ export default defineComponent({
 
     // 清除验证信息
     function resetValidate(){
-      for(const option of REGISTERED_FIELDS.values()){
-        const field = option.fieldRef.value
-        field && field.resetValidate()
+      const fields = validator.getRegisteredFields()
+      for(const field of fields){
+        validator.resetFieldValidation(field)
       }
     }
 
@@ -171,24 +196,22 @@ export default defineComponent({
 
     return {
       // 验证整个表单
-      async validate(){
+      validate(flat = false){
         if(pending.value) return Promise.reject('[xform error]: validate pending...')
         
         pending.value = true
-        const promises = [...REGISTERED_FIELDS.values()].map(i => i.validator())
-        const messages = await Promise.all(promises)
-        pending.value = false
-        
-        return { messages, valid: messages.every(i => i === true) }
+        return validator.validateSchema(props.schema, props.model, flat).then(result => {
+          pending.value = false
+          return result
+        })
       },
-      // 验证单个字段
+      // 根据字段name验证任意个字段
       validateField(...args: string[]){
-        const names = args.flat()
+        const names = flat(args)
         if(names.length == 0) return
 
         for(const name of names){
-          const r = REGISTERED_FIELDS.get(name)
-          r && r.validator()
+          ignoreError(validator.validateFieldByName(name, props.model))
         }
       },
       // 重置表单验证
@@ -206,13 +229,30 @@ export default defineComponent({
     }
   },
   render(instance: XFormBuilderInstance){
-    const slots: Slots = instance.$slots
-    const schema: XFormSchema = instance.schema
+    const slots = instance.$slots as Slots
+    const model = instance.model
+    const schema = instance.schema
     const tagName = (isString(instance.tag) ? instance.tag : 'form').toLowerCase()
-    // 考虑到异步验证时需要处理与表单相关的交互，这里暂不处理submit事件
+
     const props = { 
-      className: 'xform-builder', 
+      ...instance.$attrs,
       novalidate: tagName == 'form'
+    } as RawProps
+
+    const klass = normalizeClass(props.class)
+    klass['xform-builder'] = true
+    props.class = klass
+
+    if(tagName == 'form'){
+      props.onSubmit = (event: Event) => {
+        event.preventDefault()
+        instance.$emit(EVENTS.SUBMIT, instance.validate, model)
+      }
+
+      props.onReset = (event: Event) => {
+        event.preventDefault()
+        instance.reset()
+      }
     }
     
     const main = (

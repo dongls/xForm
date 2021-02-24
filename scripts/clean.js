@@ -1,12 +1,27 @@
 const path = require('path')
 const chalk = require('chalk')
-const rimraf = require('rimraf')
-
-const { packageNames } = require('./packages')
+const fs = require('fs')
 
 const BASE_PATH = path.resolve(__dirname, '../')
-const dirs = packageNames.map(p => `${BASE_PATH}/packages/${p}/dist`)
+const { packageNames } = require('./packages')
 
-for(const dir of dirs) rimraf.sync(dir)
+const r = packageNames
+  .map(pn => {
+    return {
+      name: pn,
+      path: `${BASE_PATH}/packages/${pn}/dist`
+    }
+  })
+  .map(({ name, path }) => {
+    if(!fs.existsSync(path)) return null
+    
+    try {
+      fs.rmSync(path, { maxRetries: 10, recursive: true })
+      return name
+    } catch {
+      return null
+    }
+  })
+  .filter(n => n)
 
-console.log(chalk.green.bold('clean dist: ') + packageNames.join(', ') + '\n')
+if(r.length > 0) console.log(chalk.green.bold('clean dist: ') + r.join(', ') + '\n')

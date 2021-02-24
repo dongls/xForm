@@ -9,7 +9,8 @@ import type {
 
 import { 
   XField, 
-  XFieldConf 
+  XFieldConf,
+  ValidateFunc
 } from '.'
 
 export interface AnyProps {
@@ -68,12 +69,12 @@ export type XFormConfig = {
   [P in keyof XFormConfigBase]?: XFormConfigBase[P] extends ValidationConf ? Partial<XFormConfigBase[P]> : XFormConfigBase[P];
 }
 
-export type WrappedValidator = () => Promise<any>
-
-export interface ValidateOptions {
+export interface RegisteredFieldState {
   fieldRef: Ref<XField>;
-  validator: WrappedValidator;
+  validationRef: Ref<boolean | ValidateFunc>;
   stopHandle: WatchStopHandle;
+  eventHandle: Function;
+  queue: Set<Promise<string | void> & { canceled?: boolean }>
 }
 
 export type PatchProps = (props: RawProps) => RawProps
@@ -82,7 +83,7 @@ export type RenderField = (field: XField, pathProps?: PatchProps, wrap?: boolean
 export interface XFormBuilderContext{
   type: 'builder';
   // 注册字段
-  registerField: (field: Ref<XField>, o: WrappedValidator) => void;
+  registerField: (field: Ref<XField>, o: Ref<boolean | ValidateFunc>) => void;
   // 删除字段
   removeField: (key: string) => void;
   // 更新字段值

@@ -8,7 +8,6 @@ const baseConfig = require('./webpack.base.config')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
@@ -60,7 +59,8 @@ const production = {
   output: {
     path: path.resolve(__dirname, '../../docs'),
     publicPath: require(`../env/${NODE_ENV}.js`).website.base,
-    filename: '[name].[contenthash:8].js'
+    filename: '[name].[contenthash:8].js',
+    clean: true
   },
   resolve: {
     alias: {
@@ -76,7 +76,6 @@ const production = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash:8].css',
       chunkFilename: '[name].[contenthash:8].css'

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { useLocalSchema, useLocalModel } from '@document/util/common'
 import { getCurrentInstance, ref, defineComponent } from 'vue'
-import { XField, XFormModel } from '@core/model'
+import { XField, XFormModel } from '@core/index'
 
 export default defineComponent({
   name: 'builder-view',
@@ -24,16 +24,12 @@ export default defineComponent({
         (instance.refs.builder as any).reset()
       },
       viewJSON,
-      submit(){
-        const builder = instance.refs.builder as any
-
+      submit(validate: Function, model: XFormModel){
         pending.value = true
-        return builder.validate()
-          .then((res: any) => {
-            console.log('validate:', res)
-            if(res.valid) viewJSON()
-          })
-          .finally(() => pending.value = false)
+        return validate().then((r: any) => {
+          console.log('validate result: ', r, model)
+          if(r.valid) viewJSON()
+        }).finally(() => pending.value = false)
       },
       // field: reactive(new XField({
       //   type: 'text',
@@ -42,11 +38,14 @@ export default defineComponent({
       //   required: true
       // })),
       validator(field: XField, model: XFormModel){
-        const value = model[field.name]
-        if(!value) return Promise.reject('必填')
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const value = model[field.name]
+            if(!value) return reject('必填')
 
-        console.log('validate succ:', field, model.field1)
-        return Promise.resolve()
+            resolve(null)
+          }, 1000)
+        })
       }
     }
   }
@@ -54,16 +53,16 @@ export default defineComponent({
 </script>
 
 <template>
-  <xform-builder ref="builder" v-model:model="model" :schema="schema" class="example-builder" @submit.prevent="submit">
+  <xform-builder 
+    ref="builder"
+    v-model:model="model"
+    :schema="schema" 
+    class="example-builder"
+    @submit="submit"
+  >
     <template #header>
       <h3 class="example-builder-title">笔记本电脑报修单</h3>
     </template>
-    
-    <!--
-    <xform-item name="field1" title="标题一" :validation="validator">
-      <input v-model="value.field1" type="text" class="form-control form-control-sm">
-    </xform-item> 
-    -->
 
     <!-- <template #type_divider><hr></template> -->
 
@@ -75,8 +74,8 @@ export default defineComponent({
     
     <template #footer>
       <div class="example-builder-footer">
-        <button type="button" class="btn btn-link btn-text btn-sm" @click="viewJSON">查看JSON</button>
-        <button type="button" class="btn btn-light btn-text btn-sm" @click="reset">重置</button>
+        <button type="button" class="btn btn-link btn-text btn-sm" :disabled="pending" @click="viewJSON">查看JSON</button>
+        <button type="reset" class="btn btn-light btn-text btn-sm" :disabled="pending">重置</button>
         <button type="submit" class="btn btn-primary btn-sm" :disabled="pending">提交</button>
       </div>
     </template>

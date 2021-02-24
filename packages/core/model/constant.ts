@@ -13,7 +13,8 @@ export const CLASS = {
   DROPPABLE: 'xform-droppable',
   PREVIEW: 'xform-preview',
   FIELD: 'xform-designer-field',
-  IS_EMPTY_TIP: 'xform-is-empty-tip'
+  IS_EMPTY_TIP: 'xform-is-empty-tip',
+  IS_ERROR: 'xform-is-error'
 }
 
 export const SELECTOR = {
@@ -39,48 +40,64 @@ export const PROPS = {
   DRAG_MODE: 'xform_prop:drag_mode'
 }
 
-export enum DragModeEnum {
-  INSERT = 'insert',
-  SORT = 'sort'
-}
-
-export enum PositionEnum {
+export enum EnumLabelPosition {
   TOP = 'top',
   BOTTOM = 'bottom',
   LEFT = 'left'
 }
 
-export enum DirectionEnum{
-  UP = -1,
-  DOWN = 1,
-  LEFT = -1,
-  RIGHT = 1
+export enum EnumDragMode {
+  INSERT = 'insert',
+  SORT = 'sort'
 }
 
-export enum ValidStatusEnum{
+export enum EnumDragDirection{
+  UP = 1,
+  DOWN = 2,
+  LEFT = 4,
+  RIGHT = 8
+}
+
+export enum EnumValidityState{
   SUCCESS = 'success',
   ERROR = 'error',
   NONE = 'none'
 }
 
-export enum ComponentEnum {
+export enum EnumValidateMode{
+  /**
+   * 默认行为
+   * - 如果没有子字段, 只验证本字段
+   * - 如果存在子字段, 等待所有子字段验证完后，验证本字段
+   *   - 如果自身没有配置`validator`, 当所有子字段都通过验证时，则认为验证通过
+   */
+  DEFAULT = 1,
+  /** 
+   * 只验证字段本身
+   * - 不触发子字段的验证
+   * - 如果自身没有配置`validator`, 当所有子字段都通过验证时，则认为验证通过
+   */
+  SLEF
+}
+
+export enum EnumComponent {
   SETTING = 'setting',
   PREVIEW = 'preview',
   BUILD = 'build',
   VIEW = 'view'
 }
 
-export enum DragEventTypesEnum{
+export enum EnumDragEventType{
   DRAGOVER = 'dragover',
   DROP = 'drop'
 }
 
-export enum DragHookEnum{
+export enum EnumDragHook{
   DRAGOVER = 'onDragOver',
   DROP = 'onDrop',
 }
 
-export enum BehaviorEnum{
+export enum EnumBehavior{
   DESIGNER = 'designer',
   BUILDER = 'builder'
 }

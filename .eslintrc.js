@@ -104,6 +104,14 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-var-requires': 'off'
       }
+    },
+    {
+      files: ['**.ts', '**.tsx'],
+      rules: {
+        'no-var': 'off',
+        'indent': 'off',
+        '@typescript-eslint/indent': ['error', 2]
+      }
     }, {
       files: ['**.d.ts'],
       rules: {

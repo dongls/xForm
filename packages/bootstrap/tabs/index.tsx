@@ -1,11 +1,12 @@
 import './index.scss'
 import icon from '@common/svg/tabs.svg'
 
-import { useContext, XField, XFieldConf, util, constant } from '@dongls/xform'
-import { defineComponent, ref, watch } from 'vue'
+import { useContext, XField, XFieldConf, normalizeClass, constant } from '@dongls/xform'
+import { defineComponent, Fragment, ref, watch } from 'vue'
 import { updateField } from '../util'
 
 import pane from './pane'
+import { EnumValidityState } from '@model'
 
 const { CLASS, PROPS } = constant
 
@@ -51,7 +52,7 @@ const setting = defineComponent({
       })
 
       return (
-        <>
+        <Fragment>
           <h3 class="xform-setting-head">选项卡</h3>
           <section class="xform-setting">
             <div class="xform-bs-tabs-setting-title">
@@ -76,11 +77,17 @@ const setting = defineComponent({
             {tabs}
             <button type="button" class="btn btn-link btn-sm" onClick={addTab}>添加标签</button>
           </div>
-        </>
+        </Fragment>
       )
     }
   }
 })
+
+function renderMessage(field: XField){
+  if(field.validation.valid !== EnumValidityState.ERROR) return null
+
+  return <p class="xform-item-message">{field.validation.message}</p>
+}
 
 const build = defineComponent({
   name: 'tabs',
@@ -118,7 +125,7 @@ const build = defineComponent({
 
       const content = field.fields.map(f => {
         return context.renderField(f, props => {
-          const klass = util.normalizeClass(props.class)
+          const klass = normalizeClass(props.class)
           klass[CLASS.DROPPABLE] = true
           klass[CLASS.SCOPE] = true
           klass.active = current.value == f.name
@@ -129,14 +136,21 @@ const build = defineComponent({
           return props
         }, false)
       })
-    
+
+      const tabClassName = {
+        'xform-item': true,
+        'xform-bs-tabs': true,
+        [CLASS.IS_ERROR]: field.validation.valid === EnumValidityState.ERROR
+      }
+
       return (
-        <div class="xform-item xform-bs-tabs">
+        <div class={tabClassName}>
           <div class="nav nav-tabs">
             {field.attributes.showTitle === true && <strong class="nav-tabs-title">{field.title}</strong>}
             {tabs}
           </div>
           <div class="tab-content">{content}</div>
+          {renderMessage(field)}
         </div>
       )
     }
@@ -158,5 +172,12 @@ export default XFieldConf.create({
       tab.title = `标签${field.fields.length + 1}`
       field.fields.push(tab)
     }
+  },
+  validator(field){
+    const panes = field.fields
+      .filter(f => f.validation.valid === EnumValidityState.ERROR)
+      .map(i => i.title)
+    
+    return panes.length > 0 ? Promise.reject(`请补全标签页[${panes.join(',')}]的必填内容`) : Promise.resolve()
   }
 })

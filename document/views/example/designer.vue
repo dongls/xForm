@@ -1,7 +1,7 @@
 <script lang="ts">
 import { XField } from '@core/index'
 import { createDefaultSchema, useLocalSchema } from '@document/util/common'
-import { defineComponent, unref } from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'designer-view',
@@ -13,7 +13,7 @@ export default defineComponent({
       schema,
       schemaJSON,
       reset(){
-        schema.value = unref(createDefaultSchema())
+        schema.value = createDefaultSchema()
       },
       clear(){
         schema.value.fields = []

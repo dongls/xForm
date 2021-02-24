@@ -43,7 +43,7 @@ export function isFunction(value: unknown): value is Function{
 }
 
 /** 是否为简单对象 @see https://github.com/lodash/lodash/blob/master/isPlainObject.js */
-export function isPlainObject(value: unknown) {
+export function isPlainObject<T>(value: unknown): value is T{
   if (value == null || typeof value != 'object' || getObjectTag(value) != '[object Object]') {
     return false
   }
@@ -121,8 +121,43 @@ export function toArray<T>(value: unknown){
   return (Array.isArray(value) ? value : []) as Array<T>
 }
 
-export function checkPromise(p: unknown, message = 'need a Promise instance'){
-  if(p instanceof Promise) return p
+export function isValidArray<T>(v: unknown): v is Array<T>{
+  return Array.isArray(v) && v.length > 0
+}
+
+export function checkPromise<T>(p: unknown, message = 'need a Promise instance'){
+  if(p instanceof Promise) return p as Promise<T>
 
   return Promise.reject(message)
+}
+
+export function flat<T>(arr: T[]): T[]{
+  if(!Array.isArray(arr)) return []
+
+  return arr.reduce((acc, val) => acc.concat(val), [])
+}
+
+export function ignoreError(v: unknown): void{
+  if(v instanceof Promise) {
+    v.catch(e => __IS_DEV__ && console.warn(e))
+    return
+  }
+
+  if(isFunction(v)){
+    try {
+      return ignoreError(v())
+    } catch (e) {
+      __IS_DEV__ && console.log(e)
+      return
+    }
+  }
+}
+
+export function parseMessage(v: unknown): string{
+  if(null == v) return null
+  if(v instanceof Error) return v.message
+  if(isString(v)) return v
+  if(isPlainObject<any>(v) && 'message' in v) return v.message
+  if(isFunction(v.toString)) return v.toString()
+  return null
 }

@@ -6,14 +6,14 @@ import {
 
 import { 
   CLASS,
-  DirectionEnum,
+  EnumDragDirection,
   InternalDragContext,
   InternalDragUtils,
   PROPS, 
   SELECTOR, 
   XField, 
   XFormSchema,
-  XFormScope
+  XFormScope,
 } from '@model'
 
 import { XFormDesignerInstance } from './component'
@@ -56,13 +56,13 @@ export default function useDragging(){
   function moveMarkEl(direction: number, target: Element, scope: Element, mark = getMarkEl()){ 
     if(target == scope) {
       if(Array.prototype.indexOf.call(scope.children, mark) < 0) {
-        const tip = scope.querySelector(`:scope > ${SELECTOR.IS_EMPTY_TIP}`)
+        const tip = scope.querySelector(SELECTOR.IS_EMPTY_TIP)
         scope.insertBefore(mark, tip)
       }
       return
     }
   
-    const reference = direction == DirectionEnum.UP ? target : target.nextElementSibling
+    const reference = direction == EnumDragDirection.UP ? target : target.nextElementSibling
     if(
       reference == mark || 
       (null != reference && reference.previousElementSibling == mark)

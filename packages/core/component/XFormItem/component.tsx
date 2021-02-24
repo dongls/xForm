@@ -1,37 +1,39 @@
 import { 
   ComputedRef,
+  Ref,
   Slots,
   computed,
+  createVNode,
   defineComponent, 
   inject,
-  onUnmounted,
+  onBeforeUnmount,
   reactive,
-  Ref,
-  createVNode,
+  toRef,
 } from 'vue'
 
 import { 
   AnyProps,
-  XField, 
-  XFormBuilderContext,
-  XFormModel,
-  XFormSchema,
-  PositionEnum,
-  ValidStatusEnum,
+  EnumComponent,
+  EnumLabelPosition,
+  EnumValidityState,
+  ValidateFunc,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
-  ComponentEnum,
+  XField, 
+  XFormBuilderContext,
   XFormContext,
+  XFormModel,
+  XFormSchema,
+  CLASS,
 } from '@model'
 
 import { isFunction } from '@core/util/lang'
-import { createValidator } from '@core/util/validator'
 import { getFieldComponent } from '@core/util/component'
 import { useModel } from '@core/api'
 
 type XFormItemProps = {
   field: XField;
-  validation: boolean | Function;
+  validation: boolean | ValidateFunc;
   title: string;
   type: string;
   name: string;
@@ -57,7 +59,7 @@ function renderMessage(field: XField){
 function renderContent(slots: Slots, field: XField, model: XFormModel, context: XFormContext){
   if(isFunction(slots.default)) return slots.default()
 
-  const component = getFieldComponent(field, ComponentEnum.BUILD)
+  const component = getFieldComponent(field, EnumComponent.BUILD)
   const props = { field: field } as AnyProps
 
   if(isBuilderContext(context)){
@@ -117,25 +119,31 @@ export default defineComponent({
     const context = inject<XFormContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
 
     const fieldRef = normalizeField(props, attrs)
-    const validation = computed(() => props.validation)
     const model = useModel()
 
     if(isBuilderContext(context)){
-      const validator = createValidator(fieldRef, validation, model)
-      context.registerField(fieldRef, validator)
-      onUnmounted(() => context.removeField(fieldRef.value.name))
+      context.registerField(fieldRef, toRef(props, 'validation'))
+      onBeforeUnmount(() => {
+        context.removeField(fieldRef.value.name)
+      })
     }
     
     return function(){
       const field = fieldRef.value
-      const labelPosition = schema.value.labelPosition ?? PositionEnum.LEFT
+
+      // 字段完全自定义时, 只显示用户自定义的内容
+      if(field?.conf?.custom === true) {
+        return isFunction(slots.default) ? slots.default() : null
+      }
+
+      const labelPosition = schema.value.labelPosition ?? EnumLabelPosition.LEFT
       const labelSuffix = schema.value.labelSuffix
 
       const className =  {
         'xform-item': true,
         [`xform-is-${labelPosition}`]: true,
         'xform-is-required': field.required, 
-        'xform-is-error': field.validation.valid == ValidStatusEnum.ERROR
+        [CLASS.IS_ERROR]: field.validation.valid == EnumValidityState.ERROR
       }
       
       return (

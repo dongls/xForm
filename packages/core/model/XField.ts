@@ -1,21 +1,21 @@
+import { markRaw, nextTick } from 'vue'
 import { isFunction } from '@core/util/lang'
-import { findFieldConf, getConfig } from '../store'
-import { ValidStatusEnum } from './constant'
-import { markRaw } from 'vue'
+import { findFieldConf, getConfig } from '@core/store'
+
+import { EnumValidityState } from './constant'
 import { AnyProps, XFormScope } from './common'
-import { XFieldConf } from '.'
+import { XFieldConf } from './XFieldConf'
+import { Emitter } from './Emitter'
 
 interface Validation {
   // 验证信息
   message: string;
   // 验证是否通过
-  valid: ValidStatusEnum;
+  valid: EnumValidityState;
   validating: boolean;
 }
 
-interface Option {
-  value: string;
-}
+interface Option { value: string }
 
 function clean(o: any){
   delete o.name
@@ -25,6 +25,21 @@ function clean(o: any){
     fields.forEach(clean)
     o.fields = fields
   }
+}
+
+function createValidation(emitter: Emitter, event: string){
+  let value = EnumValidityState.NONE
+  return {
+    get valid() { return value },
+    set valid(newValue){
+      if(newValue != EnumValidityState.NONE && newValue != value){
+        nextTick(() => emitter.trigger(event))
+      }
+      value = newValue
+    },
+    validating: false,
+    message: null
+  } as Validation
 }
 
 /** 
@@ -52,20 +67,19 @@ export class XField implements XFormScope{
   allowClone?: boolean;
 
   // 验证相关属性
-  validation: Validation = {
-    valid: ValidStatusEnum.NONE,
-    validating: false,
-    message: null
-  }
+  validation: Validation;
 
   // 缓存
   private storage: {
+    valid: EnumValidityState,
     rawData: any;
     excludeProps: string[];
+    emitter: Emitter
   } & AnyProps;
 
   constructor(o: unknown = {}){
     const params = (o instanceof XFieldConf ? o.toParams() : o) as Partial<XField>
+    const emitter = new Emitter()
 
     this.type = params.type
     this.name = params.name ?? getConfig().genName(o)
@@ -83,6 +97,8 @@ export class XField implements XFormScope{
 
     this.allowRemove = params.allowRemove
     this.allowClone = params.allowClone
+    
+    this.validation = createValidation(emitter, XField.EVENT_VALID_CHANGE)
 
     Object.defineProperty(this, 'storage', {
       // 在调用reactive()后，该对象被vue3.x使用Proxy代理访问
@@ -90,8 +106,10 @@ export class XField implements XFormScope{
       // 由于该属性是只读且不可配置的，所以会抛出错误
       // Uncaught TypeError: 'get' on proxy: property 'storage' is a read-only and non-configurable data property on the proxy target but the proxy did not return its actual value
       value: markRaw({
+        valid: EnumValidityState.NONE,
         rawData: params,
-        excludeProps: ['validation']
+        excludeProps: ['validation'],
+        emitter
       })
     })
 
@@ -109,12 +127,15 @@ export class XField implements XFormScope{
     return this.storage.rawData
   }
 
-  /** 清除字段的验证信息 */
-  resetValidate(){
-    this.validation.valid = ValidStatusEnum.NONE
-    this.validation.validating = false
-    this.validation.message = null
+  get hasSubField(){
+    return Array.isArray(this.fields) && this.fields.length > 0
   }
+
+  static create(f: unknown){
+    return f instanceof XField ? f : new XField(f)
+  }
+
+  static EVENT_VALID_CHANGE = 'valid:change'
 
   /** 复制该对象, `name`字段除外 */
   clone() {
@@ -130,8 +151,16 @@ export class XField implements XFormScope{
       .filter(i => ep.indexOf(i) < 0)
       .reduce((acc, k) => ((acc[k] = origin[k]), acc), {} as any)
   }
-  
-  static create(f: unknown){
-    return f instanceof XField ? f : new XField(f)
+
+  on(type: string, handle: Function){
+    const emitter = this.storage.emitter
+    emitter.on(type, handle)
+    return this
+  }
+
+  off(type: string, handle: Function){
+    const emitter = this.storage.emitter
+    emitter.off(type, handle)
+    return this
   }
 }

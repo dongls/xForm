@@ -1,4 +1,4 @@
-import { createSchema } from '../api'
+import { createSchemaRef } from '../api'
 import { XField } from '@model'
 import { isRef } from 'vue'
 
@@ -6,7 +6,7 @@ describe('api: createShema', () => {
   test('edge cases', () => {
     const params = [null, undefined, 1, '', 'abc', false, true, NaN]
     for(const param of params){
-      const schema = createSchema(param)
+      const schema = createSchemaRef(param)
       expect(isRef(schema)).toBeTruthy()
       expect(Object.keys(schema.value).length).toBe(1)
       expect(schema.value.fields).toBeInstanceOf(Array)
@@ -15,7 +15,7 @@ describe('api: createShema', () => {
   })
 
   test('passing data', () => {
-    const schema = createSchema({
+    const schema = createSchemaRef({
       labelSuffix: ':',
       fields: [
         { type: 'text', name: 'a', title: 'a' },
