@@ -3,7 +3,7 @@ import {
   XFormScope,
   SELECTOR,
   PROPS
-} from '@model'
+} from '../model'
 import { isString } from './lang'
 
 /**

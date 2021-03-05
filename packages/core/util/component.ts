@@ -1,4 +1,4 @@
-import { RawProps, XField, EnumComponent, FieldComponent, XFormScope } from '@core/model'
+import { RawProps, XField, EnumComponent, FieldComponent, XFormScope } from '../model'
 import { isFunction, isObject, isString } from './lang'
 
 /** 获取字段配置的组件 */

@@ -1,4 +1,4 @@
-import { XField } from '@model'
+import { XField } from '../model'
 
 test('XField: clone', () => {
   const origin = new XField({

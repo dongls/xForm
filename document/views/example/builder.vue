@@ -1,7 +1,7 @@
 <script lang="ts">
 import { useLocalSchema, useLocalModel } from '@document/util/common'
 import { getCurrentInstance, ref, defineComponent } from 'vue'
-import { XField, XFormModel } from '@core/index'
+import { XField, XFormModel } from '@dongls/xform'
 
 export default defineComponent({
   name: 'builder-view',

@@ -1,4 +1,4 @@
-import Store from '@core/store'
+import Store from '../../store'
 import useDragging from './dragging'
 
 import { 
@@ -35,25 +35,22 @@ import {
   XFieldConf,
   XFormDesignerContext,
   XFormSchema,
-} from '@model'
-
-import { 
-  isHidden, 
-  findScope, 
-  normalizeWheel 
-} from '@core/util/dom'
+} from '../../model'
 
 import {
-  getFieldComponent,
-  genEventName,
-  getHtmlElement,
   fillComponentProps,
-} from '@core/util/component'
+  findScope,
+  genEventName,
+  getFieldComponent,
+  getHtmlElement,
+  isFunction,
+  isHidden,
+  normalizeWheel,
+} from '../../util'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
-import XFormTip from '@core/assets/img/xform-tip.png'
-import { isFunction } from '@core/util/lang'
+import XFormTip from '../../assets/img/xform-tip.png'
 
 const IS_BASE64 = /^\s*data:(?:[a-z]+\/[a-z0-9-+.]+(?:;[a-z-]+=[a-z0-9-]+)?)?(?:;base64)?,([a-z0-9!$&',()*+;=\-._~:@/?%\s]*?)\s*$/i
 const IS_SVG = /<svg(\s[^>]*)?>[\s\S]*<\/svg>/

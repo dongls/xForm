@@ -2,7 +2,9 @@ import {
   XFieldConf, 
   XFormConfig, 
   XFormOption, 
-  XFormPreset 
+  XFormPreset,
+  ModeGroup, 
+  XFormConfigBase
 } from './model'
 
 import { 
@@ -11,12 +13,7 @@ import {
   isNull, 
   isEmpty,
   flat
-} from './util/lang'
-
-import { 
-  ModeGroup, 
-  XFormConfigBase
-} from '@core/model'
+} from './util'
 
 import CONFIG from './config'
 

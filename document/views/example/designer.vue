@@ -1,5 +1,5 @@
 <script lang="ts">
-import { XField } from '@core/index'
+import { XField } from '@dongls/xform'
 import { createDefaultSchema, useLocalSchema } from '@document/util/common'
 import { defineComponent } from 'vue'
 

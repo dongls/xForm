@@ -25,11 +25,14 @@ import {
   XFormModel,
   XFormSchema,
   CLASS,
-} from '@model'
+} from '../../model'
 
-import { isFunction } from '@core/util/lang'
-import { getFieldComponent } from '@core/util/component'
-import { useModel } from '@core/api'
+import { 
+  isFunction,
+  getFieldComponent,
+} from '../../util'
+
+import { useModel } from '../../api'
 
 type XFormItemProps = {
   field: XField;

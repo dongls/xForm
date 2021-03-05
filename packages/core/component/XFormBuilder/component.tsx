@@ -1,4 +1,4 @@
-import Store from '@core/store'
+import Store from '../../store'
 
 import { 
   defineComponent, 
@@ -30,12 +30,21 @@ import {
   RawProps,
   ValidResult,
   EnumValidateMode,
-} from '@model'
+} from '../../model'
 
-import { fillComponentProps, getFieldComponent, normalizeClass } from '@core/util/component'
-import { flat, ignoreError, isFunction, isString, isValidArray } from '@core/util/lang'
-import { disableValidate, enableValidate } from '@core/api'
-import { useValidator } from '@core/validator'
+import {
+  fillComponentProps,
+  flat,
+  getFieldComponent,
+  ignoreError,
+  isFunction,
+  isString,
+  isValidArray,
+  normalizeClass,
+} from '../../util'
+
+import { disableValidate, enableValidate } from '../../api'
+import { useValidator } from '../../validator'
 
 interface XFormBuilderProps{
   mode: string;

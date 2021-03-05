@@ -1,7 +1,7 @@
-import '@core/theme/index.css'
+import '../packages/core/theme/index.css'
 import { createApp } from 'vue'
 
-import XForm from '@core/index'
+import XForm from '@dongls/xform'
 import App from './app.vue'
 import Modal from './component/modal.vue'
 

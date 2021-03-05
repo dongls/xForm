@@ -8,6 +8,7 @@ const { packageNames } = require('./packages')
 const VERSION_REG = /^[0-9]+\.[0-9]+\.[0-9]+$/
 const EXIT_REG = /[nN]/
 const EXIT_MESSAGE = '终止发布'
+const VUE_VERSION = require('../package.json').devDependencies.vue
 
 function cleanCode(){
   execa.commandSync('npm run clean')
@@ -36,13 +37,25 @@ async function inputVersion(){
 function updatePackageJson(file, version){
   const json = require(file)
   json.version = version
+
+  const peerDependencies = json.peerDependencies
+  if(peerDependencies != null){
+    if(peerDependencies.vue != null) peerDependencies.vue = VUE_VERSION
+    if(peerDependencies['@dongls/xform'] != null) peerDependencies['@dongls/xform'] = version
+  }
+
   fs.writeFileSync(file, JSON.stringify(json, null, '  ') + '\n')
 }
  
 function buildPackage(package, version){
   updatePackageJson(path.resolve(__dirname, '../packages', package, 'package.json'), version)
-  if(package == 'core') updatePackageJson(path.resolve(__dirname, '../package.json'), version)
-  
+  if(package == 'core'){
+    // 更新外层依赖
+    updatePackageJson(path.resolve(__dirname, '../package.json'), version)
+    // 生成声明文件
+    execa.commandSync('npm run gen-dts', { stdio: 'inherit' })
+  }
+
   execa.commandSync(`npm run build:${package}`, { stdio: 'inherit' })
   console.log('已构建包：' + chalk.green.bold(package) + '\n')
 }

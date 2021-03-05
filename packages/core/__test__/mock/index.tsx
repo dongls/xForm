@@ -1,4 +1,4 @@
-import { XFieldConf, XFormOption } from '@model'
+import { XFieldConf, XFormOption } from '../../model'
 
 export function mockFieldConfs(){
   return [

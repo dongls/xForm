@@ -10,11 +10,17 @@ import {
   PROPS,
   SELECTOR,
 } from './constant'
-import { getHtmlElement } from '@core/util/component'
-import { XFormDesignerInstance } from '@core/component/XFormDesigner/component'
-import { getProperty } from '@core/util/dom'
+
+import {
+  isEmpty,
+  isFunction,
+  isNull,
+  getHtmlElement,
+  getProperty,
+} from '../util'
+
+import { XFormDesignerInstance } from '../component/XFormDesigner/component'
 import { AnyProps } from './common'
-import { isEmpty, isFunction, isNull } from '@core/util/lang'
 
 const DELTA_X = 72
 const DELTA_Y = 17

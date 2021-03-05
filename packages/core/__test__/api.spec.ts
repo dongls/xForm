@@ -1,5 +1,5 @@
 import { createSchemaRef } from '../api'
-import { XField } from '@model'
+import { XField } from '../model'
 import { isRef } from 'vue'
 
 describe('api: createShema', () => {

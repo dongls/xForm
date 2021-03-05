@@ -1,5 +1,5 @@
-import { isEmpty, isRegExp } from '@core/util/lang'
-import { XField } from '@model'
+import { isEmpty, isRegExp } from '../util/lang'
+import { XField } from '../model'
 
 /**
  * @deprecated

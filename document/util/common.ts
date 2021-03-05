@@ -1,6 +1,5 @@
 import { watch, computed, ref } from 'vue'
-import { XFormModel } from '@core/model'
-import { createSchema } from '@core/index'
+import { XFormModel, createSchema } from '@dongls/xform'
 
 import DEFAULT_SCHEMA from './schema.data'
 

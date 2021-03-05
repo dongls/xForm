@@ -1,4 +1,4 @@
-import { XFormConfigBase } from '@core/model'
+import { XFormConfigBase } from './model'
 import { isEmpty, isNull } from './util/lang'
 
 const config: XFormConfigBase = {

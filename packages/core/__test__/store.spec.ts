@@ -1,6 +1,6 @@
-import store from '@core/store'
-import CONFIG from '@core/config'
-import { XFieldConf } from '@model'
+import store from '../store'
+import CONFIG from '../config'
+import { XFieldConf } from '../model'
 import { mockFieldConfs } from './mock/index'
 
 describe('store: reset', () => {

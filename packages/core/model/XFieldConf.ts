@@ -1,7 +1,7 @@
 import { ComponentInternalInstance, markRaw, VNode } from 'vue'
 import { VueComponent, XFormModel, XFormScope } from './common'
 import { InternalDragEvent } from './drag'
-import { isFunction, isNull, isPlainObject, toArray } from '@core/util/lang'
+import { isFunction, isNull, isPlainObject, toArray } from '../util/lang'
 import { XField } from './XField'
 import { EnumDragHook, EnumValidateMode } from './constant'
 

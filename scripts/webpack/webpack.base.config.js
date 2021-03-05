@@ -20,7 +20,7 @@ module.exports = {
           {
             loader: 'ts-loader', 
             options: { 
-              appendTsSuffixTo: [/\.vue$/] 
+              appendTsSuffixTo: [/\.vue$/]
             }
           }
         ],
@@ -63,10 +63,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@model': path.resolve(__dirname, '../../packages/core/model'),
-      '@core': path.resolve(__dirname, '../../packages/core'),
       '@common': path.resolve(__dirname, '../../packages/common'),
-      '@packages': path.resolve(__dirname, '../../packages'),
       '@document': path.resolve(__dirname, '../../document'),
     },
     extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']

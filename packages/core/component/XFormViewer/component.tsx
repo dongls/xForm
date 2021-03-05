@@ -18,11 +18,15 @@ import {
   XFormModel, 
   XFormSchema,
   XFormViewerContext,
-} from '@core/model'
+} from '../../model'
 
-import { isFunction } from '@core/util/lang'
-import { fillComponentProps, getFieldComponent } from '@core/util/component'
-import Store from '@core/store'
+import { 
+  fillComponentProps,
+  getFieldComponent,
+  isFunction
+} from '../../util'
+
+import Store from '../../store'
 
 interface XFormViewerProps{
   schema: XFormSchema;

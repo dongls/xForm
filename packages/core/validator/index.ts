@@ -1,8 +1,8 @@
-import store from '@core/store'
+import store from '../store'
 
 import { 
   getAllFields 
-} from '@core/util/component'
+} from '../util/component'
 
 import { 
   checkPromise,
@@ -10,7 +10,7 @@ import {
   isNull, 
   parseMessage, 
   toArray 
-} from '@core/util/lang'
+} from '../util/lang'
 
 import { 
   EnumValidateMode,
@@ -22,7 +22,7 @@ import {
   XFieldConf, 
   XFormModel, 
   XFormScope 
-} from '@model'
+} from '../model'
 
 type RFS = Map<string, RegisteredFieldState>
 type Addition = { mode?: EnumValidateMode }

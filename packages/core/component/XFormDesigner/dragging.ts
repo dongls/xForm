@@ -14,12 +14,17 @@ import {
   XField, 
   XFormSchema,
   XFormScope,
-} from '@model'
+} from '../../model'
+
+import { 
+  findElementsFromPoint,
+  getProperty,
+  getHtmlElement
+} from '../../util'
+
 
 import { XFormDesignerInstance } from './component'
-import { findElementsFromPoint, getProperty } from '@core/util/dom'
-import { getHtmlElement } from '@core/util/component'
-import store from '@core/store'
+import store from '../../store'
 
 export default function useDragging(){
   const utils = {
@@ -56,7 +61,7 @@ export default function useDragging(){
   function moveMarkEl(direction: number, target: Element, scope: Element, mark = getMarkEl()){ 
     if(target == scope) {
       if(Array.prototype.indexOf.call(scope.children, mark) < 0) {
-        const tip = scope.querySelector(SELECTOR.IS_EMPTY_TIP)
+        const tip = Array.prototype.find.call(scope.children, (e: Element) => e.matches(SELECTOR.IS_EMPTY_TIP))
         scope.insertBefore(mark, tip)
       }
       return

@@ -1,6 +1,6 @@
 import { markRaw, nextTick } from 'vue'
-import { isFunction } from '@core/util/lang'
-import { findFieldConf, getConfig } from '@core/store'
+import { isFunction } from '../util/lang'
+import { findFieldConf, getConfig } from '../store'
 
 import { EnumValidityState } from './constant'
 import { AnyProps, XFormScope } from './common'

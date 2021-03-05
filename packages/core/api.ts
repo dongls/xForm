@@ -13,7 +13,7 @@ import {
   XFORM_CONTEXT_PROVIDE_KEY, 
   XFORM_MODEL_PROVIDE_KEY,
   XFormContext
-} from '@model'
+} from './model'
 
 import Store from './store'
 
@@ -21,14 +21,10 @@ export {
   findElementFromPoint,
   findElementsFromPoint,
   getProperty,
-  getXField
-} from './util/dom'
-
-export {
   getRef,
-  normalizeClass
-} from './util/component'
-
+  getXField,
+  normalizeClass,
+} from './util'
 
 export function useModel(){
   return inject(XFORM_MODEL_PROVIDE_KEY, null) as Ref<XFormModel>
@@ -48,7 +44,7 @@ export function createSchema(origin?: any){
 }
 
 export function createSchemaRef(origin?: any){
-  return ref(createSchema(origin))
+  return ref(createSchema(origin)) as Ref<XFormSchema>
 }
 
 export function disableValidate(){

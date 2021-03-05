@@ -1,4 +1,4 @@
-import { XFieldConf } from '@model'
+import { XFieldConf } from '../model'
 import { h } from 'vue'
 
 test('XFieldConf: alias', () => {

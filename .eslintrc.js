@@ -27,6 +27,7 @@ module.exports = {
     '__private__',
     'dist/',
     'docs/',
+    'types/',
     'node_modules/',
     'babel.config.js',
     'jest.config.js',
@@ -45,7 +46,7 @@ module.exports = {
 
     // Stylistic Issues
     'semi': ['warn', 'never'],
-    'indent': ['error', 2],
+    'indent': 'off',
     'quotes': ['error', 'single'],
     'spaced-comment': ['warn', 'always'], // 注释之前 跟一个空格
     'comma-spacing': ['error', { 'before': false, 'after': true }], // 逗号间距
@@ -64,6 +65,7 @@ module.exports = {
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/no-use-before-define': ['error', { 'functions': false, 'classes': true, 'variables': true }],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/indent': ['error', 2],
     
     // Vue
     'vue/component-definition-name-casing': 'off',
@@ -106,13 +108,6 @@ module.exports = {
       }
     },
     {
-      files: ['**.ts', '**.tsx'],
-      rules: {
-        'no-var': 'off',
-        'indent': 'off',
-        '@typescript-eslint/indent': ['error', 2]
-      }
-    }, {
       files: ['**.d.ts'],
       rules: {
         'no-var': 'off'

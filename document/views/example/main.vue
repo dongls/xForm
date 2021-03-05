@@ -38,7 +38,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
 import { usePreset } from './preset'
-import { version } from '@core/index'
+import { version } from '@dongls/xform'
 
 export default defineComponent({
   name: 'example',

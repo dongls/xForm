@@ -6,9 +6,8 @@ import { defineComponent, Fragment, ref, watch } from 'vue'
 import { updateField } from '../util'
 
 import pane from './pane'
-import { EnumValidityState } from '@model'
 
-const { CLASS, PROPS } = constant
+const { CLASS, PROPS, EnumValidityState } = constant
 
 const setting = defineComponent({
   name: 'xform-bs-tabs-setting',

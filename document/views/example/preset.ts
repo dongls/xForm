@@ -1,4 +1,4 @@
-import { store } from '@core/index'
+import { store } from '@dongls/xform'
 
 enum TYPE {
   STYLE = 1,
@@ -28,7 +28,7 @@ const CONFIGS = {
       ['https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js', TYPE.SCRIPT]
     ],
     factory(){
-      return import(/* webpackPrefetch: true */ '@packages/bootstrap').then(r => r.default)
+      return import(/* webpackPrefetch: true */ '../../../packages/bootstrap').then(r => r.default)
     }
   },
   'antdv': {

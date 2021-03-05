@@ -9,10 +9,7 @@
     "noImplicitAny": true,
     "outDir": "./dist/",
     "paths": {
-      "@model": ["packages/core/model/index"],
-      "@core/*": ["packages/core/*"],
       "@common/*": ["packages/common/*"],
-      "@packages/*": ["packages/*"],
       "@document/*": ["document/*"],
       "@dongls/xform": ["packages/core/index"]
     },
@@ -22,6 +19,6 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "packages/**.d.ts",
-    "document/**/*.ts",
+    "document/**/*.ts"
   ]
 }
