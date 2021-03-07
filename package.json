@@ -1,7 +1,7 @@
 {
   "name": "xform",
   "private": true,
-  "version": "0.5.6",
+  "version": "0.6.0",
   "description": "基于Vue@3.x的动态表单生成器。",
   "main": "dist/xform.core.js",
   "style": "dist/css/xform.core.css",
