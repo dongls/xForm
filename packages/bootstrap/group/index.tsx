@@ -3,17 +3,14 @@ import { defineComponent, ref } from 'vue'
 import { 
   XField,
   XFieldConf, 
-  XFormScope,
   constant,
-  getProperty,
-  store,
   useContext,
 } from '@dongls/xform'
 
 import icon from '@common/svg/group.svg'
 import setting from './setting.vue'
 
-const { SELECTOR, CLASS, EnumBehavior, EnumDragMode, PROPS } = constant
+const { SELECTOR, CLASS, EnumBehavior, PROPS } = constant
 const GROUP_LIST_CLASS = 'xform-bs-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
 
@@ -81,9 +78,11 @@ const build = defineComponent({
         class: {
           'card-body': true, 
           [GROUP_LIST_CLASS]: true,
-          [CLASS.DROPPABLE]: inDesigner
+          [CLASS.DROPPABLE]: inDesigner,
+          [CLASS.SCOPE]: true
         },
-        [PROPS.XFIELD]: inDesigner ? props.field : undefined
+        [PROPS.XFIELD]: inDesigner ? props.field : undefined,
+        [PROPS.SCOPE]: props.field
       }
 
       return (
@@ -140,7 +139,6 @@ export default XFieldConf.create({
   type: 'group',
   title: '分组',
   custom: true,
-  scoped: true,
   preview: build,
   setting,
   build,
@@ -164,45 +162,5 @@ export default XFieldConf.create({
     if(!current.matches(SELECTOR.SCOPE)) return
 
     event.stopPropagation()
-    event.preventDefault()
-
-    const context = event.context
-    const mark = context.getMarkEl()
-    const originScopeEl = event.dragElement.parentElement.closest(SELECTOR.SCOPE) ?? context.getRootScopeEl()
-    const body = current.querySelector(GROUP_LIST_SELECTOR)
-    const index = Array.prototype.indexOf.call(body.children, mark)
-    const scope = getProperty<XFormScope>(current, PROPS.SCOPE)
-    const pInstance = context.getPublicInstance()
-
-    if(context.mode == EnumDragMode.INSERT){
-      const fc = store.findFieldConf(context.fieldType)
-      if(null != fc){
-        const field = new XField(fc)
-        scope.fields.splice(index, 0, field)
-        pInstance.updateSchema()
-        pInstance.chooseField(field)
-      }
-
-      return context.resetDragStatus()
-    }
-
-    if(context.mode == EnumDragMode.SORT){
-      const field = context.field
-      if(originScopeEl == current){
-        const oldIndex = scope.fields.indexOf(field)
-        context.moveField(oldIndex, index, scope.fields)
-      } else {
-        const oldScope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
-        const oldIndex = oldScope.fields.indexOf(field)
-        oldScope.fields.splice(oldIndex, 1)
-        scope.fields.splice(index, 0, field)
-      }
-
-      pInstance.updateSchema()
-      pInstance.chooseField(field)
-      return context.resetDragStatus()
-    }
-
-    context.resetDragStatus()
   }
 })

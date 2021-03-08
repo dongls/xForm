@@ -3,6 +3,7 @@ import { createSchemaRef } from '../api'
 import { mockOption, mockSchema } from './mock/index'
 import { store, XFormDesigner, XFormItem } from '../index'
 import { ModeGroup, PROPS } from '../model'
+import { h } from 'vue'
 
 describe('XFormDesigner props: mode', () => {
   test('mode is null', () => {
@@ -72,25 +73,140 @@ describe('XFormDesigner props: mode', () => {
 
 })
 
-describe('XFormDesigner slots', () => {
+describe('XFormDesigner slots: setting_form', () => {
+  test('slot is null', () => {
+    const option = mockOption()
+    store.reset(option)
 
-  test('tool & preview & setting', () => {
+    const app = {
+      template: `
+        <xform-designer v-model:schema="schema"></xform-designer>
+      `,
+      setup(){
+        return {
+          schema: createSchemaRef(mockSchema())
+        }
+      }
+    }
+    const wrapper = mount(app, {
+      global: {
+        components: {
+          [XFormDesigner.name]: XFormDesigner,  
+          [XFormItem.name]: XFormItem
+        }
+      }
+    })
+
+    const setting = wrapper.find('.xform-designer-setting')
+    expect(setting.element.children.length).toBe(1)
+    expect(setting.element.firstElementChild.matches('.xform-designer-setting-field')).toBe(true)
+  })
+
+  test('use preset slot', () => {
+    const slotText = 'mock preset setting_form slot'
+    const option = mockOption()
+    option.preset.slots = {
+      'setting_form': h('div', slotText)
+    }
+    
+    store.reset(option)
+
+    const app = {
+      template: `
+        <xform-designer v-model:schema="schema"></xform-designer>
+      `,
+      setup(){
+        return {
+          schema: createSchemaRef(mockSchema())
+        }
+      }
+    }
+    const wrapper = mount(app, {
+      global: {
+        components: {
+          [XFormDesigner.name]: XFormDesigner,  
+          [XFormItem.name]: XFormItem
+        }
+      }
+    })
+
+    const setting = wrapper.find('.xform-designer-setting')
+    expect(setting.element.children.length).toBe(2)
+    expect(setting.element.firstElementChild.matches('.xform-tabs')).toBe(true)
+
+    const content = setting.find('.xform-tabs-content')
+    expect(content.exists()).toBe(true)
+    expect(content.text()).toBe(slotText)
+  })
+
+  test('use custom slot', () => {
+    const slotText = 'mock preset setting_form slot'
+    const customText = 'mock custom setting_form slot'
+    const option = mockOption()
+    option.preset.slots = {
+      'setting_form': h('div', slotText)
+    }
+    
+    store.reset(option)
+
+    const app = {
+      template: `
+        <xform-designer v-model:schema="schema">
+          <template #setting_form>
+            <div>${customText}</div>
+          </template>
+        </xform-designer>
+      `,
+      setup(){
+        return {
+          schema: createSchemaRef(mockSchema())
+        }
+      }
+    }
+    const wrapper = mount(app, {
+      global: {
+        components: {
+          [XFormDesigner.name]: XFormDesigner,  
+          [XFormItem.name]: XFormItem
+        }
+      }
+    })
+
+    const setting = wrapper.find('.xform-designer-setting')
+    expect(setting.element.children.length).toBe(2)
+    expect(setting.element.firstElementChild.matches('.xform-tabs')).toBe(true)
+    
+    const content = setting.find('.xform-tabs-content')
+    expect(content.exists()).toBe(true)
+    expect(content.text()).toBe(customText)
+  })
+})
+
+describe('XFormDesigner slots: others', () => {
+
+  test('tool & preview & setting', async () => {
     const option = mockOption()
     store.reset(option)
   
     const toolSlotClass = 'is-slot-tool'
-    const toolSlotText = 'mock tool slot text'
+    const toolSlotText = 'mock tool slot'
     
     // preview_name_[name]
     const previewNameSlotClass = 'is-slot-preview-name'
-    const previewNameSlotText = 'mock preview name slot text'
+    const previewNameSlotText = 'mock preview name slot'
 
     // preview_type_[type]
     const previewTypeSlotClass = 'is-slot-preview-type'
-    const previewTypeSlotText = 'mock preview type slot text'
-    
-    // TEST: setting_type_[type]
-    // TEST: setting_name_[name]
+    const previewTypeSlotText = 'mock preview type slot'
+
+    // setting_name_[name]
+    const settingNameSlotClass = 'is-slot-setting-name'
+    const settingNameSlotText = 'mock setting name slot'
+
+    // setting_type_[type]
+    const settingTypeSlotClass = 'is-slot-setting-name'
+    const settingTypeSlotText = 'mock setting name slot'
+
     const app = {
       template: `
         <xform-designer v-model:schema="schema">
@@ -100,8 +216,14 @@ describe('XFormDesigner slots', () => {
           <template #preview_name_field_text01>
             <div class="${previewNameSlotClass}">${previewNameSlotText}</div>
           </template>
-          <template #preview_type_textarea>
+          <template #preview_type_text>
             <div class="${previewTypeSlotClass}">${previewTypeSlotText}</div>
+          </template>
+          <template #setting_name_field_textarea01>
+            <div class="is-setting-slot ${settingNameSlotClass}">${settingNameSlotText}</div>
+          </template>
+          <template #setting_type_textarea>
+            <div class="is-setting-slot ${settingTypeSlotClass}">${settingTypeSlotText}</div>
           </template>
         </xform-designer>
       `,
@@ -133,8 +255,20 @@ describe('XFormDesigner slots', () => {
     expect(previewNameSlot[0].element.matches('.xform-preview-text > .xform-item > .xform-item-content > .' + previewNameSlotClass)).toBe(true)
     
     const previewTypeSlot = wrapper.findAll('.' + previewTypeSlotClass)
-    expect(previewTypeSlot.length).toBe(2)
+    expect(previewTypeSlot.length).toBe(1)
     expect(previewTypeSlot[0].text()).toBe(previewTypeSlotText)
-    expect(previewTypeSlot[0].element.matches('.xform-preview-textarea > .xform-item > .xform-item-content > .' + previewTypeSlotClass)).toBe(true)
+    expect(previewTypeSlot[0].element.matches('.xform-preview-text > .xform-item > .xform-item-content > .' + previewTypeSlotClass)).toBe(true)
+
+    await wrapper.find('#preview_field_textarea01 .xform-preview-cover').trigger('click')
+    const settingNameSlot = wrapper.find('.is-setting-slot')
+    expect(settingNameSlot.exists()).toBe(true)
+    expect(settingNameSlot.element.matches('.' + settingNameSlotClass)).toBe(true)
+    expect(settingNameSlot.text()).toBe(settingNameSlotText)
+
+    await wrapper.find('#preview_field_textarea02 .xform-preview-cover').trigger('click')
+    const settingTypeSlot = wrapper.find('.is-setting-slot')
+    expect(settingTypeSlot.exists()).toBe(true)
+    expect(settingTypeSlot.element.matches('.' + settingTypeSlotClass)).toBe(true)
+    expect(settingTypeSlot.text()).toBe(settingTypeSlotText)
   })
 })

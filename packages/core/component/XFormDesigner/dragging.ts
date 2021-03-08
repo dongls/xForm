@@ -12,7 +12,6 @@ import {
   PROPS, 
   SELECTOR, 
   XField, 
-  XFormSchema,
   XFormScope,
 } from '../../model'
 
@@ -158,8 +157,7 @@ export default function useDragging(){
 
     // 触发dragover事件
     const dragOverEvent = context.createDragOverEvent(path, event, { ...utils })
-    context.trigger(dragOverEvent)
-    if(dragOverEvent.defaultPrevented) return
+    if(context.trigger(dragOverEvent).defaultPrevented) return
 
     const list = getHtmlElement(instance.refs, 'list')
     moveMarkEl(context.directionY, path[0], list, mark)
@@ -170,24 +168,29 @@ export default function useDragging(){
 
     const mark = getHtmlElement(instance.refs, 'mark')
     const root = getHtmlElement(instance.refs, 'root')
-
     const path = findDropPath(mark, root)
+    if(path.length == 0 && !context.isImmediateInsert) return resetDragStatus()
+
     const dropEvent = context.createDropEvent(path, event, { ...utils })
-    context.trigger(dropEvent)
-    if(dropEvent.defaultPrevented) return
+    if(context.trigger(dropEvent).defaultPrevented) return
 
-    const schema = instance.props.schema as XFormSchema
-    const list = getHtmlElement(instance.refs, 'list') 
     const pInstance = getPublicInstance()
-    const newIndex = context.isImmediateInsert ? -1 : Array.prototype.indexOf.call(list.children, mark)
-    if(newIndex < 0) return resetDragStatus()
-
+    const rootScopeEl = getRootScopeEl()
+    const targetScopeEl = mark.closest(SELECTOR.SCOPE) ?? rootScopeEl
+    const targetScope = getProperty<XFormScope>(targetScopeEl, PROPS.SCOPE)
     // 新插入
     if(context.isInsert){
+      const newIndex = (
+        context.isImmediateInsert 
+          ? targetScope.fields.length 
+          : Array.prototype.indexOf.call(targetScopeEl.children, mark)
+      )
+      if(newIndex < 0) return resetDragStatus()
+
       const fc = store.findFieldConf(context.fieldType)
       if(null != fc){
         const field = new XField(fc)
-        schema.fields.splice(newIndex, 0, field)
+        targetScope.fields.splice(newIndex, 0, field)
         pInstance.updateSchema()
         pInstance.chooseField(field)
       }
@@ -196,23 +199,22 @@ export default function useDragging(){
     }
 
     // 原有字段重新排序
+    const originScopeEl = context.dragElement.parentElement.closest(SELECTOR.SCOPE) ?? rootScopeEl
+    const originScope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
+
     if(context.isSort){
-      const originScopeEl = context.dragElement.parentElement.closest(SELECTOR.SCOPE) ?? list
-      const targetScopeEl = mark.closest(SELECTOR.SCOPE) ?? list
       const field = context.field
+      const newIndex = Array.prototype.indexOf.call(targetScopeEl.children, mark)
 
       if(originScopeEl == targetScopeEl){
-        const scope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
-        const oldIndex = scope.fields.indexOf(field)
-        moveField(oldIndex, newIndex, scope.fields)
+        const oldIndex = originScope.fields.indexOf(field)
+        moveField(oldIndex, newIndex, originScope.fields)
       } else {
-        const oldScope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
-        const newScope = getProperty<XFormScope>(targetScopeEl, PROPS.SCOPE)
-
-        const oldIndex = oldScope.fields.indexOf(field)
-        oldScope.fields.splice(oldIndex, 1)
-        newScope.fields.splice(newIndex, 0, field)
+        const oldIndex = originScope.fields.indexOf(field)
+        originScope.fields.splice(oldIndex, 1)
+        targetScope.fields.splice(newIndex, 0, field)
       }
+
       pInstance.updateSchema()
       pInstance.chooseField(field)
       return resetDragStatus()

@@ -3,14 +3,11 @@ import { defineComponent } from 'vue'
 import {
   XField,
   XFieldConf,
-  XFormScope,
   constant,
-  getProperty,
-  store,
   useContext,
 } from '@dongls/xform'
 
-const { SELECTOR, CLASS, EnumDragMode, PROPS } = constant
+const { SELECTOR, CLASS } = constant
 
 export default XFieldConf.create({
   type: 'tabs.pane',
@@ -84,46 +81,6 @@ export default XFieldConf.create({
     moveMarkEl(directionY, target, scope)
   },
   onDrop(event) {
-    const current = event.currentTarget
     event.stopPropagation()
-    event.preventDefault()
-
-    const context = event.context
-    const mark = context.getMarkEl()
-    const originScopeEl = event.dragElement.parentElement.closest(SELECTOR.SCOPE) ?? context.getRootScopeEl()
-    const index = Array.prototype.indexOf.call(current.children, mark)
-    const scope = getProperty<XFormScope>(current, PROPS.SCOPE)
-    const pInstance = context.getPublicInstance()
-
-    if(context.mode == EnumDragMode.INSERT){
-      const fc = store.findFieldConf(context.fieldType)
-      if(null != fc){
-        const field = new XField(fc)
-        scope.fields.splice(index, 0, field)
-        pInstance.updateSchema()
-        pInstance.chooseField(field)
-      }
-
-      return context.resetDragStatus()
-    }
-
-    if(context.mode == EnumDragMode.SORT){
-      const field = context.field
-      if(originScopeEl == current){
-        const oldIndex = scope.fields.indexOf(field)
-        context.moveField(oldIndex, index, scope.fields)
-      } else {
-        const oldScope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
-        const oldIndex = oldScope.fields.indexOf(field)
-        oldScope.fields.splice(oldIndex, 1)
-        scope.fields.splice(index, 0, field)
-      }
-
-      pInstance.updateSchema()
-      pInstance.chooseField(field)
-      return context.resetDragStatus()
-    }
-
-    context.resetDragStatus()
   }
 })

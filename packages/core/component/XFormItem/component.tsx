@@ -12,7 +12,6 @@ import {
 } from 'vue'
 
 import { 
-  AnyProps,
   EnumComponent,
   EnumLabelPosition,
   EnumValidityState,
@@ -25,11 +24,13 @@ import {
   XFormModel,
   XFormSchema,
   CLASS,
+  RawProps,
 } from '../../model'
 
 import { 
   isFunction,
   getFieldComponent,
+  fillComponentProps,
 } from '../../util'
 
 import { useModel } from '../../api'
@@ -63,14 +64,16 @@ function renderContent(slots: Slots, field: XField, model: XFormModel, context: 
   if(isFunction(slots.default)) return slots.default()
 
   const component = getFieldComponent(field, EnumComponent.BUILD)
-  const props = { field: field } as AnyProps
+  if(null == component) return null
+
+  const allProps = { field: field } as RawProps
 
   if(isBuilderContext(context)){
-    props.value = model[field.name]
-    props['onUpdate:value'] = context.updateFieldValue
+    allProps.value = model[field.name]
+    allProps['onUpdate:value'] = context.updateFieldValue
   }
 
-  return createVNode(component, props)
+  return createVNode(component, fillComponentProps(component, allProps, {}))
 }
 
 function patchField(field: XField, o: any){
@@ -118,7 +121,7 @@ export default defineComponent({
     }
   },
   setup(props: XFormItemProps, { slots, attrs }){
-    const schema = inject<Ref<XFormSchema>>(XFORM_FORM_SCHEMA_PROVIDE_KEY)
+    const schema = inject<Ref<XFormSchema>>(XFORM_FORM_SCHEMA_PROVIDE_KEY, null)
     const context = inject<XFormContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
 
     const fieldRef = normalizeField(props, attrs)
@@ -139,8 +142,8 @@ export default defineComponent({
         return isFunction(slots.default) ? slots.default() : null
       }
 
-      const labelPosition = schema.value.labelPosition ?? EnumLabelPosition.LEFT
-      const labelSuffix = schema.value.labelSuffix
+      const labelPosition = schema?.value?.labelPosition ?? EnumLabelPosition.LEFT
+      const labelSuffix = schema?.value?.labelSuffix
 
       const className =  {
         'xform-item': true,

@@ -222,6 +222,10 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: XField, patc
     [PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
   }
 
+  if(globalThis.__IS_TEST__ === true){
+    props.id = `preview_${field.name}`
+  }
+
   return (
     <div {...props}>
       {content}

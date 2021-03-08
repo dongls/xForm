@@ -185,6 +185,8 @@ export class InternalDragContext{
 
       if(event.cancelBubble) break
     }
+
+    return event
   }
 
   private initialize(instance: ComponentInternalInstance){

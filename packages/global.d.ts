@@ -1,6 +1,7 @@
 declare var __VERSION__: string
 declare var __IS_DEV__: boolean
 declare var __VUE_VERSION__: string
+declare var __IS_TEST__: boolean
 
 declare module '@config'{
   interface config{
