@@ -1,0 +1,36 @@
+.xform-preview-subform{
+  .xform-bs-subform{
+    position: relative;
+    border: 1px solid #ccc;
+    z-index: 9;
+  }
+
+  .xform-preview{
+    min-width: 120px;
+    margin-top: 0;
+
+    & + .xform-preview{
+      margin-left: 5px;
+    }
+  }
+
+  .xform-bs-empty-tip{
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.xform-bs-subform-columns{
+  padding: 5px;
+  height: 62px;
+  display: flex;
+  flex-flow: row nowrap;
+  float: left;
+  min-width: 100%;
+}
+
+.xform-bs-subform-col{
+  text-align: center;
+  line-height: 38px;
+  height: 38px;
+}

@@ -1,5 +1,5 @@
 import { RawProps, XField, EnumComponent, FieldComponent, XFormScope } from '../model'
-import { isFunction, isObject, isString } from './lang'
+import { isFunction, isObject, isPlainObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
 export function getFieldComponent(field: XField, target: EnumComponent, mode?: string){
@@ -57,7 +57,7 @@ export function genEventName(name: string){
   return 'on' + name[0].toUpperCase() + name.slice(1)
 }
 
-export function normalizeClass(value: unknown){
+function _normalizeClass(value: unknown){
   if(isObject(value)) return value
 
   if(isString(value)){
@@ -72,6 +72,11 @@ export function normalizeClass(value: unknown){
   }
 
   return {}
+}
+
+export function normalizeClass(value: unknown, o?: unknown){
+  const klass = _normalizeClass(value)
+  return isPlainObject(o) ? Object.assign(klass, o) : klass
 }
 
 export function getAllFields(scope: XFormScope): XField[] {

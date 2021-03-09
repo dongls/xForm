@@ -76,8 +76,15 @@ export interface RegisteredFieldState {
   queue: Set<Promise<string | void> & { canceled?: boolean }>
 }
 
-export type PatchProps = (props: RawProps) => RawProps
-export type RenderField = (field: XField, pathProps?: PatchProps, wrap?: boolean) => VNode
+export type RenderOptions = {
+  // 修改组件`props`
+  patchProps?: (props: RawProps) => RawProps,
+  // 是否使用`xform-item`包裹组件
+  wrapped?: boolean,
+  render?: () => VNode
+}
+
+export type RenderField = (field: XField, options?: RenderOptions) => VNode
 
 export interface XFormBuilderContext{
   type: 'builder';
@@ -104,7 +111,7 @@ export interface XFormViewerContext{
   renderField: RenderField
 }
 
-export type XFormContext = XFormBuilderContext | XFormDesignerContext | XFormViewerContext;
+export type XFormRenderContext = XFormBuilderContext | XFormDesignerContext | XFormViewerContext;
 
 export interface XFormOption {
   // 组件配置

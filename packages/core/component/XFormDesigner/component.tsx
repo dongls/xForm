@@ -26,7 +26,6 @@ import {
   EnumDragMode,
   ModeGroup,
   PROPS,
-  PatchProps,
   RawProps,
   SELECTOR,
   XFORM_CONTEXT_PROVIDE_KEY,
@@ -35,6 +34,7 @@ import {
   XFieldConf,
   XFormDesignerContext,
   XFormSchema,
+  RenderOptions,
 } from '../../model'
 
 import {
@@ -155,7 +155,7 @@ function renderFieldPanel(groups: ModeGroup[]){
  * 2. 检索是否有名为`preview_type_[type]`的slot
  * 3. 检索字段对应的`XFieldConf`中配置的`preview`或`build`组件
  */
-function renderContent(instance: XFormDesignerInstance, field: XField, patch?: PatchProps){
+function renderContent(instance: XFormDesignerInstance, field: XField, options: RenderOptions){
   const slots = instance.$slots
 
   const nameSlot = slots[`preview_name_${field.name}`]
@@ -169,11 +169,11 @@ function renderContent(instance: XFormDesignerInstance, field: XField, patch?: P
   if(component == null) return null
 
   const props = fillComponentProps(component, { field, behavior: EnumBehavior.DESIGNER })
-  return createVNode(component, isFunction(patch) ? patch(props) : props)
+  return createVNode(component, isFunction(options.patchProps) ? options.patchProps(props) : props)
 }
 
-function renderItem(instance: XFormDesignerInstance, field: XField, patch?: PatchProps){
-  const content = renderContent(instance, field, patch)
+function renderItem(instance: XFormDesignerInstance, field: XField, options: RenderOptions){
+  const content = renderContent(instance, field, options)
   const XFormItem = resolveComponent('xform-item')
   const itemProps = { field, validation: false }
   return h(XFormItem, itemProps, function(){
@@ -187,7 +187,7 @@ function renderItem(instance: XFormDesignerInstance, field: XField, patch?: Patc
 }
 
 /** 渲染字段预览组件 */
-function renderFieldPreview(instance: XFormDesignerInstance, field: XField, patch?: PatchProps, wrap = true){
+function renderFieldPreview(instance: XFormDesignerInstance, field: XField, options: RenderOptions = {}){
   const { selectedField, icon, clone, remove, chooseField } = instance
   const buttons = []
 
@@ -205,8 +205,8 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: XField, patc
       : null
   )
 
-  const content = renderItem(instance, field, patch)
-  if(wrap === false) return content
+  const content = isFunction(options.render) ? options.render() : renderItem(instance, field, options)
+  if(options.wrapped === false) return content
 
   const props = {
     'class': {
@@ -222,7 +222,7 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: XField, patc
     [PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
   }
 
-  if(globalThis.__IS_TEST__ === true){
+  if(typeof globalThis != 'undefined' && globalThis.__IS_TEST__ === true){
     props.id = `preview_${field.name}`
   }
 
@@ -471,7 +471,7 @@ export default defineComponent({
           <div class="xform-designer-ghost-template" ref="template"/>
           <div class="xform-designer-cover"/>
         </div>
-        <div ref="mark" key="xform-designer-mark" class="xform-designer-mark"/>
+        <div ref="mark" key="xform-designer-mark" class="xform-designer-mark"><hr/></div>
       </div>
     )
   }

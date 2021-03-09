@@ -19,7 +19,6 @@ import {
 
 import { 
   EnumComponent,
-  PatchProps,
   XFORM_CONTEXT_PROVIDE_KEY, 
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
   XFORM_MODEL_PROVIDE_KEY, 
@@ -31,6 +30,7 @@ import {
   RawProps,
   ValidResult,
   EnumValidateMode,
+  RenderOptions,
 } from '../../model'
 
 import {
@@ -77,7 +77,7 @@ const EVENTS = {
  * 2. 检索是否有名为`type_[type]`的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderContent(instance: XFormBuilderInstance, field: XField, patch?: PatchProps){
+function renderContent(instance: XFormBuilderInstance, field: XField, options: RenderOptions){
   const slots = instance.$slots
   const value = instance.model[field.name]
 
@@ -96,11 +96,11 @@ function renderContent(instance: XFormBuilderInstance, field: XField, patch?: Pa
   if(null == component) return null
 
   const props = fillComponentProps(component, all)
-  return createVNode(component, isFunction(patch) ? patch(props) : props)
+  return createVNode(component, isFunction(options.patchProps) ? options.patchProps(props) : props)
 }
 
-function renderField(instance: XFormBuilderInstance, field: XField, patch?: PatchProps){
-  const content = renderContent(instance, field, patch)
+function renderField(instance: XFormBuilderInstance, field: XField, options: RenderOptions = {}){
+  const content = renderContent(instance, field, options)
   const XFormItem = resolveComponent('xform-item')
   const itemProps = { key: field.name, field, validation: true }
 

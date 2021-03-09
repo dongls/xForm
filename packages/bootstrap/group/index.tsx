@@ -4,7 +4,7 @@ import {
   XField,
   XFieldConf, 
   constant,
-  useContext,
+  useRenderContext,
 } from '@dongls/xform'
 
 import icon from '@common/svg/group.svg'
@@ -57,7 +57,7 @@ const build = defineComponent({
   },
   setup(props){
     const { collasped, renderHeader } = useHeader()
-    const { renderField } = useContext()
+    const { renderField } = useRenderContext()
 
     return function(){
       const fields = props.field.fields
@@ -109,7 +109,7 @@ const view = defineComponent({
     }
   },
   setup(props){
-    const { renderField } = useContext()
+    const { renderField } = useRenderContext()
     const { collasped, renderHeader } = useHeader()
 
     return function(){
@@ -151,6 +151,7 @@ export default XFieldConf.create({
     event.preventDefault()
 
     const { directionY, moveMarkEl } = event.context
+    // 处理拖拽外层字段
     const isMockDef = event.dragElement.contains(current)
     const target = isMockDef ? event.dragElement : event.target
     const scope = isMockDef ? event.dragElement.parentElement.closest(SELECTOR.DROPPABLE) : current

@@ -1,24 +1,29 @@
-import './index.scss'
-import icon from '@common/svg/tabs.svg'
-
-import { useContext, XField, XFieldConf, normalizeClass, constant } from '@dongls/xform'
 import { defineComponent, Fragment, ref, watch } from 'vue'
-import { updateField } from '../util'
 
+import {
+  useRenderContext,
+  XField,
+  XFieldConf,
+  normalizeClass,
+  constant,
+} from '@dongls/xform'
+
+import { updateField } from '../util'
+import icon from '@common/svg/tabs.svg'
 import pane from './pane'
 
-const { CLASS, PROPS, EnumValidityState } = constant
+const { CLASS, EnumValidityState } = constant
 
 const setting = defineComponent({
   name: 'xform-bs-tabs-setting',
   props: {
     field: {
       type: XField,
-      required: true
-    }
+      required: true,
+    },
   },
-  setup(props, { emit }){
-    function addTab(){
+  setup(props, { emit }) {
+    function addTab() {
       const field = props.field
       const tab = new XField(pane)
       tab.title = `标签${props.field.fields.length + 1}`
@@ -27,25 +32,36 @@ const setting = defineComponent({
 
     function removeTab(f: XField) {
       const fields = props.field.fields
-      if(fields.length <= 1) return
-      
+      if (fields.length <= 1) return
+
       const index = fields.indexOf(f)
-      if(index >= 0) fields.splice(index, 1)
+      if (index >= 0) fields.splice(index, 1)
     }
 
-    function updateTitle(f: XField, event: Event){
+    function updateTitle(f: XField, event: Event) {
       f.title = (event.target as HTMLInputElement).value
     }
 
-    return function(){
+    return function () {
       const field = props.field
 
-      const tabs = field.fields.map(f => {
+      const tabs = field.fields.map((f) => {
         const disabled = field.fields.length <= 1
         return (
           <div class="xform-bs-setting-option">
-            <input type="text" class="form-control form-control-sm" placeholder="请输入标签名称" value={f.title} onInput={updateTitle.bind(null, f)}/>
-            <button type="button" class="btn btn-link btn-sm" onClick={removeTab.bind(null, f)} disabled={disabled}>删除</button>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="请输入标签名称"
+              value={f.title}
+              onInput={updateTitle.bind(null, f)}
+            />
+            <button
+              type="button"
+              class="btn btn-link btn-sm"
+              onClick={removeTab.bind(null, f)}
+              disabled={disabled}
+            >删除</button>
           </div>
         )
       })
@@ -57,18 +73,24 @@ const setting = defineComponent({
             <div class="xform-bs-tabs-setting-title">
               <header>标题：</header>
               <div class="custom-control custom-checkbox">
-                <input 
-                  type="checkbox" 
-                  class="custom-control-input" 
-                  id={`${field.name}-show-title`} 
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id={`${field.name}-show-title`}
                   name={`${field.name}-show-title`}
                   checked={field.attributes.showTitle}
-                  onInput={e => updateField(emit, e, 'showTitle', 'attributes')}
+                  onInput={(e) => updateField(emit, e, 'showTitle', 'attributes')}
                 />
                 <label class="custom-control-label" for={`${field.name}-show-title`}>显示标题</label>
               </div>
             </div>
-            <input value={field.title} type="text" class="form-control form-control-sm" placeholder="请输入标题..." onInput={updateTitle.bind(null, field)}/>
+            <input
+              value={field.title}
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="请输入标题..."
+              onInput={updateTitle.bind(null, field)}
+            />
           </section>
 
           <div class="xform-setting">
@@ -79,11 +101,11 @@ const setting = defineComponent({
         </Fragment>
       )
     }
-  }
+  },
 })
 
-function renderMessage(field: XField){
-  if(field.validation.valid !== EnumValidityState.ERROR) return null
+function renderMessage(field: XField) {
+  if (field.validation.valid !== EnumValidityState.ERROR) return null
 
   return <p class="xform-item-message">{field.validation.message}</p>
 }
@@ -93,59 +115,60 @@ const build = defineComponent({
   props: {
     field: {
       type: XField,
-      required: true
-    }
+      required: true,
+    },
   },
-  setup(props){
+  setup(props) {
     const current = ref(props.field.fields[0].name)
 
-    function chooseTab(field: XField, event: Event){
+    function chooseTab(field: XField, event: Event) {
       event.preventDefault()
       current.value = field.name
     }
 
-    watch(props.field.fields, fields => {
-      if(fields.every(f => f.name != current.value)){
+    watch(props.field.fields, (fields) => {
+      if (fields.every((f) => f.name != current.value)) {
         current.value = fields[fields.length - 1].name
       }
     })
 
-    return function(){
-      const context = useContext()
+    return function () {
+      const context = useRenderContext()
       const field = props.field
-      const tabs = field.fields.map(f => {
+      const tabs = field.fields.map((f) => {
         const className = {
           'nav-link': true,
-          'active': current.value == f.name
+          active: current.value == f.name,
         }
 
         return <a class={className} href="javascript:;" onClick={chooseTab.bind(null, f)}>{f.title}</a>
       })
 
-      const content = field.fields.map(f => {
-        return context.renderField(f, props => {
-          const klass = normalizeClass(props.class)
-          klass[CLASS.DROPPABLE] = true
-          klass[CLASS.SCOPE] = true
-          klass.active = current.value == f.name
-          props.class = klass
-          props[PROPS.SCOPE] = f
-          props[PROPS.XFIELD] = f
+      const content = field.fields.map((f) => {
+        return context.renderField(f, {
+          wrapped: false,
+          patchProps: (props) => {
+            props.class = normalizeClass(props.class, {
+              active: current.value == f.name,
+            })
 
-          return props
-        }, false)
+            return props
+          },
+        })
       })
 
       const tabClassName = {
         'xform-item': true,
         'xform-bs-tabs': true,
-        [CLASS.IS_ERROR]: field.validation.valid === EnumValidityState.ERROR
+        [CLASS.IS_ERROR]: field.validation.valid === EnumValidityState.ERROR,
       }
 
       return (
         <div class={tabClassName}>
           <div class="nav nav-tabs">
-            {field.attributes.showTitle === true && <strong class="nav-tabs-title">{field.title}</strong>}
+            {field.attributes.showTitle === true && (
+              <strong class="nav-tabs-title">{field.title}</strong>
+            )}
             {tabs}
           </div>
           <div class="tab-content">{content}</div>
@@ -153,7 +176,7 @@ const build = defineComponent({
         </div>
       )
     }
-  }
+  },
 })
 
 export default XFieldConf.create({
@@ -165,18 +188,20 @@ export default XFieldConf.create({
   build: build,
   view: build,
   dependencies: [pane],
-  onCreate(field, params, init){
-    if(init){
+  onCreate(field, params, init) {
+    if (init) {
       const tab = new XField(pane)
       tab.title = `标签${field.fields.length + 1}`
       field.fields.push(tab)
     }
   },
-  validator(field){
+  validator(field) {
     const panes = field.fields
-      .filter(f => f.validation.valid === EnumValidityState.ERROR)
-      .map(i => i.title)
-    
-    return panes.length > 0 ? Promise.reject(`请补全标签页[${panes.join(',')}]的必填内容`) : Promise.resolve()
-  }
+      .filter((f) => f.validation.valid === EnumValidityState.ERROR)
+      .map((i) => i.title)
+
+    return panes.length > 0
+      ? Promise.reject(`请补全标签页[${panes.join(',')}]的必填内容`)
+      : Promise.resolve()
+  },
 })

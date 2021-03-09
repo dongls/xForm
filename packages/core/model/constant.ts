@@ -14,7 +14,9 @@ export const CLASS = {
   PREVIEW: 'xform-preview',
   FIELD: 'xform-designer-field',
   IS_EMPTY_TIP: 'xform-is-empty-tip',
-  IS_ERROR: 'xform-is-error'
+  IS_ERROR: 'xform-is-error',
+  IS_VERTICAL_MARK: 'is-vertical-mark',
+  IS_SCROLL: 'xform-is-scroll'
 }
 
 export const SELECTOR = {

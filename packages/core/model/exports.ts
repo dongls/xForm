@@ -5,7 +5,7 @@ export {
   XFormBuilderContext,
   XFormDesignerContext,
   XFormViewerContext,
-  XFormContext,
+  XFormRenderContext,
   RawProps,
   XFormScope
 } from './common'

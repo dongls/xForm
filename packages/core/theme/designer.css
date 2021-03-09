@@ -44,9 +44,10 @@
 }
 
 .xform-designer-responsive{
-  border: 1px dashed #ccc;
   height: 100%;
   padding: 5px;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgba(0,0,0,.05);
 }
 
 .xform-is-pc{
@@ -58,6 +59,7 @@
   padding: 10px;
   flex: 1;
   overflow: hidden;
+  background-color: #f8f8f9;
 }
 
 .xform-designer-list{
@@ -140,7 +142,7 @@
 .xform-preview{
   position: relative;
   padding: 5px;
-  border: 1px dashed transparent;
+  border: 1px dashed #ccc;
   transition: border-color ease .3s, background-color ease .3s;
 }
 
@@ -269,17 +271,34 @@
 .xform-designer-mark{
   display: none;
   position: relative;
+  height: 0;
+}
+
+.xform-designer-mark:not(:first-child) + .xform-preview{
+  margin-top: 5px;
+}
+
+.is-vertical-mark .xform-designer-mark:not(:first-child) + .xform-preview{
+  margin-top: 0;
+  margin-left: 5px;
+}
+
+.xform-designer-mark > hr{
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
   padding: 5px 0;
   height: 3px;
-  width: calc(100% - 12px);
-  margin:  0 auto;
+  margin: 0 auto;
   background: linear-gradient(to bottom, transparent 5px, red 5px, red 8px, transparent 8px);
   z-index: 10;
   box-sizing: content-box;
+  border: none;
 }
 
-.xform-designer-mark::after,
-.xform-designer-mark::before{
+.xform-designer-mark > hr::after,
+.xform-designer-mark > hr::before{
   content: "";
   position: absolute;
   
@@ -289,14 +308,47 @@
   z-index: 10;
 }
 
-.xform-designer-mark::before{
+.xform-designer-mark > hr::before{
   left: 0;
   border-left: 4px solid red;
 }
 
-.xform-designer-mark::after{
+.xform-designer-mark > hr::after{
   right: 0;
   border-right: 4px solid red;
+}
+
+.is-vertical-mark .xform-designer-mark{
+  width: 0;
+  height: 100%;
+}
+
+.is-vertical-mark .xform-designer-mark > hr{
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 3px;
+  padding: 0 5px;
+  margin: 0;
+  background: linear-gradient(to right, transparent 5px, red 5px, red 8px, transparent 8px);
+}
+
+.is-vertical-mark .xform-designer-mark > hr::after,
+.is-vertical-mark .xform-designer-mark > hr::before{
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  left: 0;
+}
+
+.is-vertical-mark .xform-designer-mark > hr::before{
+  top: 0;
+  border-top: 4px solid red;
+}
+
+.is-vertical-mark .xform-designer-mark > hr::after{
+  bottom: 0;
+  border-bottom: 4px solid red;
 }
 
 .xform-is-silence .xform-designer-mark{
@@ -309,7 +361,7 @@
 
 .xform-is-silence .xform-preview{
   outline: none;
-  border-color: transparent;
+  border-color: #ccc;
 }
 
 .xform-is-silence .xform-preview > .xform-preview-cover{

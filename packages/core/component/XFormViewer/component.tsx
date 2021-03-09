@@ -11,13 +11,13 @@ import {
 
 import { 
   EnumComponent,
-  PatchProps,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
   XField, 
   XFormModel, 
   XFormSchema,
   XFormViewerContext,
+  RenderOptions,
 } from '../../model'
 
 import { 
@@ -47,7 +47,7 @@ type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormVie
  * 2. 检索是否有名为`type_[type]`对应的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderContent(instance: XFormViewerInstance, field: XField, value: any, patch?: PatchProps){
+function renderContent(instance: XFormViewerInstance, field: XField, value: any, options: RenderOptions){
   const slots = instance.$slots
 
   const nameSlot = slots[`name_${field.name}`]
@@ -59,14 +59,14 @@ function renderContent(instance: XFormViewerInstance, field: XField, value: any,
   if(component == null) return null
 
   const props = fillComponentProps(component, { field, value, model: instance.model })
-  return createVNode(component, isFunction(patch) ? patch(props) : props)
+  return createVNode(component, isFunction(options.patchProps) ? options.patchProps(props) : props)
 }
 
-function renderField(instance: XFormViewerInstance, field: XField, patch?: PatchProps){
+function renderField(instance: XFormViewerInstance, field: XField, options: RenderOptions = {}){
   const conf = Store.getConfig()
   const value = conf.formatter(field, instance.$props, instance)
 
-  const content = renderContent(instance, field, value, patch)
+  const content = renderContent(instance, field, value, options)
   const XFormItem = resolveComponent('xform-item')
   const itemProps = { key: field.name, field, validation: false }
   return h(XFormItem, itemProps, function(){

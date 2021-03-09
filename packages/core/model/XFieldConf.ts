@@ -67,6 +67,7 @@ export class XFieldConf extends Hook{
   icon?: string | Function;
   alias: XFieldConf;
 
+  accept?: string[];
   scoped?: boolean;
   custom?: boolean;
   validator?: Validator;
@@ -87,6 +88,7 @@ export class XFieldConf extends Hook{
     this.icon = options.icon
     this.alias = options.alias instanceof XFieldConf ? options.alias : null
 
+    this.accept = Array.isArray(options.accept) ? options.accept : null
     this.scoped = options.scoped === true
     this.custom = options.custom === true
     this.validator = options.validator

@@ -12,7 +12,7 @@ import {
   XField,
   XFORM_CONTEXT_PROVIDE_KEY, 
   XFORM_MODEL_PROVIDE_KEY,
-  XFormContext
+  XFormRenderContext,
 } from './model'
 
 export {
@@ -28,7 +28,7 @@ export function useModel(){
   return inject(XFORM_MODEL_PROVIDE_KEY, null) as Ref<XFormModel>
 }
 
-export function useContext<T = XFormContext>(){
+export function useRenderContext<T = XFormRenderContext>(){
   return inject<T>(XFORM_CONTEXT_PROVIDE_KEY)
 }
 

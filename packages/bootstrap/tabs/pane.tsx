@@ -4,10 +4,10 @@ import {
   XField,
   XFieldConf,
   constant,
-  useContext,
+  useRenderContext,
 } from '@dongls/xform'
 
-const { SELECTOR, CLASS } = constant
+const { SELECTOR, CLASS, PROPS } = constant
 
 export default XFieldConf.create({
   type: 'tabs.pane',
@@ -28,19 +28,28 @@ export default XFieldConf.create({
     },
     setup(props) {
       return function () {
-        const context = useContext()
-        const field = props.field
-        const fields = field.fields
+        const context = useRenderContext()
+        const fields = props.field.fields
 
-        const tip =
+        const content =
           props.behavior == 'designer' && fields.length == 0 ? (
             <p class={[CLASS.IS_EMPTY_TIP, 'xform-bs-empty-tip']}>请将左侧控件拖动到此处</p>
-          ) : null
+          ) : fields.map((f) => context.renderField(f))
+
+        const _p = {
+          class: {
+            'tab-pane': true,
+            [CLASS.DROPPABLE]: true,
+            [CLASS.SCOPE]: true
+          },
+          [PROPS.XFIELD]: props.field,
+          [PROPS.SCOPE]: props.field
+        }
+  
 
         return (
-          <div class="tab-pane">
-            {tip}
-            {fields.map((f) => context.renderField(f))}
+          <div {..._p}>
+            {content}
           </div>
         )
       }
@@ -55,7 +64,7 @@ export default XFieldConf.create({
       },
     },
     setup(props) {
-      const context = useContext()
+      const context = useRenderContext()
 
       return function () {
         const fields = props.field.fields
@@ -74,6 +83,7 @@ export default XFieldConf.create({
     event.preventDefault()
 
     const { directionY, moveMarkEl } = event.context
+    // 处理拖拽外层字段
     const isMockDef = event.dragElement.contains(current)
     const target = isMockDef ? event.dragElement : event.target
     const scope = isMockDef ? event.dragElement.parentElement.closest(SELECTOR.DROPPABLE) : current

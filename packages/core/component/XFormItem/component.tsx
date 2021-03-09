@@ -20,11 +20,11 @@ import {
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
   XField, 
   XFormBuilderContext,
-  XFormContext,
   XFormModel,
   XFormSchema,
   CLASS,
   RawProps,
+  XFormRenderContext,
 } from '../../model'
 
 import { 
@@ -43,7 +43,7 @@ type XFormItemProps = {
   name: string;
 }
 
-function isBuilderContext(context: XFormContext): context is XFormBuilderContext {
+function isBuilderContext(context: XFormRenderContext): context is XFormBuilderContext {
   return null != context && context.type == 'builder'
 }
 
@@ -60,7 +60,7 @@ function renderMessage(field: XField){
   return null
 }
 
-function renderContent(slots: Slots, field: XField, model: XFormModel, context: XFormContext){
+function renderContent(slots: Slots, field: XField, model: XFormModel, context: XFormRenderContext){
   if(isFunction(slots.default)) return slots.default()
 
   const component = getFieldComponent(field, EnumComponent.BUILD)
@@ -122,7 +122,7 @@ export default defineComponent({
   },
   setup(props: XFormItemProps, { slots, attrs }){
     const schema = inject<Ref<XFormSchema>>(XFORM_FORM_SCHEMA_PROVIDE_KEY, null)
-    const context = inject<XFormContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
+    const context = inject<XFormRenderContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
 
     const fieldRef = normalizeField(props, attrs)
     const model = useModel()

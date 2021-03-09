@@ -128,7 +128,9 @@ export class InternalDragContext{
     ghost.style.transform = `translate(${left}px, ${top}px)`
     
     this.directionY = event.clientY < this.clientY ? EnumDragDirection.UP : EnumDragDirection.DOWN
+    this.directionX = event.clientX < this.clientX ? EnumDragDirection.LEFT : EnumDragDirection.RIGHT
     this.clientY = event.clientY
+    this.clientX = event.clientX
   }
 
   reset(instance: ComponentInternalInstance){

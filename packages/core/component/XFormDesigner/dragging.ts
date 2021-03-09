@@ -66,7 +66,7 @@ export default function useDragging(){
       return
     }
   
-    const reference = direction == EnumDragDirection.UP ? target : target.nextElementSibling
+    const reference = (direction == EnumDragDirection.UP || direction == EnumDragDirection.LEFT) ? target : target.nextElementSibling
     if(
       reference == mark || 
       (null != reference && reference.previousElementSibling == mark)
