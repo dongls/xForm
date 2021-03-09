@@ -13,7 +13,7 @@
       </nav>
 
       <div class="header-right">
-        <router-link v-show="false" to="/doc">文档</router-link>
+        <router-link v-if="isDev" to="/doc">文档</router-link>
         <div class="libs">
           <label>UI库：</label>
           <div class="lib-picker">
@@ -72,6 +72,11 @@ export default defineComponent({
 
         usePreset(value, state)
       }
+    }
+  },
+  computed: {
+    isDev(){
+      return this.IS_DEV
     }
   }
 })

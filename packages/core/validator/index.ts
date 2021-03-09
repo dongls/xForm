@@ -1,4 +1,4 @@
-import store from '../store'
+import { Ref } from 'vue'
 
 import { 
   getAllFields 
@@ -58,7 +58,7 @@ function checkValidateMode(v: any){
 function normalizeOptions(fc: XFieldConf, state: RegisteredFieldState, addition?: Addition){
   const fca = fc?.validator
   const validationRef = state.validationRef
-  const enable = store.isEnableValidate() && validationRef.value !== false && fca !== false
+  const enable = validationRef.value !== false && fca !== false
 
   let validator = null
   let mode = EnumValidateMode.DEFAULT
@@ -107,7 +107,7 @@ function isCanceled(vi: any){
   return vi.canceled === true
 }
 
-export function useValidator(){
+export function useValidator(isEnableValidate: Ref<boolean>){
   const REGISTERED_FIELDS: RFS = new Map()
 
   function validate(field: XField, model: XFormModel, addition?: Addition): Promise<string | void>{
@@ -145,7 +145,7 @@ export function useValidator(){
   }
 
   function validateField(field: XField, model: XFormModel, addition?: Addition){
-    if(field.validation.validating || !store.isEnableValidate()) return Promise.resolve()
+    if(field.validation.validating || !isEnableValidate.value) return Promise.resolve()
   
     const promise = validate(field, model, addition)
     const state = REGISTERED_FIELDS.get(field.name)

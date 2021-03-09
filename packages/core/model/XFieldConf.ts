@@ -79,7 +79,7 @@ export class XFieldConf extends Hook{
   // 依赖的子组件
   dependencies: XFieldConf[];
 
-  constructor(options: Partial<XFieldConf>){
+  constructor(options: any = {}){
     super(options)
 
     this.type = options.type

@@ -131,7 +131,7 @@ export class XField implements XFormScope{
     return Array.isArray(this.fields) && this.fields.length > 0
   }
 
-  static create(f: unknown){
+  static create(f: Partial<XField>){
     return f instanceof XField ? f : new XField(f)
   }
 

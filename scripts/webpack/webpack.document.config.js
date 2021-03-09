@@ -80,8 +80,7 @@ const production = {
       filename: '[name].[contenthash:8].css',
       chunkFilename: '[name].[contenthash:8].css'
     }),
-    genHtmlWebpackPlugin('./index.html'),
-    genHtmlWebpackPlugin('./404.html')
+    genHtmlWebpackPlugin('./index.html')
   ]
 }
 

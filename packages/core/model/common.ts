@@ -54,7 +54,6 @@ export interface ModeConf {
 }
 
 interface ValidationConf {
-  enable: boolean;
   immediate: boolean;
 }
 
@@ -89,7 +88,8 @@ export interface XFormBuilderContext{
   // 更新字段值
   updateFieldValue: (event: any) => void;
   // 渲染字段
-  renderField: RenderField
+  renderField: RenderField,
+  novalidate: Ref<boolean>
 }
 
 export interface XFormDesignerContext{

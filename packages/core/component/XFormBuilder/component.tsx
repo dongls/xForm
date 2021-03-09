@@ -14,6 +14,7 @@ import {
   toRef,
   createVNode,
   Ref,
+  computed,
 } from 'vue'
 
 import { 
@@ -43,7 +44,6 @@ import {
   normalizeClass,
 } from '../../util'
 
-import { disableValidate, enableValidate } from '../../api'
 import { useValidator } from '../../validator'
 
 interface XFormBuilderProps{
@@ -51,6 +51,7 @@ interface XFormBuilderProps{
   schema: XFormSchema;
   model: XFormModel;
   tag: string;
+  novalidate: boolean;
 }
 
 interface XFormBuilderSetupState{
@@ -132,6 +133,10 @@ export default defineComponent({
     tag: {
       type: String,
       default: 'form'
+    },
+    novalidate: {
+      type: Boolean,
+      default: false
     }
   },
   emits: [
@@ -142,7 +147,9 @@ export default defineComponent({
   setup(props: XFormBuilderProps, { emit }){
     const instance = getCurrentInstance()
     const pending = ref(false)
-    const validator = useValidator()
+    const preventValidate = ref(false)
+    const isEnableValidate = computed(() => !preventValidate.value && props.novalidate !== true)
+    const validator = useValidator(isEnableValidate)
 
     function registerField(fieldRef: Ref<XField>, validationRef: Ref<boolean | ValidateFunc>){      
       const key = fieldRef.value.name
@@ -200,7 +207,8 @@ export default defineComponent({
       registerField, 
       removeField, 
       updateFieldValue: update,
-      renderField: renderField.bind(null, instance.proxy)
+      renderField: renderField.bind(null, instance.proxy),
+      novalidate: toRef(props, 'novalidate')
     })
 
     return {
@@ -227,10 +235,10 @@ export default defineComponent({
       resetValidate,
       // 重置表单
       reset(){
-        disableValidate()
+        preventValidate.value = true
         emit(EVENTS.UPDATE_MODEL, {})
         resetValidate()
-        nextTick(enableValidate)
+        nextTick(() => preventValidate.value = false)
       },
       update,
       registerField,

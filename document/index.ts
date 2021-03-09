@@ -2,6 +2,8 @@ import '../packages/core/theme/index.css'
 import { createApp } from 'vue'
 
 import XForm from '@dongls/xform'
+// import * as XForm from '@dongls/xform'
+// console.log(XForm)
 import App from './app.vue'
 import Modal from './component/modal.vue'
 
@@ -15,6 +17,4 @@ app.component(Modal.name, Modal)
 app.mount('#app')
 
 app.config.performance = __IS_DEV__
-
-// import * as x from '@core/index'
-// console.log(x)
+app.config.globalProperties.IS_DEV = __IS_DEV__

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { website } from '@config'
 
 import Example from './views/example/main.vue'
@@ -10,7 +10,7 @@ import { Doc, Page } from './views/document'
 import NotFound from './views/not-found.vue'
 
 const router = createRouter({
-  history: createWebHistory(website.base),
+  history: createWebHashHistory(website.base),
   routes: [
     { path: '/', redirect: '/example/designer' },
     {

@@ -15,8 +15,6 @@ import {
   XFormContext
 } from './model'
 
-import Store from './store'
-
 export {
   findElementFromPoint,
   findElementsFromPoint,
@@ -45,12 +43,4 @@ export function createSchema(origin?: any){
 
 export function createSchemaRef(origin?: any){
   return ref(createSchema(origin)) as Ref<XFormSchema>
-}
-
-export function disableValidate(){
-  Store.getConfig().validation.enable = false
-}
-
-export function enableValidate(){
-  Store.getConfig().validation.enable = true
 }

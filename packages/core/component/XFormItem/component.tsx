@@ -139,7 +139,7 @@ export default defineComponent({
 
       // 字段完全自定义时, 只显示用户自定义的内容
       if(field?.conf?.custom === true) {
-        return isFunction(slots.default) ? slots.default() : null
+        return renderContent(slots, field, model, context)
       }
 
       const labelPosition = schema?.value?.labelPosition ?? EnumLabelPosition.LEFT
@@ -148,7 +148,7 @@ export default defineComponent({
       const className =  {
         'xform-item': true,
         [`xform-is-${labelPosition}`]: true,
-        'xform-is-required': field.required, 
+        'xform-is-required': isBuilderContext(context) ? !context.novalidate.value && field.required : field.required, 
         [CLASS.IS_ERROR]: field.validation.valid == EnumValidityState.ERROR
       }
       
