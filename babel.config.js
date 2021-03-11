@@ -1,8 +1,11 @@
+const RELEASE_TARGET = process.env.RELEASE_TARGET
+
 const presets = [
   ['@babel/preset-env', {
+    browserslistEnv: RELEASE_TARGET,
     useBuiltIns: 'usage',
     corejs: 3,
-    // debug: true
+    // debug: true,
   }]
 ];
 

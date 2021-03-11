@@ -32,11 +32,12 @@ const common = {
 
 const development = {
   devServer: {
-    port: 8801,
-    publicPath: '/',
+    historyApiFallback: true,
+    host: '127.0.0.1',
     hot: true,
     open: true,
-    historyApiFallback: true
+    port: 8801,
+    publicPath: '/',
   },
   output: {
     publicPath: '/',

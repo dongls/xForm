@@ -1,245 +1,276 @@
-import { Ref } from 'vue'
-
-import { 
-  getAllFields 
-} from '../util/component'
-
 import { 
   checkPromise,
+  ignoreError,
   isFunction, 
   isNull, 
-  parseMessage, 
-  toArray 
-} from '../util/lang'
+  isObject, 
+  parseMessage,
+} from '../util'
 
 import { 
   EnumValidateMode,
   EnumValidityState,
-  RegisteredFieldState, 
-  ValidateOptions, 
-  ValidResult, 
-  XField, 
-  XFieldConf, 
-  XFormModel, 
-  XFormScope 
+  ValidateObj,
+  XField,
+  XSchema,
+  Emitter,
+  ValidateFunc,
 } from '../model'
 
-type RFS = Map<string, RegisteredFieldState>
-type Addition = { mode?: EnumValidateMode }
+import { nextTick, Ref } from 'vue'
 
-function getNeedValidateFields(scope: XFormScope, rfs: RFS){
-  const internal = toArray<XField>(scope.fields).filter(i => rfs.has(i.name))
-  const external = scope instanceof XField ? [] : (function(){
-    const all = getAllFields(scope)
-    const arr = [] as XField[]
+export interface ValidateOptions { mode?: EnumValidateMode }
 
-    for(const [, v] of rfs){
-      const field = v.fieldRef.value
-      if(all.indexOf(field) < 0) arr.push(field)
-    }
-    
-    return arr
-  })()
-
-  return internal.concat(external)
+export interface RegisteredFieldState {
+  fieldRef: Ref<XField>;
+  onValidate: (options?: ValidateOptions) => Promise<void | string>;
+  onValidChange: (e: any) => void;
+  queue?: Set<Promise<any>>
 }
 
-function isValidateOptions(v: any): v is ValidateOptions{
+export interface NormalizedOptions{
+  enable: boolean;
+  validator: ValidateFunc;
+  mode: EnumValidateMode
+}
+
+interface XFieldValueEventDetail{
+  field: XField,
+  mode?: EnumValidateMode,
+  callback?: (state: boolean, r?: any) => void
+}
+
+type RFS = Map<string, RegisteredFieldState>
+type ComponentHandles = {
+  onValueChange: (e: any) => void
+}
+
+const EVENTS = {
+  XFIELD_VALID_CHANGE: 'xfield.valid.change'
+}
+
+function isValidateObj(v: any): v is ValidateObj{
   return v != null && 'mode' in v
 }
 
 function checkValidateMode(v: any){
-  return [
-    EnumValidateMode.DEFAULT, 
-    EnumValidateMode.SLEF
-  ].includes(v)
+  return v in EnumValidateMode
 }
 
-function normalizeOptions(fc: XFieldConf, state: RegisteredFieldState, addition?: Addition){
-  const fca = fc?.validator
-  const validationRef = state.validationRef
-  const enable = validationRef.value !== false && fca !== false
+function eachFieldValue(value: any, callback: any): void{
+  if(value == null || typeof value != 'object') return
+
+  if(value instanceof XField) {
+    callback(value)
+    return eachFieldValue(value.value, callback)
+  }
+
+  if(Array.isArray(value)) return value.forEach(v => eachFieldValue(v, callback))
+  if(isObject(value)) return Object.values(value).forEach(v => eachFieldValue(v, callback))
+}
+
+function normalizeOptions(field: XField, options?: ValidateOptions){
+  const fca = field?.conf?.validator
+  const external = isFunction(field?.validation?.external) ? field.validation.external() : null
+  const enable = external !== false && fca !== false
 
   let validator = null
   let mode = EnumValidateMode.DEFAULT
   
-  if(isValidateOptions(fca)){
+  if(isValidateObj(fca)){
     checkValidateMode(fca.mode) && (mode = fca.mode)
     validator = fca.validator
   } else if(isFunction(fca)) {
     validator = fca
   }
 
-  if(isFunction(validationRef.value)) validator = validationRef.value
+  if(isFunction(external)) validator = external
 
-  if(addition != null){
-    checkValidateMode(addition.mode) && (mode = addition.mode)
+  if(options != null){
+    checkValidateMode(options.mode) && (mode = options.mode)
   }
 
-  return { enable, validator, mode }
+  return { enable, validator, mode } as NormalizedOptions
 }
 
-function fallback(field: XField, model: XFormModel){
+function fallback(field: XField){
   return (
-    field.required === true && isNull(model[field.name])
+    field.required === true && isNull(field.value)
       ? Promise.reject('必填')
       : Promise.resolve()
   )
 }
 
-function validateSelf(field: XField, model: XFormModel, options: ValidateOptions){
+function validate(field: XField, RFS: RFS, vos?: ValidateOptions): Promise<string | void>{
+  field.validation.validating = true
+
+  const options = normalizeOptions(field, vos)
+  if(!options.enable) return Promise.resolve()
+
+  // 根据validator验证
   if(isFunction(options.validator)){
-    return options.validator(field, model)
+    return checkPromise<string>(options.validator(field, field.value, { mode: options.mode }))
   }
 
-  if(field.hasSubField){
-    return (
-      field.fields.some(f => f.validation.valid === EnumValidityState.ERROR) 
-        ? Promise.reject() 
-        : Promise.resolve()
-    )
-  }
-
-  return fallback(field, model)
+  // 默认验证函数，只验证`required`属性
+  return fallback(field)
 }
 
-function isCanceled(vi: any){
-  return vi.canceled === true
-}
+// 触发验证
+function doValidate(detail: XFieldValueEventDetail, rfs: RFS){
+  const state = rfs.get(detail.field.uid)
+  const handle = state.onValidate
+  const callback = detail.callback
+  const options = { mode: detail.mode }
 
-export function useValidator(isEnableValidate: Ref<boolean>){
-  const REGISTERED_FIELDS: RFS = new Map()
-
-  function validate(field: XField, model: XFormModel, addition?: Addition): Promise<string | void>{
-    field.validation.validating = true
-  
-    const options = normalizeOptions(field.conf, REGISTERED_FIELDS.get(field.name), addition)
-    if(!options.enable) return Promise.resolve()
-  
-    // 只验证自身
-    if(options.mode == EnumValidateMode.SLEF){
-      return validateSelf(field, model, options)
-    }
-  
-    // 验证子字段
-    if(field.hasSubField){
-      return validateScope(field, model).then(r => {
-        if(isFunction(options.validator)) return checkPromise<string>(options.validator(field, model))
-  
-        return r.some(i => i.status === 'rejected') ? Promise.reject() : Promise.resolve()
-      })
-    }
-  
-    // 根据validator验证
-    if(isFunction(options.validator)){
-      return checkPromise<string>(options.validator(field, model))
-    }
-  
-    // 默认验证函数，只验证`required`属性
-    return fallback(field, model)
-  }
-  
-  function validateScope(scope: XFormScope, model: XFormModel){
-    const promises = getNeedValidateFields(scope, REGISTERED_FIELDS).map(f => validateField(f, model))
-    return Promise.allSettled(promises)
+  if(!isFunction(handle) && isFunction(callback)) {
+    return callback(true)
   }
 
-  function validateField(field: XField, model: XFormModel, addition?: Addition){
-    if(field.validation.validating || !isEnableValidate.value) return Promise.resolve()
-  
-    const promise = validate(field, model, addition)
-    const state = REGISTERED_FIELDS.get(field.name)
-    state.queue.add(promise)
-    return promise.then(r => {
-      state.queue.delete(promise)
-      if(isCanceled(promise)) return 
-      
-      const message = parseMessage(r)
-      field.validation.message = message
-      field.validation.valid = EnumValidityState.SUCCESS
-      field.validation.validating = false      
-      return message
-    }).catch(error => {
-      state.queue.delete(promise)
-      if(isCanceled(promise)) return
-  
-      const message = parseMessage(error)
-      field.validation.message = message
-      field.validation.valid = EnumValidityState.ERROR
-      field.validation.validating = false
-      return Promise.reject(message)
+  handle(options)
+    .then(r => {
+      isFunction(callback) && callback(true, r)
     })
+    .catch(r => {
+      isFunction(callback) && callback(false, r)
+    })
+}
+
+function triggerValidChange(emitter: Emitter, detail: any){
+  const newValue = detail.field.validation.valid
+  const oldValue = detail.oldValid
+  if(
+    oldValue == newValue ||
+    oldValue == EnumValidityState.NONE && newValue == EnumValidityState.SUCCESS ||
+    newValue == EnumValidityState.NONE
+  ) return
+
+  nextTick(() => emitter.trigger(EVENTS.XFIELD_VALID_CHANGE, detail))
+}
+
+export function useValidator(handles: ComponentHandles){
+  const RFS: RFS = new Map()
+  const emitter = new Emitter()
+
+  // 处理所有来自`XField`触发的事件
+  function callback(name: string, detail: any){
+    switch(name){
+      case XField.EVENT_VALIDATE:
+        // TODO: 标记触发来源
+        doValidate(detail, RFS)
+        break
+      case XField.EVENT_VALUE_CHANGE:
+        handles.onValueChange(detail)
+        break
+    }
   }
-  
-  function validateSchema(scope: XFormScope, model: XFormModel, flat = false){
-    return validateScope(scope, model)
-      .then(r => {
-        return {
-          result: extractValidResult(scope, flat), 
-          valid: r.every(i => i.status == 'fulfilled')
-        }
-      })
-  }
 
-  function extractValidResult(scope: XFormScope, flat = false): ValidResult[]{
-    return getNeedValidateFields(scope, REGISTERED_FIELDS).reduce((acc, f) => {
-      const fields = extractValidResult(f, flat)
-      const r = {
-        valid: f.validation.valid !== EnumValidityState.ERROR,
-        message: f.validation.message,
-        name: f.name,
-        title: f.title,
-        type: f.type
-      } as ValidResult
+  function registerField(key: string, state: RegisteredFieldState){
+    state.queue = new Set()
+    const fieldRef = state.fieldRef
+    // 订阅来自字段的事件
+    fieldRef.value.subscribe(callback)
 
-      acc.push(r)
+    // 只有包含子字段才触发
+    if(fieldRef.value.fields.length > 0){
+      state.onValidChange = function(e: { field: XField }){
+        const field = e.field as XField
+        const fields = fieldRef.value.fields
+        // 如果子字段中没有相同name的字段，则不触发验证
+        if(fields.every(f => f.name != field.name)) return
+        // TODO: 标记触发来源
+        nextTick(() => ignoreError(state.onValidate))
+      }
+      
+      emitter.on(EVENTS.XFIELD_VALID_CHANGE, state.onValidChange)
+    }
 
-      return flat ? acc.concat(fields) : (r.fields = fields, acc)
-    }, [])
-  }
-
-  function validateFieldByName(name: string, model: XFormModel, addition?: Addition){
-    const state = REGISTERED_FIELDS.get(name)
-    const field = state?.fieldRef?.value
-    return isNull(field) ? Promise.resolve() : validateField(field, model, addition)
-  }
-
-  function registerField(key: string, state: Partial<Pick<RegisteredFieldState, 'queue'>> & Omit<RegisteredFieldState, 'queue'>){
-    if(!(state.queue instanceof Set)) state.queue = new Set()
-    REGISTERED_FIELDS.set(key, state as RegisteredFieldState)
+    RFS.set(key, state)
   }
 
   function removeField(key: string){
-    const state = REGISTERED_FIELDS.get(key)
-    if(null != state) REGISTERED_FIELDS.delete(key)
-    return state
-  }
+    if(!RFS.has(key)) return
+    
+    const state = RFS.get(key)
+    RFS.delete(key)
 
-  function resetFieldValidation(field: XField){
-    field.validation.valid = EnumValidityState.NONE
-    field.validation.validating = false
-    field.validation.message = null
-
-    const state = REGISTERED_FIELDS.get(field.name)
-    if(state?.queue instanceof Set){
-      for(const p of state.queue) p.canceled = true
+    if(isFunction(state.onValidChange)) {
+      emitter.off(EVENTS.XFIELD_VALID_CHANGE, state.onValidChange)
     }
+
+    state.fieldRef.value.subscribe(null)
+    state.onValidChange = null
+    state.onValidate = null
+    state.fieldRef = null
+    state.queue = null
   }
 
-  function getRegisteredFields(){
-    return Array.from(REGISTERED_FIELDS.values())
-      .map(i => i.fieldRef.value)
-      .filter(i => i != null)
+  function validateField(field: XField, options?: ValidateOptions){
+    if(field.validation.validating) return Promise.resolve()
+    
+    const promise = validate(field, RFS, options)
+    const state = RFS.get(field.uid)
+    state.queue.add(promise)
+    return promise.then(r => {
+      if(!state.queue.has(promise)) return 
+      state.queue.delete(promise)
+      
+      const message = parseMessage(r)
+      const oldValid = field.validation.valid
+      field.validation.message = message
+      field.validation.valid = EnumValidityState.SUCCESS
+      field.validation.validating = false
+      
+      triggerValidChange(emitter, { field, oldValid })
+      return message
+    }).catch(error => {
+      if(!state.queue.has(promise)) return 
+      state.queue.delete(promise)
+
+      const message = parseMessage(error)
+      const oldValid = field.validation.valid
+
+      field.validation.message = message
+      field.validation.valid = EnumValidityState.ERROR
+      field.validation.validating = false
+      
+      triggerValidChange(emitter, { field, oldValid })
+      return Promise.reject(message)
+    })
+  }
+
+  function validateSchema(schema: XSchema){
+    const promises = schema
+      .getNeedValidateFields()
+      .map(f => validateField(f, { mode: EnumValidateMode.RECURSIVE }))
+
+    return Promise.allSettled(promises).then(r => {
+      const result = { valid: r.every(i => i.status == 'fulfilled') } as any
+      if(result.valid) result.model = schema.model
+
+      return result
+    })
+  }
+
+  function resetCallback(field: XField){
+    if(!isObject(field.value)) field.value = undefined
+
+    const state = RFS.get(field.uid)
+    state.queue.clear()
+    field.resetValidate()
+  }
+
+  function resetValidate(fields: XField[]){
+    if(fields.length == 0) return
+  
+    eachFieldValue(fields, resetCallback)
   }
 
   return {
-    extractValidResult,
-    getRegisteredFields,
     registerField,
+    resetValidate,
     removeField,
-    resetFieldValidation,
     validateField,
-    validateFieldByName,
-    validateSchema,
+    validateSchema
   }
 }

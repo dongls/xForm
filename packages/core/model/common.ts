@@ -1,37 +1,26 @@
 import type { 
   Component,
   ComponentPublicInstance,
+  ConcreteComponent,
   Ref,
   VNode,
   VNodeProps,
-  WatchStopHandle,
 } from 'vue'
 
 import { 
   XField, 
   XFieldConf,
-  ValidateFunc
 } from '.'
+
+import { XFormSchema } from './XSchema'
 
 export interface AnyProps {
   [propName: string]: any;
 }
 
-export type RawProps = VNodeProps & AnyProps
 export type VueComponent = Component
-
-export type XFormModel = AnyProps
-
-export type XFormScope = {
-  fields: XField[];
-}
-
-export interface XFormSchema extends XFormScope, AnyProps {
-  labelSuffix?: string;
-  labelPosition?: string;
-
-  viewerPlaceholder?: string;
-}
+export type RawProps = VNodeProps & AnyProps
+export type XFormScope = XField | XFormSchema
 
 export interface XFormPreset {
   name: string;
@@ -68,20 +57,10 @@ export type XFormConfig = {
   [P in keyof XFormConfigBase]?: XFormConfigBase[P] extends ValidationConf ? Partial<XFormConfigBase[P]> : XFormConfigBase[P];
 }
 
-export interface RegisteredFieldState {
-  fieldRef: Ref<XField>;
-  validationRef: Ref<boolean | ValidateFunc>;
-  stopHandle: WatchStopHandle;
-  eventHandle: Function;
-  queue: Set<Promise<string | void> & { canceled?: boolean }>
-}
-
 export type RenderOptions = {
-  // 修改组件`props`
-  patchProps?: (props: RawProps) => RawProps,
-  // 是否使用`xform-item`包裹组件
-  wrapped?: boolean,
-  render?: () => VNode
+  renderPreivew?: (component: ConcreteComponent | string, props: RawProps, children: () => any, content: () => any) => VNode;
+  renderItem?: (component: ConcreteComponent | string, props: RawProps, children: () => any) => VNode;
+  renderContent?: (component: ConcreteComponent | string, props: RawProps) => VNode;
 }
 
 export type RenderField = (field: XField, options?: RenderOptions) => VNode
@@ -89,11 +68,11 @@ export type RenderField = (field: XField, options?: RenderOptions) => VNode
 export interface XFormBuilderContext{
   type: 'builder';
   // 注册字段
-  registerField: (field: Ref<XField>, o: Ref<boolean | ValidateFunc>) => void;
+  registerField: (field: Ref<XField>, isExternal: boolean) => void;
   // 删除字段
   removeField: (key: string) => void;
   // 更新字段值
-  updateFieldValue: (event: any) => void;
+  onUpdateValue: (event: any) => void;
   // 渲染字段
   renderField: RenderField,
   novalidate: Ref<boolean>
@@ -106,9 +85,10 @@ export interface XFormDesignerContext{
 }
 
 export interface XFormViewerContext{
-  type: 'viewer',
+  type: 'viewer';
   // 渲染字段
-  renderField: RenderField
+  renderField: RenderField;
+  formatter: Function
 }
 
 export type XFormRenderContext = XFormBuilderContext | XFormDesignerContext | XFormViewerContext;

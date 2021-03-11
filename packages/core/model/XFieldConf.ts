@@ -1,57 +1,62 @@
 import { ComponentInternalInstance, markRaw, VNode } from 'vue'
-import { VueComponent, XFormModel, XFormScope } from './common'
-import { InternalDragEvent } from './drag'
-import { isFunction, isNull, isPlainObject, toArray } from '../util/lang'
+import { VueComponent, XFormScope } from './common'
+import { PublicDragEvent } from './drag'
+import { isFunction, isNull, isPlainObject, toArray, toFunction } from '../util/lang'
 import { XField } from './XField'
 import { EnumDragHook, EnumValidateMode } from './constant'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Rule{}
 
-export interface ValidResult{
-  valid: boolean;
-  message: string;
-  name: string;
-  title: string;
-  type: string;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  fields?: ValidResult[]
-}
-
-export type ValidateFunc = (field: XField, model: XFormModel) => Promise<string>;
-export type ValidateOptions = { mode: EnumValidateMode, validator: ValidateFunc }
-type Validator = ValidateFunc | ValidateOptions | Rule | Rule[] | false
-
-type DragHookFn = (e: InternalDragEvent) => void | boolean;
+export type ValidateFunc = (field: XField, value: any, options?: { mode: EnumValidateMode }) => Promise<string | void>;
+export type ValidateObj = { mode: EnumValidateMode, validator: ValidateFunc }
+type Validator = ValidateFunc | ValidateObj | Rule | Rule[] | false
+type DragHookFn = (e: PublicDragEvent) => void | boolean;
+const CALL_FROM_CREATE = Symbol()
 
 class Hook{
+  // 字段值初始化时触发
+  onValueInit?: (field: XField, value: any) => any;
+  // 字段值提交时触发
+  onValueSubmit?: (field: XField) => any;
   // 字段创建时调用
   onCreate?: (field: XField, params: any, init: boolean) => void;
   // 字段删除后时调用
   onRemoved?: (field: XField, scope: XFormScope, instance: ComponentInternalInstance) => void;
+  // 字段提交时触发，一般在转换为JSON时调用
+  onSubmit?: (data: any) => object;
   // 字段拖到该字段上方时调用
   [EnumDragHook.DRAGOVER]?: DragHookFn;
   // 字段放到该字段上调用, 只对scoped值为true的字段生效
   [EnumDragHook.DROP]?: DragHookFn;
 
-  constructor(options: any = {}){
-    this.onCreate = isFunction(options.onCreate) ? options.onCreate : null
-    this.onRemoved = isFunction(options.onRemoved) ? options.onRemoved : null
-    this[EnumDragHook.DRAGOVER] = isFunction(options[EnumDragHook.DRAGOVER]) ? options[EnumDragHook.DRAGOVER] : null
-    this[EnumDragHook.DROP] = isFunction(options[EnumDragHook.DROP]) ? options[EnumDragHook.DROP] : null
+  constructor(options: Partial<Hook> = {}){
+    this.onValueInit = toFunction(options.onValueInit)
+    this.onValueSubmit = toFunction(options.onValueSubmit)
+    this.onCreate = toFunction(options.onCreate)
+    this.onRemoved = toFunction(options.onRemoved)
+    this.onSubmit = toFunction(options.onSubmit)
+    this[EnumDragHook.DRAGOVER] = toFunction(options[EnumDragHook.DRAGOVER])
+    this[EnumDragHook.DROP] = toFunction(options[EnumDragHook.DROP])
   }
 }
 
 export class FieldComponent{
   factory?: (field: XField, mode: string) => VueComponent | VNode;
-  // [mode][_[field.name]]?
   extension: {
+    // prop: [mode][_[field.name]]?
     [prop: string]: VueComponent
   }
 
   constructor(options: Partial<FieldComponent>){
     this.factory = isFunction(options.factory) ? options.factory : null
     this.extension = isPlainObject(options.extension) ? options.extension : {}
+  }
+
+  get(field: XField, mode?: string){
+    if(isFunction(this.factory)) return this.factory(field, mode)
+
+    return this.extension[`${mode}_${field.name}`] || this.extension[mode]
   }
 }
 
@@ -80,7 +85,9 @@ export class XFieldConf extends Hook{
   // 依赖的子组件
   dependencies: XFieldConf[];
 
-  constructor(options: any = {}){
+  constructor(options: any = {}, from?: Symbol){
+    if(from != CALL_FROM_CREATE) console.warn('use `XFieldConf.create` instead of `new XFieldConf`')
+
     super(options)
 
     this.type = options.type
@@ -124,7 +131,7 @@ export class XFieldConf extends Hook{
    * 例如用于配置alias，可直接访问目标的属性
    */
   static create(options: Partial<XFieldConf>){
-    return new Proxy(new XFieldConf(options), {
+    return new Proxy(new XFieldConf(options, CALL_FROM_CREATE), {
       get(target, prop, receiver){
         const r = Reflect.get(target, prop, receiver)
 

@@ -5,9 +5,6 @@ import divider from '../../common/components/divider.vue'
 
 export default defineComponent({
   name: 'xform-bs-divider-setting',
-  components: {
-    [divider.name]: divider
-  },
   props: {
     field: XField
   },
@@ -35,6 +32,9 @@ export default defineComponent({
         return props.field.attributes.type == type || (type == 'solid' && props.field.attributes.type == null)
       }
     }
+  },
+  components: {
+    [divider.name]: divider
   }
 })
 </script>

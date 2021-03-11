@@ -1,19 +1,17 @@
 <template>
   <input
-    :id="field.name"
+    :id="field.uid"
+    v-model="value"
     :name="field.name"
     type="text"
-    :value="value"
-    :class="className"
+    class="form-control form-control-sm"
     :placeholder="field.placeholder"
-    @input="updateValue"
   >
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
-import { XField } from '@dongls/xform'
-import { updateValue } from '../util'
+import { defineComponent } from 'vue'
+import { useValue, XField } from '@dongls/xform'
 
 export default defineComponent({
   name: 'xform-bs-text',
@@ -21,23 +19,10 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
-    },
-    value: {
-      type: String,
-      default: null
     }
   },
-  emits: ['update:value'],
-  setup(props, { emit }){
-    return { 
-      updateValue: updateValue.bind(null, emit, props.field.name),
-      className: computed(() => {
-        return {
-          'form-control': true,
-          'form-control-sm': true
-        }
-      })
-    }
+  setup(props){
+    return { value: useValue<string>(props) }
   }
 })
 </script>

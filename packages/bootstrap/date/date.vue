@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { XField } from '@dongls/xform'
-import { updateValue } from '../util'
+import { useValue, XField } from '@dongls/xform'
 
 export default defineComponent({
   name: 'xform-bs-date',
@@ -9,27 +8,21 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
-    },
-    value: {
-      type: String,
-      default: null
     }
   },
-  emits: ['update:value'],
-  setup(props: any, { emit }){
-    return { updateValue: updateValue.bind(null, emit, props.field.name) }
+  setup(props: any){
+    return { value: useValue<string>(props) }
   }
 })
 </script>
 
 <template>
   <input
-    :id="field.name"
+    :id="field.uid"
     :name="field.name"
     type="date"
-    :value="value"
+    v-model="value"
     class="form-control form-control-sm"
     :placeholder="field.placeholder"
-    @input="updateValue"
   >
 </template>

@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { XField } from '@dongls/xform'
-import { updateValue } from '../util'
+import { useValue, XField } from '@dongls/xform'
 
 export default defineComponent({
   name: 'xform-bs-select',
@@ -9,23 +8,18 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
-    },
-    value: {
-      type: String,
-      default: null
     }
   },
-  emits: ['update:value'],
-  setup(props, { emit }) {
+  setup(props) {
+    const value = useValue<string>(props, '')
     return {
-      updateValue: updateValue.bind(null, emit, props.field.name),
-      placeholder: computed(() => props.field.placeholder ? `---- ${ props.field.placeholder } ----` : ''),
+      value,
       className: computed(() => {
         return {
           'custom-select': true,
           'custom-select-sm': true,
           'xform-bs-select': true,
-          'xform-bs-is-empty': null == props.value || (typeof props.value == 'string' && props.value.length == 0)
+          'xform-bs-is-empty': null == value || (typeof value.value == 'string' && value.value.length == 0)
         }
       })
     }
@@ -35,12 +29,12 @@ export default defineComponent({
 
 <template>
   <select
-    :id="field.name"
+    :id="field.uid"
+    v-model="value"
     :name="field.name"
     :class="className"
-    :value="value" @change="updateValue"
   >
-    <option v-if="placeholder" class="xform-bs-is-placeholer" value>{{ placeholder }}</option>
+    <option class="xform-bs-is-placeholer" value="">---- {{ field.placeholder || '请选择' }} ----</option>
     <option
       v-for="option in field.options"
       :key="option.value"

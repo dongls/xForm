@@ -1,3 +1,6 @@
+import { isReactive, isRef, toRaw } from '@vue/reactivity'
+import { AnyProps } from '../model'
+
 const OBJECT_TO_STRING = Object.prototype.toString
 const OBJECT_TO_STRING_TAG = {
   RegExp: '[object RegExp]'
@@ -9,6 +12,11 @@ function getObjectTag(value: unknown): string{
   }
 
   return OBJECT_TO_STRING.call(value)
+}
+
+let seed = 0
+export function getIncNum(){
+  return seed++
 }
 
 export function isString(value: unknown): value is string{
@@ -147,7 +155,7 @@ export function ignoreError(v: unknown): void{
     try {
       return ignoreError(v())
     } catch (e) {
-      __IS_DEV__ && console.log(e)
+      __IS_DEV__ && console.warn(e)
       return
     }
   }
@@ -160,4 +168,68 @@ export function parseMessage(v: unknown): string{
   if(isPlainObject<any>(v) && 'message' in v) return v.message
   if(isFunction(v.toString)) return v.toString()
   return null
+}
+
+function genRDS(length: number): string{
+  const r = Math.random().toString(36).slice(2)
+  if(r.length >= length) return r
+
+  return r + genRandomStr(length - r.length)
+}
+
+export function genRandomStr(length = 8){
+  return genRDS(length).slice(0, length)
+}
+
+export function toFunction<T extends Function>(v: unknown){
+  return (isFunction(v) ? v : null) as any as T
+}
+
+export function getRaw<T>(v: unknown){
+  if(isRef(v)) return v.value as T
+  if(isReactive(v)) return toRaw(v) as T
+  return v as T
+}
+
+export function usePrivateProps<T extends object, P extends object>(){
+  const storage = new WeakMap<T, P>()
+  const o = Object.create(null)
+
+  o.get = function<V>(target: T, key: string){
+    const raw = getRaw<T>(target)
+    const props = storage.get(raw)
+    if(isNull(props)) return null
+
+    return Reflect.get(props, key, props) as V
+  }
+
+  o.set = function(target: T, key: string, value: any){
+    const raw = getRaw<T>(target)
+    const props = storage.get(raw)
+    if(isNull(props)) return
+
+    Reflect.set(props, key, value, props)
+  }
+
+  o.create = function(target: T, props: P){
+    const raw = getRaw<T>(target)
+    const old = storage.get(raw)
+    storage.set(raw, { ...old, ...props })
+  }
+
+  __IS_DEV__ && (o.storage = storage)
+
+  return o as {
+    get: <V>(target: T, key: string) => V,
+    set: (target: T, key: string, value: any) => void,
+    create: (target: T, props: P) => void
+  }
+}
+
+export function mixinRestParams(target: AnyProps, origin: AnyProps){
+  if(target == null || origin == null) return
+
+  Object.keys(origin).forEach(key => {
+    if(!(key in target)) target[key] = origin[key]
+  })
 }

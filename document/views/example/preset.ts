@@ -13,7 +13,7 @@ const MODES = {
     },
     {
       title: '辅助字段',
-      types: ['divider', 'group', 'tabs', __IS_DEV__ ? 'subform' : null]
+      types: ['divider', 'group', 'tabs', 'subform']
     }
   ],
   simple: ['text', 'textarea', 'number', 'select']

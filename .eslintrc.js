@@ -40,6 +40,7 @@ module.exports = {
 
     // Possible Errors
     'require-atomic-updates': 'off',
+    'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
 
     // Variables
     'no-use-before-define': ['error', { 'functions': false }],
@@ -72,13 +73,11 @@ module.exports = {
     'vue/singleline-html-element-content-newline': 'off',
     'vue/order-in-components': ['error', {
       'order': [
-        'el',
         'name',
         'inheritAttrs',
+        'el',
         'parent',
-        'functional',
         ['delimiters', 'comments'],
-        ['components', 'directives', 'filters'],
         'extends',
         'mixins',
         'model',
@@ -88,23 +87,26 @@ module.exports = {
         'data',
         'computed',
         'watch',
-        'LIFECYCLE_HOOKS',
         'methods',
+        'LIFECYCLE_HOOKS',
         'head',
         ['template', 'render'],
-        'renderError'
+        'renderError',
+        ['components', 'directives', 'filters'],
       ]
     }],
     'vue/max-attributes-per-line': 'off',
     'vue/html-closing-bracket-spacing': 'off',
     'vue/no-v-html': 'off',
-    'vue/one-component-per-file': 'off'
+    'vue/one-component-per-file': 'off',
+    'vue/attributes-order': 'off'
   },
   overrides: [
     {
       files: ['scripts/**/*'],
       rules: {
-        '@typescript-eslint/no-var-requires': 'off'
+        '@typescript-eslint/no-var-requires': 'off',
+        'no-console': 'off'
       }
     },
     {

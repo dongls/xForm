@@ -1,45 +1,39 @@
-import { markRaw, nextTick } from 'vue'
-import { isFunction } from '../util/lang'
-import { findFieldConf, getConfig } from '../store'
+import { getIncNum, isFunction, mixinRestParams, usePrivateProps } from '../util/lang'
+import { findFieldConf, getConfig, isImmediateValidate } from '../store'
 
-import { EnumValidityState } from './constant'
-import { AnyProps, XFormScope } from './common'
-import { XFieldConf } from './XFieldConf'
-import { Emitter } from './Emitter'
+import { EnumValidateMode, EnumValidityState } from './constant'
+import { ValidateFunc, XFieldConf } from './XFieldConf'
+import { Serializable } from './base'
 
 interface Validation {
   // 验证信息
   message: string;
   // 验证是否通过
   valid: EnumValidityState;
+  // 是否正在验证
   validating: boolean;
+  // 外部验证器
+  external: () => boolean | ValidateFunc;
 }
 
 interface Option { value: string }
 
-function clean(o: any){
+interface XFieldStorage{
+  uid: string;
+  broadcast: Function
+}
+
+// eslint-disable-next-line no-use-before-define
+const PRIV_PROPS = usePrivateProps<XField, XFieldStorage>()
+
+function cleanName(o: any){
   delete o.name
   
   if(Array.isArray(o.fields)){
     const fields = o.fields.filter((i: any) => i.allowClone !== false)
-    fields.forEach(clean)
+    fields.forEach(cleanName)
     o.fields = fields
   }
-}
-
-function createValidation(emitter: Emitter, event: string){
-  let value = EnumValidityState.NONE
-  return {
-    get valid() { return value },
-    set valid(newValue){
-      if(newValue != EnumValidityState.NONE && newValue != value){
-        nextTick(() => emitter.trigger(event))
-      }
-      value = newValue
-    },
-    validating: false,
-    message: null
-  } as Validation
 }
 
 /** 
@@ -48,7 +42,9 @@ function createValidation(emitter: Emitter, event: string){
  * 1. 保存用户对字段的配置数据
  * 2. 保存用户在表单中操作数据
  */
-export class XField implements XFormScope{
+export class XField extends Serializable{
+  [prop: string]: any
+
   type: string;
   name: string;  
   title?: string;
@@ -59,27 +55,39 @@ export class XField implements XFormScope{
 
   // 各字段类型的私有属性都存储在此
   attributes?: { [prop: string]: any };
-  fields: XField[];
-
   // 是否允许字段被删除
   allowRemove?: boolean;
   // 是否允许复制字段
   allowClone?: boolean;
 
+  // 子类型
+  fields: XField[]
   // 验证相关属性
-  validation: Validation;
+  validation: Validation = {
+    valid: EnumValidityState.NONE,
+    validating: false,
+    message: null,
+    external: null
+  }
 
-  // 缓存
-  private storage: {
-    valid: EnumValidityState,
-    rawData: any;
-    excludeProps: string[];
-    emitter: Emitter
-  } & AnyProps;
+  value: any;
 
-  constructor(o: unknown = {}){
+  // 组件是否挂载
+  mounted = false
+  
+  static EVENT_VALUE_CHANGE = 'xfield.value.change'
+  static EVENT_VALIDATE = 'xfield.validate'
+  static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'mounted', 'value']
+
+  static create(f: Partial<XField>, value?: any){
+    return f instanceof XField ? f : new XField(f, value)
+  }
+
+  constructor(o: unknown = {}, value?: any){
+    super()
+
     const params = (o instanceof XFieldConf ? o.toParams() : o) as Partial<XField>
-    const emitter = new Emitter()
+    const fc = findFieldConf(params.type)
 
     this.type = params.type
     this.name = params.name ?? getConfig().genName(o)
@@ -91,31 +99,28 @@ export class XField implements XFormScope{
     this.attributes = params.attributes ?? {}
     this.fields = (
       Array.isArray(params.fields) 
-        ? params.fields.map(XField.create) 
+        ? params.fields.map(f => XField.create(f)) 
         : []
     )
 
     this.allowRemove = params.allowRemove
     this.allowClone = params.allowClone
     
-    this.validation = createValidation(emitter, XField.EVENT_VALID_CHANGE)
+    createValue(this, value)
 
-    Object.defineProperty(this, 'storage', {
-      // 在调用reactive()后，该对象被vue3.x使用Proxy代理访问
-      // 如果不使用markRaw()标识该字段，在访问storage时，vue3.x会使用reactive()包裹该属性，
-      // 由于该属性是只读且不可配置的，所以会抛出错误
-      // Uncaught TypeError: 'get' on proxy: property 'storage' is a read-only and non-configurable data property on the proxy target but the proxy did not return its actual value
-      value: markRaw({
-        valid: EnumValidityState.NONE,
-        rawData: params,
-        excludeProps: ['validation'],
-        emitter
-      })
+    PRIV_PROPS.create(this, {
+      uid: 'field__' + getIncNum(),
+      broadcast: null
     })
 
-    const fc = this.conf
-    // 如果从XFormConf创建时，需要初始化
-    if(fc && isFunction(fc.onCreate)) fc.onCreate(this, params, o instanceof XFieldConf)
+    mixinRestParams(this, params)
+    // 调用onCreate hook, 可在此初始化字段
+    isFunction(fc?.onCreate) && fc.onCreate(this, params, o instanceof XFieldConf)
+  }
+
+  /** 创建时自动生成，全局唯一 */
+  get uid(){
+    return PRIV_PROPS.get<string>(this, 'uid')
   }
 
   /** 查询该字段对应的字段类型对象, 不存在返回null */
@@ -123,44 +128,70 @@ export class XField implements XFormScope{
     return findFieldConf(this.type)
   }
 
-  get rawData(){
-    return this.storage.rawData
+  get invalid(){
+    return this.validation.valid === EnumValidityState.ERROR
   }
 
-  get hasSubField(){
-    return Array.isArray(this.fields) && this.fields.length > 0
-  }
-
-  static create(f: Partial<XField>){
-    return f instanceof XField ? f : new XField(f)
-  }
-
-  static EVENT_VALID_CHANGE = 'valid:change'
-
-  /** 复制该对象, `name`字段除外 */
-  clone() {
+  /**
+   * 复制该对象
+   * @param keepName - 值为`true`时，保留`name`属性
+   * @param value - 字段的值
+   * @returns 复制的对象
+   */
+  clone(keepName = false, value?: any) {
     const data = JSON.parse(JSON.stringify(this))
-    clean(data)
-    return new XField(data)
+    if(!keepName) cleanName(data)
+    return new XField(data, value)
+  }
+  
+  /** 广播事件 */
+  broadcast(event: string, detail?: any){
+    const broadcast = PRIV_PROPS.get(this, 'broadcast')
+    isFunction(broadcast) && broadcast(event, detail)
   }
 
-  toJSON(): any {
-    const origin = this as any
-    const ep = this.storage.excludeProps
-    return Object.keys(origin)
-      .filter(i => ep.indexOf(i) < 0)
-      .reduce((acc, k) => ((acc[k] = origin[k]), acc), {} as any)
+  /** 订阅来自字段的事件 */
+  subscribe(v: Function){
+    PRIV_PROPS.set(this, 'broadcast', v)
   }
 
-  on(type: string, handle: Function){
-    const emitter = this.storage.emitter
-    emitter.on(type, handle)
-    return this
+  validate(options?: { mode: EnumValidateMode }){
+    return new Promise((resolve, reject) => {
+      this.broadcast(XField.EVENT_VALIDATE, { 
+        field: this,
+        mode: options?.mode,
+        callback: (status: boolean, r: any) => {
+          status ? resolve(r) : reject(r)
+        }
+      })
+    })
   }
 
-  off(type: string, handle: Function){
-    const emitter = this.storage.emitter
-    emitter.off(type, handle)
-    return this
+  resetValidate(){
+    this.validation.valid = EnumValidityState.NONE
+    this.validation.validating = false
+    this.validation.message = null
   }
+
+  toJSON(){
+    const r = super.toJSON.call(this)
+    const onSubmit = this.conf?.onSubmit
+    return isFunction(onSubmit) ? onSubmit(r) : r
+  }
+}
+
+function createValue(field: XField, _value: any){
+  let value = isFunction(field.conf?.onValueInit) ? field.conf.onValueInit(field, _value) : _value
+
+  Reflect.defineProperty(field, 'value', {
+    get(){
+      return value
+    },
+    set(v){
+      value = v
+
+      field.broadcast(XField.EVENT_VALUE_CHANGE, { field: this })
+      isImmediateValidate() && field.broadcast(XField.EVENT_VALIDATE, { field: this })
+    }
+  })
 }

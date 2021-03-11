@@ -8,7 +8,6 @@ describe('api: createShema', () => {
     for(const param of params){
       const schema = createSchemaRef(param)
       expect(isRef(schema)).toBeTruthy()
-      expect(Object.keys(schema.value).length).toBe(1)
       expect(schema.value.fields).toBeInstanceOf(Array)
       expect(schema.value.fields.length).toBe(0)
     }

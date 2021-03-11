@@ -1,6 +1,5 @@
-import { watch, computed, ref } from 'vue'
-import { XFormModel, createSchema } from '@dongls/xform'
-
+import { watch } from 'vue'
+import { createSchema, createSchemaRef } from '@dongls/xform'
 import DEFAULT_SCHEMA from './schema.data'
 
 const XFORM_SCHEMA_STORAGE_KEY = '__xform_schema_storage__'
@@ -10,9 +9,8 @@ function saveToLocalStorage(key: string, value: string){
   localStorage.setItem(key, value)
 }
 
-export function createDefaultSchema(){
-  const o = JSON.parse(JSON.stringify(DEFAULT_SCHEMA))
-  return createSchema(o)
+function createDefaultSchema(){
+  return JSON.parse(JSON.stringify(DEFAULT_SCHEMA))
 }
 
 function getLocalSchema(){
@@ -24,12 +22,13 @@ function getLocalSchema(){
       Object.keys(schema).length == 0 || 
       !Array.isArray(schema.fields) || 
       schema.fields.length == 0
-    ) throw new Error
+    ) throw new Error('get local schema')
 
-    return ref(createSchema(schema))
+    return createSchemaRef(schema, getLocalModel())
   } catch (error) {
-    const schema = ref(createDefaultSchema())
-    saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(schema))
+    console.error(error)
+    const schema = createSchemaRef(createDefaultSchema())
+    saveToLocalSchema(schema.value)
     return schema
   }
 }
@@ -43,28 +42,20 @@ function getLocalModel(){
   }
 }
 
+export function saveToLocalModel(model: any){
+  saveToLocalStorage(XFORM_MODEL_STORAGE_KEY, JSON.stringify(model))
+}
+
+export function saveToLocalSchema(schema: any){
+  saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(schema))
+}
+
 export function useLocalSchema(){
   const schema = getLocalSchema()
-
-  watch(
-    schema, 
-    value => saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(value)), 
-    { deep: true }
-  )
+  watch(schema, v => saveToLocalSchema(v), { deep: true })
 
   return {
     schema,
-    schemaJSON: computed(() => JSON.stringify(schema.value, null, '  '))
+    reset: () => schema.value = createSchema(createDefaultSchema())
   }
-}
-
-export function useLocalModel(readonly = false){
-  const localModel = getLocalModel()
-  const model = ref<XFormModel>(localModel)
-
-  if(!readonly) {
-    watch(model, () => saveToLocalStorage(XFORM_MODEL_STORAGE_KEY, JSON.stringify(model.value)), { deep: true })
-  }
-
-  return model
 }

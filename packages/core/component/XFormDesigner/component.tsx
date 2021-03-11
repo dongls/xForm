@@ -17,6 +17,7 @@ import {
   toRef,
   ConcreteComponent,
   createVNode,
+  Ref,
 } from 'vue'
 
 import { 
@@ -73,6 +74,7 @@ interface XFormDesignerSetupState {
   chooseTab?: Function;
   chooseField?: Function;
   updateSchema?: Function;
+  dragstart: (event: MouseEvent) => void;
 
   [prop: string]: any;
 } 
@@ -120,6 +122,25 @@ function renderIcon(fc: XFieldConf){
   return <i class={icon}/>
 }
 
+function renderOperate(instance: XFormDesignerInstance, field: XField){
+  const { icon, clone, remove } = instance
+  const buttons = []
+
+  if(field.allowClone !== false){
+    buttons.push(<button type="button" title="复制" onClick={clone.bind(null, field)} innerHTML={icon.clone}/>)
+  }
+
+  if(field.allowRemove !== false) {
+    buttons.push(<button type="button" title="删除" onClick={remove.bind(null, field)} innerHTML={icon.remove}/>)
+  }
+
+  return (
+    buttons.length > 0 
+      ? <div class="xform-preview-operate">{buttons}</div> 
+      : null
+  )
+}
+
 function renderFieldPanel(groups: ModeGroup[]){
   return groups.map((group, i) => {
     const title = group.title ? <h3>{group.title}</h3> : null
@@ -149,6 +170,11 @@ function renderFieldPanel(groups: ModeGroup[]){
   })
 }
 
+function renderUnknown(field: XField){
+  console.warn(`field[${field.title}: ${field.name}] not implement preview component`)
+  return <p class="xform-is-unknown">暂不支持的字段类型</p>
+}
+
 /**
  * 根据字段渲染对应的预览组件，按以下顺序逐次匹配：
  * 1. 检索是否有名为`preview_name_[name]`的slot
@@ -169,70 +195,53 @@ function renderContent(instance: XFormDesignerInstance, field: XField, options: 
   if(component == null) return null
 
   const props = fillComponentProps(component, { field, behavior: EnumBehavior.DESIGNER })
-  return createVNode(component, isFunction(options.patchProps) ? options.patchProps(props) : props)
+  const create = isFunction(options?.renderContent) ? options.renderContent : h
+  return create(component, props)
 }
 
 function renderItem(instance: XFormDesignerInstance, field: XField, options: RenderOptions){
-  const content = renderContent(instance, field, options)
-  const XFormItem = resolveComponent('xform-item')
-  const itemProps = { field, validation: false }
-  return h(XFormItem, itemProps, function(){
-    if(null == content) {
-      console.warn(`field[${field.title}: ${field.name}] not implement preview component`)
-      return <p class="xform-is-unknown">暂不支持的字段类型</p>
-    }
-
-    return content
-  })
+  const children = function(){
+    return renderContent(instance, field, options) ?? renderUnknown(field)
+  }
+  const component = resolveComponent('xform-item')
+  const props = { field, validation: false }
+  const create = isFunction(options?.renderItem) ? options.renderItem : h
+  return create(component, props, children)
 }
 
 /** 渲染字段预览组件 */
 function renderFieldPreview(instance: XFormDesignerInstance, field: XField, options: RenderOptions = {}){
-  const { selectedField, icon, clone, remove, chooseField } = instance
-  const buttons = []
-
-  if(field.allowClone !== false){
-    buttons.push(<button type="button" title="复制" onClick={clone.bind(null, field)} innerHTML={icon.clone}/>)
-  }
-
-  if(field.allowRemove !== false) {
-    buttons.push(<button type="button" title="删除" onClick={remove.bind(null, field)} innerHTML={icon.remove}/>)
-  }
-
-  const operate = (
-    buttons.length > 0 
-      ? <div class="xform-preview-operate">{buttons}</div> 
-      : null
-  )
-
-  const content = isFunction(options.render) ? options.render() : renderItem(instance, field, options)
-  if(options.wrapped === false) return content
-
+  const tag = 'div'
   const props = {
     'class': {
       'xform-preview': true,
       'xform-draggable': true,
       'xform-droppable': true,
       ['xform-preview-' + field.type]: true,
-      'xform-is-selected': field == selectedField,
+      'xform-is-selected': field == instance.selectedField,
       [CLASS.SCOPE]: field.conf?.scoped ?? false
     },
-    'key': field.name,
+    'key': field.uid,
     [PROPS.XFIELD]: field,
     [PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
   }
 
-  if(typeof globalThis != 'undefined' && globalThis.__IS_TEST__ === true){
+  if(__IS_TEST__ === true){
     props.id = `preview_${field.name}`
   }
 
-  return (
-    <div {...props}>
-      {content}
-      {operate}
-      <div class="xform-preview-cover" onClick={chooseField.bind(null, field)}/>
-    </div>
-  )
+  const content = function(){
+    return renderItem(instance, field, options)
+  }
+
+  const children = function(){
+    const operate = renderOperate(instance, field)
+    const cover = <div class="xform-preview-cover" onClick={instance.chooseField.bind(null, field)}/>
+    return [content(), operate, cover]
+  }
+
+  if(isFunction(options.renderPreivew)) return options.renderPreivew(tag, props, children, content)
+  return h(tag, props, children())
 }
 
 function renderPreviewList(instance: XFormDesignerInstance, fields: XField[]){
@@ -358,13 +367,17 @@ export default defineComponent({
       required: true
     }
   },
-  emits: Object.values(EVENTS),
+  emits: [
+    EVENTS.UPDATE_SCHEMA,
+    EVENTS.REMOVE
+  ],
   setup(props: XFormDesignerProps, { emit }){
     const instance = getCurrentInstance()
-    const selectedField = ref<XField>(null)
+    const selectedField = ref(null) as Ref<XField>
     const selectedTab = ref<string>('form')
     const groups = computed(() => Store.findFieldGroups(props.mode))
-
+    const { dragstart } = useDragging()
+    
     const updateSchema = function(schema: XFormSchema = props.schema){
       emit(EVENTS.UPDATE_SCHEMA, schema)
     }
@@ -425,8 +438,6 @@ export default defineComponent({
       emit(EVENTS.UPDATE_SCHEMA, {})
     }
 
-    useDragging()
-
     provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormDesignerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'designer',
@@ -445,6 +456,7 @@ export default defineComponent({
       selectedField,
       selectedTab,
       updateSchema,
+      dragstart
     }
   },
   render(instance: XFormDesignerInstance){
@@ -454,7 +466,7 @@ export default defineComponent({
     const fields: XField[] = Array.isArray(schema.fields) ? schema.fields : []
 
     return (
-      <div class="xform-designer" ref="root">
+      <div class="xform-designer" ref="root" onMousedown={instance.dragstart}>
         <div class="xform-designer-panel">
           { renderFieldPanel(groups) }
         </div>

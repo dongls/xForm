@@ -1,7 +1,7 @@
 <script lang="ts">
-import { useLocalSchema, useLocalModel } from '@document/util/common'
 import { getCurrentInstance, ref, defineComponent } from 'vue'
-import { XField, XFormModel } from '@dongls/xform'
+import { XField } from '@dongls/xform'
+import { useLocalSchema, saveToLocalModel } from '@document/util/common'
 
 export default defineComponent({
   name: 'builder-view',
@@ -9,25 +9,28 @@ export default defineComponent({
   setup(props, { emit }){
     const instance = getCurrentInstance()
     const { schema } = useLocalSchema()
-    const model = useLocalModel()
     const pending = ref(false)
 
     const viewJSON = function(){
-      emit('view', { title: 'Form JSON', json: JSON.stringify(model.value, null, ' ') })
+      const model = schema.value.model
+      emit('view', { title: 'Form JSON', json: JSON.stringify(model, null, '  ') })
     }
 
     return {
       schema, 
-      model,
       pending,
+      change(/* e: any */){
+        // console.log(`${e.field.name}[${e.field.title}] value change:`, e.field.value,)
+        saveToLocalModel(schema.value.model)
+      },
       reset(){
         (instance.refs.builder as any).reset()
       },
       viewJSON,
-      submit(validate: Function, model: XFormModel){
+      submit(validate: Function){
         pending.value = true
-        return validate().then((r: any) => {
-          console.log('validate result: ', r, model)
+        return validate().then((r: { valid: boolean, model: any }) => {
+          console.info('validate result: ', r)
           if(r.valid) viewJSON()
         }).finally(() => pending.value = false)
       },
@@ -37,10 +40,9 @@ export default defineComponent({
       //   title: '测试三',
       //   required: true
       // })),
-      validator(field: XField, model: XFormModel){
+      validator(field: XField, value: any){
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            const value = model[field.name]
             if(!value) return reject('必填')
 
             resolve(null)
@@ -55,9 +57,9 @@ export default defineComponent({
 <template>
   <xform-builder 
     ref="builder"
-    v-model:model="model"
     :schema="schema" 
     class="example-builder"
+    @value:change="change"
     @submit="submit"
   >
     <template #header>
@@ -66,9 +68,11 @@ export default defineComponent({
 
     <!-- <template #type_divider><hr></template> -->
 
-    <xform-item name="address" title="地址" :validation="validator" required>
-      <input v-model="model.address" type="text" class="form-control form-control-sm" placeholder="详细地址">
-      <p class="example-builder-tip">该字段并非由设计器生成，而是页面单独添加的字段</p>
+    <xform-item name="address" title="地址" :validation="validator" virtual>
+      <template #default="{field}">
+        <input v-model="field.value" type="text" class="form-control form-control-sm" placeholder="详细地址">
+        <p class="example-builder-tip">该字段并非由设计器生成，而是页面单独添加的字段</p>
+      </template>
     </xform-item>
     <!-- <xform-item :field="field" validation/> -->
     
@@ -84,11 +88,11 @@ export default defineComponent({
 
 <style>
 .example-builder{
-  padding: 10px 0;
+  padding: 15px 0;
 }
 
 .example-builder-footer{
-  margin-top: 10px;
+  margin-top: 20px;
   text-align: right;
 }
 

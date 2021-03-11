@@ -14,6 +14,16 @@ describe('store: reset', () => {
     store.resetPreset()
     expect(store.getPreset()).toBeNull()
   })
+
+  test('reset', () => {
+    store.reset()
+    const config = store.getConfig()
+    const fg = store.findFieldGroups()
+
+    expect(config).toStrictEqual(CONFIG)
+    expect(store.getPreset()).toBeNull()
+    expect(fg.length).toBe(0)
+  })
 })
 
 describe('store: useConfig', () => {

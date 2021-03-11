@@ -1,4 +1,4 @@
-import { XFieldConf, XField, XFormModel } from '@dongls/xform'
+import { XFieldConf, XField } from '@dongls/xform'
 import icon from '@common/svg/select.svg'
 
 import select from './select.vue'
@@ -10,8 +10,7 @@ export default XFieldConf.create({
   title: '下拉选择',
   setting: setting,
   build: select,
-  validator(field: XField, model: XFormModel){
-    const value = model[field.name]
+  validator(field: XField, value: any){
     const isEmpty = null == value || typeof value == 'string' && value.length == 0
     if(field.required && isEmpty) return Promise.reject('必填')
     return Promise.resolve()

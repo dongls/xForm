@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { XField } from '@dongls/xform'
-import { updateValue } from '../util'
+import { useValue, XField } from '@dongls/xform'
 
 export default defineComponent({
   name: 'xform-bs-checkbox',
@@ -9,16 +8,11 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
-    },
-    value: {
-      type: Array,
-      default: null
     }
   },
-  emits: ['update:value'],
-  setup(props, { emit }) {
+  setup(props) {
     return {
-      updateValue: updateValue.bind(null, emit, props.field.name),
+      value: useValue<string[]>(props, []),
       radioClassName: computed(() => {
         const className = ['custom-control', 'custom-checkbox']
         if(props.field.attributes.layout == 'inline') className.push('custom-control-inline')
@@ -33,12 +27,14 @@ export default defineComponent({
   <div class="xform-bs-checkbox">
     <div v-for="(option, i) in field.options" :key="i" :class="radioClassName">
       <input 
-        :id="field.name + '_' + i" :name="field.name" 
-        :value="option.value" :checked="Array.isArray(value) && value.includes(option.value)" 
-        type="checkbox" class="custom-control-input"
-        @change="updateValue"
+        :id="field.uid + '_' + i" 
+        v-model="value" 
+        :name="field.name" 
+        :value="option.value"  
+        type="checkbox" 
+        class="custom-control-input"
       >
-      <label class="custom-control-label" :for="field.name + '_' + i">{{ option.value }}</label>
+      <label class="custom-control-label" :for="field.uid + '_' + i">{{ option.value }}</label>
     </div>
   </div>
 </template>

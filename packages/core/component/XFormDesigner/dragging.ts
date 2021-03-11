@@ -1,7 +1,5 @@
 import { 
   getCurrentInstance,
-  onMounted, 
-  onUnmounted 
 } from 'vue'
 
 import { 
@@ -65,6 +63,8 @@ export default function useDragging(){
       }
       return
     }
+
+    if(Array.prototype.indexOf.call(scope.children, target) < 0) return
   
     const reference = (direction == EnumDragDirection.UP || direction == EnumDragDirection.LEFT) ? target : target.nextElementSibling
     if(
@@ -223,11 +223,5 @@ export default function useDragging(){
     resetDragStatus()
   }
 
-  onMounted(() => {
-    document.addEventListener('mousedown', dragstart)
-  })
-
-  onUnmounted(() => {
-    document.removeEventListener('mousedown', dragstart)
-  })
+  return { dragstart }
 }

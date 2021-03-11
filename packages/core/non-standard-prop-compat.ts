@@ -8,5 +8,5 @@ import { PROPS } from './model/constant'
 
 // https://github.com/vuejs/rfcs/blob/master/active-rfcs/0008-render-function-api-change.md
 // https://github.com/vuejs/vue-next/blob/0a6105f8ce4fb6f91947fb9764aae8eec1aded10/packages/runtime-dom/src/patchProp.ts#L112
-const descriptor = { writable: true }
-Object.values(PROPS).forEach(prop => Object.defineProperty(HTMLElement.prototype, prop, descriptor))
+for(const key in PROPS) Object.defineProperty(HTMLElement.prototype, (PROPS as any)[key], { writable: true })
+

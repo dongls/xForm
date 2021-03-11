@@ -1,5 +1,7 @@
 <script lang="ts">
-export default {
+import { defineComponent, onBeforeUnmount, onMounted } from '@vue/runtime-core'
+
+export default defineComponent({
   name: 'modal',
   props: {
     title: {
@@ -12,12 +14,17 @@ export default {
     }
   },
   emits: ['update:show'],
-  methods: {
-    close(){
-      this.$emit('update:show', false)
+  setup(props, { emit }){
+    function close(){
+      props.show && emit('update:show', false)
     }
+
+    onMounted(() => document.addEventListener('keydown', close))
+    onBeforeUnmount(() => document.removeEventListener('keydown', close))
+
+    return { close }
   }
-}
+})
 </script>
 
 <template>

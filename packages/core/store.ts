@@ -63,6 +63,7 @@ export function resetField(){
 export function reset(option?: XFormOption){
   resetPreset()
   resetConfig()
+  if(store.fields.size > 0) resetField()
   if(null != option) use(option)
 }
 

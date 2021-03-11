@@ -1,5 +1,6 @@
 .xform-bs-tabs{
   display: block;
+  background-color: #fff;
 
   .tab-pane{
     padding: 5px;
@@ -11,26 +12,59 @@
 
   .nav-tabs-title{
     padding: .5rem 10px;
+    border-bottom: 1px solid #dee2e6;
   }
-}
 
-.xform-viewer{
-  .nav-tabs-title{
-    padding-left: 0;
+  .nav-tabs{
+    display: flex;
+    flex-flow: row nowrap;
+    border-bottom: none;
+    border: 1px solid #dee2e6;
+    padding-top: 5px;
+    border-bottom: none;
+    background-color: rgba(0,0,0,.03);
+    border-radius: 0.25rem 0.25rem 0 0;
+  }
+
+  .xform-bs-tabs-scroll{
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .xform-bs-tab-list{
+    float: left;
+    padding: 0 5px;
+    min-width: 100%;
+    white-space: nowrap;
+    border-bottom: 1px solid #dee2e6;
+
+    .nav-link{
+      display: inline-block;
+    }
+  }
+
+  .nav-link{
+    color: inherit;
+    
+    &:hover,
+    &.active{
+      color: #007bff;
+    }
+  }
+
+  .tab-pane{
+    border-radius: 0 0 0.25rem 0.25rem;
   }
 }
 
 .xform-preview-tabs{
-  .nav-tabs .nav-link{
+  .xform-bs-tabs-scroll{
     position: relative;
     z-index: 9;
   }
 
   .tab-pane{
     position: relative;
-    min-height: 200px;
-    // padding: 5px 0 0 0;
-
     .xform-preview:first-child{
       margin-top: 0px;
     }

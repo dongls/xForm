@@ -1,12 +1,16 @@
 .xform-preview-subform{
+  &.xform-is-selected > .xform-preview-cover,
+  &:hover > .xform-preview-cover{
+    background-color: rgb(253, 213, 138);
+  }
+
   .xform-bs-subform{
-    position: relative;
     border: 1px solid #ccc;
+    position: relative;
     z-index: 9;
   }
 
   .xform-preview{
-    min-width: 120px;
     margin-top: 0;
 
     & + .xform-preview{
@@ -18,19 +22,112 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
+  .xform-bs-subform-cell{
+    text-align: center;
+    line-height: 26px;
+    height: 26px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .xform-bs-subform-columns{
+    padding: 5px;
+    height: 50px;
+    display: flex;
+    flex-flow: row nowrap;
+    float: left;
+    min-width: 100%;
+  }
 }
 
-.xform-bs-subform-columns{
-  padding: 5px;
-  height: 62px;
-  display: flex;
-  flex-flow: row nowrap;
-  float: left;
-  min-width: 100%;
+.xform-bs-subform .xform-item{
+  margin-bottom: 0;
+
+  .xform-item-message{
+    bottom: -12px;
+    line-height: 14px;
+  }
 }
 
-.xform-bs-subform-col{
+.xform-bs-subform tr td{
+  vertical-align: middle;
+}
+
+.xform-bs-subform .table,
+.xform-bs-subform-view .table{
+  margin-bottom: 0;
+}
+
+.xform-bs-subform .table-hover tbody tr:hover{
+  background-color: #ececec;
+}
+
+.xform-bs-subform-cell span{
+  position: relative;
+}
+
+.xform-bs-subform-cell.xform-is-required{
+  font-weight: 700;
+}
+
+.xform-bs-subform-cell.xform-is-required span:before{
+  content: "*";
+  position: absolute;
+  top: 0;
+  left: -8px;
+  color: var(--xform-color-danger);
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.xform-bs-subform-operate{
   text-align: center;
-  line-height: 38px;
-  height: 38px;
+  position: sticky;
+  left: 0;
+  z-index: 8;
+}
+
+.xform-bs-subform  th.xform-bs-subform-operate{
+  background-color: #f5f5f5;
+}
+
+.xform-bs-subform  td.xform-bs-subform-operate{
+  background-color: #fff;
+}
+
+.xform-bs-subform  tr:hover td.xform-bs-subform-operate{
+  background-color: #ececec;
+}
+
+.xform-bs-subform-operate > button{
+  display: none;
+  font-size: 14px;
+  padding: 0;
+}
+
+.xform-bs-subform-row:hover .xform-bs-subform-operate > button{
+  display: inline-block;
+}
+
+.xform-bs-subform-row:hover .xform-bs-subform-operate > strong{
+  display: none;
+}
+
+.xform-bs-subform-tip{
+  text-align: center;
+  color: #6c757d;
+  
+  span{
+    vertical-align: middle;
+  }
+
+  button{
+    padding: 0 5px;
+  }
+}
+
+.xform-bs-subform-error{
+  line-height: 31px;
 }

@@ -1,4 +1,4 @@
-import { XFieldConf, XField, XFormModel } from '@dongls/xform'
+import { XFieldConf, XField } from '@dongls/xform'
 import icon from '@common/svg/radio.svg'
 
 import radio from './radio.vue'
@@ -10,8 +10,7 @@ export default XFieldConf.create({
   title: '单选',
   setting: setting,
   build: radio,
-  validator(field: XField, model: XFormModel){
-    const value = model[field.name]
+  validator(field: XField, value: any){
     const isEmpty = null == value || typeof value == 'string' && value.length == 0
     if(field.required && isEmpty) return Promise.reject('必填')
     return Promise.resolve()

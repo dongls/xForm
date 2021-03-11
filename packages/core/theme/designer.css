@@ -7,31 +7,11 @@
   color: var(--xform-text-color);
 }
 
-.xform-is-scroll{
-  overflow: auto;
-}
-
-.xform-is-scroll::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.xform-is-scroll::-webkit-scrollbar-track {
-  background-color: #f5f5f5;
-}
-
-.xform-is-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(200, 200, 200, 0.5);
-}
-
-.xform-is-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: rgb(200, 200, 200)
-}
-
 .xform-designer-panel{
   border-right: 1px solid #eee;
   background-color: #fff;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .xform-designer-main{
@@ -474,4 +454,25 @@
 
 .xform-is-scope .xform-preview{
   z-index: 9;
+}
+
+.xform-setting-row{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.xform-setting-row > label{
+  width: 100px;
+  display: block;
+  margin: 0;
+}
+
+.xform-setting-row + .xform-setting-row{
+  margin-top: 5px;
+}
+
+.xform-setting-row-content{
+  flex: 1;
+  width: 0;
 }

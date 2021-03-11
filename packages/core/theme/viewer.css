@@ -15,17 +15,9 @@
   content: none !important;
 }
 
-.xform-viewer .xform-item-content{
-  line-height: 20px;
+.xform-viewer-value{
+  line-height: 21px;
+  display: inline-block;
   padding-top: 5px;
   padding-bottom: 5px;
-  min-height: 30px;
-}
-
-.xform-viewer .xform-item-label{
-  padding-left: 0;
-}
-
-.xform-viewer .xform-item.xform-is-top .xform-item-label{
-  padding-left: 0 !important;
 }

@@ -1,5 +1,5 @@
 import { XFormConfigBase } from './model'
-import { isEmpty, isNull } from './util/lang'
+import { isEmpty, isNull, genRandomStr } from './util'
 
 const config: XFormConfigBase = {
   modes: null,
@@ -7,13 +7,10 @@ const config: XFormConfigBase = {
     immediate: true
   },
   genName(){
-    const time = Date.now().toString(36)
-    const random = Math.random().toString(36).slice(-4)
-
-    return `field_${time}_${random}`
+    return `field_${Date.now().toString(36)}_${genRandomStr()}`
   },
   formatter(field, props){
-    const value = props.model[field.name]
+    const value = field.value
 
     if(isNull(value) || isEmpty(value)) return props.schema.viewerPlaceholder ?? ''
     return Array.isArray(value) ? value.join('，') : value

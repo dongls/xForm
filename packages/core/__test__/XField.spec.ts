@@ -1,5 +1,18 @@
 import { XField } from '../model'
 
+test('XField: rest params', () => {
+  const o = {
+    name: 'field_a',
+    type: 'text',
+    otherProp: 'other prop'
+  }
+
+  const field = new XField(o)
+  expect(field.name).toBe(o.name)
+  expect(field.type).toBe(o.type)
+  expect(field.otherProp).toBe(o.otherProp)
+})
+
 test('XField: clone', () => {
   const origin = new XField({
     name: 'origin',

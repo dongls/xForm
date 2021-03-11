@@ -1,8 +1,6 @@
 import { 
   defineComponent,
-  provide, 
-  h,
-  resolveComponent,
+  provide,
   ComponentPublicInstance,
   getCurrentInstance,
   toRef,
@@ -14,7 +12,6 @@ import {
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_FORM_SCHEMA_PROVIDE_KEY,
   XField, 
-  XFormModel, 
   XFormSchema,
   XFormViewerContext,
   RenderOptions,
@@ -26,17 +23,18 @@ import {
   isFunction
 } from '../../util'
 
+import XFormItem from '../XFormItem/component'
+
 import Store from '../../store'
 
 interface XFormViewerProps{
   schema: XFormSchema;
-  model: XFormModel;
   mode: string;
+  formatter: Function;
 }
 
 interface XFormViewerSetupState{
-  formatter: Function;
-  [prop: string]: any;
+  fmtValue: Function;
 }
 
 type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormViewerSetupState;
@@ -58,20 +56,20 @@ function renderContent(instance: XFormViewerInstance, field: XField, value: any,
   const component = getFieldComponent(field, EnumComponent.VIEW, instance.mode)
   if(component == null) return null
 
-  const props = fillComponentProps(component, { field, value, model: instance.model })
-  return createVNode(component, isFunction(options.patchProps) ? options.patchProps(props) : props)
+  const props = fillComponentProps(component, { field, value })
+  const create = isFunction(options?.renderContent) ? options.renderContent : createVNode
+  return create(component, props)
 }
 
 function renderField(instance: XFormViewerInstance, field: XField, options: RenderOptions = {}){
-  const conf = Store.getConfig()
-  const value = conf.formatter(field, instance.$props, instance)
+  const value = instance.fmtValue(field, instance.$props, instance)  
+  const props = { key: field.name, field, validation: false }
+  const children = function(){
+    return renderContent(instance, field, value, options) ?? <span class="xform-viewer-value">{value}</span>
+  }
 
-  const content = renderContent(instance, field, value, options)
-  const XFormItem = resolveComponent('xform-item')
-  const itemProps = { key: field.name, field, validation: false }
-  return h(XFormItem, itemProps, function(){
-    return content ?? value
-  })
+  const create = isFunction(options?.renderItem) ? options.renderItem : createVNode
+  return create(XFormItem, props, children)
 }
 
 export default defineComponent({
@@ -81,25 +79,31 @@ export default defineComponent({
       type: Object,
       required: true
     },
-    model: {
-      type: Object,
-      required: true
-    },
     mode: {
       type: String,
+      default: null
+    },
+    formatter: {
+      type: Function,
       default: null
     }
   },
   setup(props: XFormViewerInstance){
     const instance = getCurrentInstance()
+  
+    function fmtValue(field: XField){
+      const fmt = props.formatter ?? Store.getConfig().formatter
+      return fmt(field, props, instance.proxy)
+    }
 
     provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormViewerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'viewer',
-      renderField: renderField.bind(null, instance.proxy)
+      renderField: renderField.bind(null, instance.proxy),
+      formatter: fmtValue
     })
 
-    return {}
+    return { fmtValue }
   },
   render(instance: XFormViewerInstance){
     const schema: XFormSchema = instance.schema

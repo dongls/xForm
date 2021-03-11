@@ -14,6 +14,8 @@ function cleanTypes(){
   }
 }
 
+
+// TODO: 等待api-extractor更新
 function genTypes(){
   execa.sync('node_modules/.bin/tsc', [
     '--project',

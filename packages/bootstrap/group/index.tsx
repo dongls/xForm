@@ -10,9 +10,11 @@ import {
 import icon from '@common/svg/group.svg'
 import setting from './setting.vue'
 
-const { SELECTOR, CLASS, EnumBehavior, PROPS } = constant
+const { SELECTOR, CLASS, EnumBehavior, PROPS, EnumValidateMode, EnumValidityState } = constant
 const GROUP_LIST_CLASS = 'xform-bs-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
+
+type GroupValue = { [prop: string]: XField }
 
 function useHeader(){
   const collasped = ref(false)
@@ -60,12 +62,16 @@ const build = defineComponent({
     const { renderField } = useRenderContext()
 
     return function(){
+      const value = props.field.value
       const fields = props.field.fields
       const inDesigner = props.behavior == EnumBehavior.DESIGNER
+      const message = props.field.validation.message
+
       const className = {
         'xform-item': true,
         'xform-bs-group': true,
-        'xform-is-collasped': collasped.value
+        'xform-is-collasped': collasped.value,
+        [CLASS.IS_ERROR]: props.field.validation.valid == EnumValidityState.ERROR
       }
 
       const tip = (
@@ -91,9 +97,10 @@ const build = defineComponent({
             { renderHeader(props.field) }          
             <div {...bodyProps}>
               { tip }
-              { fields.map(f => renderField(f)) }
+              { fields.map(f => renderField(inDesigner ? f : value[f.name])) }
             </div>
           </div>
+          { message && <p class="xform-item-message">{message}</p> }
         </div>
       )
     }
@@ -113,6 +120,7 @@ const view = defineComponent({
     const { collasped, renderHeader } = useHeader()
 
     return function(){
+      const value = props.field.value
       const fields = props.field.fields
       const className = {
         'xform-item': true,
@@ -125,7 +133,7 @@ const view = defineComponent({
           <div class="card">
             { renderHeader(props.field) }          
             <div class={['card-body', GROUP_LIST_CLASS]}>
-              { fields.map(f => renderField(f)) }
+              { fields.map(f => renderField(value[f.name])) }
             </div>  
           </div>
         </div>
@@ -163,5 +171,43 @@ export default XFieldConf.create({
     if(!current.matches(SELECTOR.SCOPE)) return
 
     event.stopPropagation()
+  },
+  onValueInit(field, value: any){
+    const v = (null == value || typeof value != 'object') ? {} : value
+
+    return field.fields.reduce((acc, f) => {
+      acc[f.name] = f.clone(true, v[f.name] ?? null)
+      return acc
+    }, {} as any) 
+  },
+  onValueSubmit(field){
+    const value = field.value
+    if(value == null || typeof value != 'object' || Object.keys(value).length == 0) return null
+
+    return field.fields.map(f => f.name).reduce((acc, key) => {
+      const f = Reflect.get(value, key, value) as XField
+      if(f != null){
+        const fc = f.conf
+        const v = (typeof fc?.onValueSubmit == 'function') ? fc.onValueSubmit(f) : f.value
+        Reflect.set(acc, key, v, acc)
+      }
+      return acc
+    }, {})
+  },
+  validator(field, v, options){
+    const value = field.value as GroupValue 
+
+    const promise = Object.keys(value).map(key => {
+      const f = value[key]
+      if(options.mode == EnumValidateMode.RECURSIVE){
+        return f.validate({ mode: EnumValidateMode.RECURSIVE })
+      }
+
+      return f.invalid ? Promise.reject() : Promise.resolve()
+    })
+
+    return Promise.allSettled(promise).then(r => {
+      return r.some(i => i.status === 'rejected') ? Promise.reject('请补全必填内容') : Promise.resolve()
+    }) 
   }
 })

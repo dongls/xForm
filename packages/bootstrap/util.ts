@@ -1,3 +1,5 @@
+import { constant } from '@dongls/xform'
+
 // retrieve raw value set via :value bindings
 function getValue(el: HTMLOptionElement | HTMLInputElement) {
   return '_value' in el ? (el as any)._value : el.value
@@ -41,16 +43,9 @@ function parseValue(target: any, behavior = 'build'){
   return target.value
 }
 
-export function updateValue(emit: Function, name: string, event: InputEvent ){
-  const target = event.target
-  const value = parseValue(target)
-
-  emit('update:value', { value, name })
-}
-
 export function updateField(emit: Function, event: Event, prop: string, scope?: string){
   const target = event.target
   const value = parseValue(target, 'setting')
 
-  emit('update:field', { prop, value, scope })
+  emit(constant.EVENTS.UPDATE_FIELD, { prop, value, scope })
 }

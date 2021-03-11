@@ -1,27 +1,11 @@
+import { ConcreteComponent, VNode } from '@vue/runtime-core'
 import { RawProps, XField, EnumComponent, FieldComponent, XFormScope } from '../model'
-import { isFunction, isObject, isPlainObject, isString } from './lang'
+import { isObject, isPlainObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
 export function getFieldComponent(field: XField, target: EnumComponent, mode?: string){
-  const component = field.conf?.[target]
-  if(!(component instanceof FieldComponent)) return component
-
-  if(isFunction(component.factory)) return component.factory(field, mode)
-
-  return component.extension[`${mode}_${field.name}`] || component.extension[mode]
-}
- 
-/**
- * 生成提示信息
- * @param {XFiled} field - 字段对象
- * @returns {string}
- */
-export function genPlaceholder(field: XField){
-  if(null == field) return ''
-
-  const prefix = field.required ? field.type == 'select' ? '[必选] ' : '[必填] ' : ''
-  const placeholder = field.placeholder || ''
-  return `${prefix}${placeholder}` || null
+  const r = field.conf?.[target]
+  return (r instanceof FieldComponent ? r.get(field, mode) : r) as ConcreteComponent | VNode
 }
 
 /** 获取ref对应的dom或组件 */

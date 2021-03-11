@@ -1,11 +1,20 @@
-import { defineComponent, Fragment, ref, watch } from 'vue'
+import { 
+  Fragment,
+  defineComponent,
+  ref,
+  watch,
+  h,
+  getCurrentInstance,
+} from 'vue'
 
 import {
   useRenderContext,
   XField,
   XFieldConf,
-  normalizeClass,
   constant,
+  normalizeClass,
+  normalizeWheel,
+  getHtmlElement,
 } from '@dongls/xform'
 
 import { updateField } from '../util'
@@ -13,6 +22,7 @@ import icon from '@common/svg/tabs.svg'
 import pane from './pane'
 
 const { CLASS, EnumValidityState } = constant
+const OFFSET_PROP = '__offset__'
 
 const setting = defineComponent({
   name: 'xform-bs-tabs-setting',
@@ -22,6 +32,7 @@ const setting = defineComponent({
       required: true,
     },
   },
+  emits: [ constant.EVENTS.UPDATE_FIELD ],
   setup(props, { emit }) {
     function addTab() {
       const field = props.field
@@ -42,11 +53,23 @@ const setting = defineComponent({
       f.title = (event.target as HTMLInputElement).value
     }
 
+    function up(index: number){
+      const fields = props.field.fields
+      const item = fields.splice(index, 1)[0]
+      fields.splice(index - 1, 0, item)
+    }
+
+    function down(index: number){
+      const fields = props.field.fields
+      const item = fields.splice(index + 1, 1)[0]
+      fields.splice(index, 0, item)
+    }
+
     return function () {
       const field = props.field
 
-      const tabs = field.fields.map((f) => {
-        const disabled = field.fields.length <= 1
+      const tabs = field.fields.map((f, index) => {
+        const length = field.fields.length
         return (
           <div class="xform-bs-setting-option">
             <input
@@ -56,12 +79,9 @@ const setting = defineComponent({
               value={f.title}
               onInput={updateTitle.bind(null, f)}
             />
-            <button
-              type="button"
-              class="btn btn-link btn-sm"
-              onClick={removeTab.bind(null, f)}
-              disabled={disabled}
-            >删除</button>
+            <button type="button" class="btn btn-link" onClick={up.bind(null, index)} disabled={index == 0}>上移</button>
+            <button type="button" class="btn btn-link" onClick={down.bind(null, index)} disabled={index == length - 1}>下移</button>
+            <button type="button" class="btn btn-link text-danger" onClick={removeTab.bind(null, f)} disabled={length <= 1}>删除</button>
           </div>
         )
       })
@@ -110,6 +130,19 @@ function renderMessage(field: XField) {
   return <p class="xform-item-message">{field.validation.message}</p>
 }
 
+function calcOffset(event: WheelEvent, list: HTMLElement, scroll: HTMLElement){
+  const r = normalizeWheel(event).pixelY
+  const p = (list as any)[OFFSET_PROP] || 0
+  const offset = r + p
+
+  if(offset < 0) return 0
+  if(offset > list.offsetWidth - scroll.offsetWidth){
+    return list.offsetWidth - scroll.offsetWidth
+  }
+
+  return offset
+}
+
 const build = defineComponent({
   name: 'tabs',
   props: {
@@ -117,13 +150,30 @@ const build = defineComponent({
       type: XField,
       required: true,
     },
+    behavior: {
+      type: String,
+      default: null,
+    }
   },
   setup(props) {
     const current = ref(props.field.fields[0].name)
+    const instance = getCurrentInstance()
 
     function chooseTab(field: XField, event: Event) {
       event.preventDefault()
       current.value = field.name
+    }
+
+    function scroll(event: WheelEvent){
+      const scroll = getHtmlElement(instance.refs, 'scroll')
+      const list = getHtmlElement(instance.refs, 'list') as any
+      if(list.offsetWidth <= scroll.offsetWidth) return
+
+      event.preventDefault()
+      
+      const offset = calcOffset(event, list, scroll)
+      list[OFFSET_PROP] = offset
+      list.style.transform = `translateX(${-offset}px)`
     }
 
     watch(props.field.fields, (fields) => {
@@ -133,8 +183,11 @@ const build = defineComponent({
     })
 
     return function () {
-      const context = useRenderContext()
+      const rc = useRenderContext()
       const field = props.field
+      const value = field.value ?? {}
+      const title = field.attributes.showTitle === true ? <strong class="nav-tabs-title">{field.title}</strong> : null
+      
       const tabs = field.fields.map((f) => {
         const className = {
           'nav-link': true,
@@ -145,31 +198,30 @@ const build = defineComponent({
       })
 
       const content = field.fields.map((f) => {
-        return context.renderField(f, {
-          wrapped: false,
-          patchProps: (props) => {
+        return rc.renderField(props.behavior == 'designer' ? f : value[f.name], {
+          renderContent(component, props){
             props.class = normalizeClass(props.class, {
               active: current.value == f.name,
             })
-
-            return props
+            return h(component, props)
           },
+          renderPreivew: (c, p, ch, content) => content()
         })
       })
 
-      const tabClassName = {
+      const klass = {
         'xform-item': true,
         'xform-bs-tabs': true,
         [CLASS.IS_ERROR]: field.validation.valid === EnumValidityState.ERROR,
       }
 
       return (
-        <div class={tabClassName}>
+        <div class={klass}>
           <div class="nav nav-tabs">
-            {field.attributes.showTitle === true && (
-              <strong class="nav-tabs-title">{field.title}</strong>
-            )}
-            {tabs}
+            {title}
+            <div class="xform-bs-tabs-scroll" onWheel={scroll} ref="scroll">
+              <div class="xform-bs-tab-list" ref="list">{tabs}</div>
+            </div>
           </div>
           <div class="tab-content">{content}</div>
           {renderMessage(field)}
@@ -193,15 +245,33 @@ export default XFieldConf.create({
       const tab = new XField(pane)
       tab.title = `标签${field.fields.length + 1}`
       field.fields.push(tab)
+      field.attributes.showTitle = true
     }
   },
-  validator(field) {
-    const panes = field.fields
-      .filter((f) => f.validation.valid === EnumValidityState.ERROR)
-      .map((i) => i.title)
+  onValueInit(field, _value){
+    const value = _value ?? {}
 
-    return panes.length > 0
-      ? Promise.reject(`请补全标签页[${panes.join(',')}]的必填内容`)
-      : Promise.resolve()
+    return field.fields.reduce((acc, f) => {
+      const k = f.name
+      acc[k] = f.clone(true, value[k])
+      return acc
+    }, {} as any)
+  },
+  onValueSubmit(field){
+    const value = field.value ?? {}
+    return field.fields.map(f => f.name).reduce((acc, k: string) => {
+      const f = value[k] as XField
+      const onValueSubmit = f.conf?.onValueSubmit
+      acc[k] = typeof onValueSubmit == 'function' ? onValueSubmit(f) : f.value
+      return acc
+    }, {} as any)
+  },
+  validator(field, value, options) {
+    const promise = Object.values(value ?? {}).map((f: XField) => f.validate({ mode: options.mode }))
+
+    return Promise.allSettled(promise).then(r => {
+      const reason = r.map(i => i.status == 'rejected' ? i.reason : null).filter(i => i)
+      return reason.length > 0 ? Promise.reject(reason.join('\n')) : Promise.resolve()
+    })
   },
 })

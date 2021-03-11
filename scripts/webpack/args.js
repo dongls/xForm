@@ -19,5 +19,6 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV,
   TARGET: process.env.TARGET,
   RELEASE_VERSION: process.env.RELEASE_VERSION,
-  RELEASE_PACKAGE: process.env.RELEASE_PACKAGE
+  RELEASE_PACKAGE: process.env.RELEASE_PACKAGE,
+  RELEASE_TARGET: process.env.RELEASE_TARGET
 }

@@ -1,25 +1,22 @@
 <script lang="ts">
 import { XField } from '@dongls/xform'
-import { createDefaultSchema, useLocalSchema } from '@document/util/common'
+import { useLocalSchema } from '@document/util/common'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'designer-view',
   emits: ['view'],
   setup(){
-    const { schema, schemaJSON } = useLocalSchema()    
+    const { schema, reset } = useLocalSchema()    
 
     return {
       schema,
-      schemaJSON,
-      reset(){
-        schema.value = createDefaultSchema()
-      },
+      reset,
       clear(){
         schema.value.fields = []
       },
       viewJson(){
-        this.$emit('view', { title: 'Field JSON', json: schemaJSON.value })
+        this.$emit('view', { title: 'Schema JSON', json: JSON.stringify(schema.value, null, '  ') })
       },
       remove(e: { field: XField, defaultAction: Function }){
         window.confirm(`确定要删除字段[${e.field.title}]?`) && e.defaultAction()

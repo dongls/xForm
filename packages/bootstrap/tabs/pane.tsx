@@ -7,7 +7,7 @@ import {
   useRenderContext,
 } from '@dongls/xform'
 
-const { SELECTOR, CLASS, PROPS } = constant
+const { SELECTOR, CLASS, PROPS, EnumValidateMode } = constant
 
 export default XFieldConf.create({
   type: 'tabs.pane',
@@ -30,11 +30,13 @@ export default XFieldConf.create({
       return function () {
         const context = useRenderContext()
         const fields = props.field.fields
+        const value = props.field.value ?? {}
+        const inDesigner = props.behavior == 'designer'
 
         const content =
           props.behavior == 'designer' && fields.length == 0 ? (
             <p class={[CLASS.IS_EMPTY_TIP, 'xform-bs-empty-tip']}>请将左侧控件拖动到此处</p>
-          ) : fields.map((f) => context.renderField(f))
+          ) : fields.map((f) => context.renderField(inDesigner ? f : value[f.name]))
 
         const _p = {
           class: {
@@ -45,13 +47,8 @@ export default XFieldConf.create({
           [PROPS.XFIELD]: props.field,
           [PROPS.SCOPE]: props.field
         }
-  
 
-        return (
-          <div {..._p}>
-            {content}
-          </div>
-        )
+        return <div {..._p}>{content}</div>
       }
     },
   }),
@@ -92,5 +89,35 @@ export default XFieldConf.create({
   },
   onDrop(event) {
     event.stopPropagation()
+  },
+  onValueInit(field, _value){
+    const value = _value ?? {}
+    return field.fields.reduce((acc, f) => {
+      const k = f.name
+      acc[k] = f.clone(true, value[k] ?? null)
+      return acc
+    }, {} as any)
+  },
+  onValueSubmit(field){
+    const value = field.value ?? {}
+
+    return field.fields.map(f => f.name).reduce((acc: any, k: string) => {
+      const f = value[k] as XField
+      const onValueSubmit = f.conf?.onValueSubmit
+      acc[k] = typeof onValueSubmit == 'function' ? onValueSubmit(f) : f.value
+      return acc
+    }, {} as any)
+  },
+  validator(field, value, options){
+    const promise = Object.values(value ?? {}).map((f: XField) => {
+      if(options.mode == EnumValidateMode.RECURSIVE){
+        return f.validate({ mode: EnumValidateMode.RECURSIVE })
+      }
+      return f.invalid ? Promise.reject() : Promise.resolve()
+    })
+    
+    return Promise.allSettled(promise).then(r => {
+      return r.some(i => i.status === 'rejected') ? Promise.reject(`请补全标签页[${field.title}]必填内容`) : Promise.resolve()
+    })
   }
 })

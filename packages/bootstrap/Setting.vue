@@ -1,5 +1,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { constant } from '@dongls/xform'
+
+const { EVENTS } = constant
 
 export default defineComponent({
   name: 'xform-bs-setting',
@@ -9,11 +12,11 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update:prop'],
+  emits: [EVENTS.UPDATE_PROP],
   setup(props, { emit }){
     return {
       updateProp(prop: string, value: any){
-        emit('update:prop', { prop, value })
+        emit(EVENTS.UPDATE_PROP, { prop, value })
       }
     }
   }

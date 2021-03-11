@@ -73,7 +73,7 @@ export default defineComponent({
       class="xform-bs-setting-option"
     >
       <input :value="option.value" class="form-control form-control-sm" placeholder="请输入选项内容" @input="updateOption($event, option)">
-      <button type="button" class="btn btn-link btn-sm" @click="removeOption(option)">删除</button>
+      <button type="button" class="btn btn-link text-danger" @click="removeOption(option)">删除</button>
     </div>
     <button type="text" class="btn btn-link btn-sm" @click="addOption">添加选项</button>
   </section>

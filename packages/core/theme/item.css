@@ -5,10 +5,11 @@
   color: var(--xform-text-color);
 }
 
-.xform-item + .xform-item{
-  margin-top: 10px;
+.xform-builder .xform-item,
+.xform-viewer .xform-item{
+  margin-bottom: 20px;
 }
-  
+
 .xform-item.xform-is-required .xform-item-label{
   font-weight: 700;
 }
@@ -69,6 +70,7 @@
   width: 0;
   flex: 1;
   line-height: 20px;
+  position: relative;
 }
 
 i.xform-item-help-icon{
@@ -98,10 +100,12 @@ pre.xform-item-help-content{
 
 .xform-is-validating,
 .xform-item-message{
+  position: absolute;
   color: #606266;
   font-size: 12px;
   line-height: 20px;
   margin: 0;
+  white-space: pre-line;
 }
 
 .xform-is-unknown{

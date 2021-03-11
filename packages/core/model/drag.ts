@@ -17,6 +17,7 @@ import {
   isNull,
   getHtmlElement,
   getProperty,
+  isString,
 } from '../util'
 
 import { XFormDesignerInstance } from '../component/XFormDesigner/component'
@@ -24,6 +25,7 @@ import { AnyProps } from './common'
 
 const DELTA_X = 72
 const DELTA_Y = 17
+const MODIFIABLE_KEY = ['currentTarget', 'cancelBubble', 'defaultPrevented']
 
 export interface InternalDragUtils{
   getInternalInstance: () => ComponentInternalInstance;
@@ -44,7 +46,7 @@ export interface InternalDragEventContext extends InternalDragUtils, AnyProps{
   fieldType?: string;
 }
 
-export class InternalDragEvent{
+class InternalDragEvent{
   cancelBubble = false // 是否被取消
   currentTarget: Element; // 当前被触发事件的元素
   defaultPrevented = false // 是否阻止默认行为
@@ -55,12 +57,13 @@ export class InternalDragEvent{
   target: Element; // 当前触发事件的元素
   type: string; // 事件类型
 
-  constructor(type: string, path: Element[], originEvent: Event, dragElement: Element){
+  constructor(type: string, path: Element[], dragElement: Element, originEvent: Event, context: InternalDragEventContext){
     this.dragElement = dragElement
     this.type = type
     this.path = path
     this.target = path[0]
     this.originEvent = originEvent
+    this.context = context
   }
 
   stopPropagation(){
@@ -70,6 +73,15 @@ export class InternalDragEvent{
   preventDefault(){
     this.defaultPrevented = true
   }
+}
+
+export type PublicDragEvent = { 
+  readonly [P in Exclude<keyof InternalDragEvent, 'currentTarget' | 'cancelBubble' | 'defaultPrevented'>]: InternalDragEvent[P] 
+} & { 
+  currentTarget: Element,
+  cancelBubble: boolean,
+  defaultPrevented: boolean,
+  readonly context: Readonly<InternalDragEventContext> 
 }
 
 export class InternalDragContext{
@@ -147,31 +159,27 @@ export class InternalDragContext{
   }
 
   createDragOverEvent(path: Element[], originEvent: Event, context: InternalDragEventContext){
-    const event = new InternalDragEvent(EnumDragEventType.DRAGOVER, path, originEvent, this.dragElement)
-
     context.directionY = this.directionY
     context.directionX = this.directionX
     context.mode = this.mode
     context.hook = EnumDragHook.DRAGOVER
     context.fieldType = this.fieldType
 
-    event.context = context
-    return event
+    const event = new InternalDragEvent(EnumDragEventType.DRAGOVER, path, this.dragElement, originEvent, context)
+    return InternalDragContext.createPublicDragEvent(event)
   }
 
   createDropEvent(path: Element[], originEvent: Event, context: InternalDragEventContext){
-    const event = new InternalDragEvent(EnumDragEventType.DROP, path, originEvent, this.dragElement)
-    
     context.mode = this.mode
     context.hook = EnumDragHook.DROP
     context.field = this.field
     context.fieldType = this.fieldType
 
-    event.context = context
-    return event
+    const event = new InternalDragEvent(EnumDragEventType.DROP, path, this.dragElement, originEvent, context)
+    return InternalDragContext.createPublicDragEvent(event)
   }
 
-  trigger(event: InternalDragEvent){
+  trigger(event: PublicDragEvent){
     const hook = event.context.hook
     if(isNull(hook) || isEmpty(hook)) return
 
@@ -182,13 +190,39 @@ export class InternalDragContext{
       const field = getProperty<XField>(element, PROPS.XFIELD)
       if(field == null || field.conf == null || !isFunction(field.conf[hook])) continue
       
+      const fc = field.conf
+      if(Array.isArray(fc.accept) && fc.accept.indexOf(event.context.fieldType) < 0) continue
+
       event.currentTarget = element
-      field.conf[hook](event)
+      fc[hook](event)
 
       if(event.cancelBubble) break
     }
 
     return event
+  }
+
+  static createPublicDragEvent(event: InternalDragEvent){
+    Object.freeze(event.context)
+
+    return new Proxy<PublicDragEvent>(event, {
+      set(target, prop, value, receiver){
+        if(isString(prop) && MODIFIABLE_KEY.indexOf(prop) >= 0){
+          Reflect.set(target, prop, value, receiver)
+        } else if (__IS_DEV__) {
+          console.warn(`Set operation on key "${String(prop)}" failed: target is readonly.`, target)
+        }
+  
+        return true
+      },
+      deleteProperty(target, prop) {
+        if (__IS_DEV__) {
+          console.warn(`Delete operation on key "${String(prop)}" failed: target is readonly.`, target)
+        }
+
+        return true
+      }
+    })
   }
 
   private initialize(instance: ComponentInternalInstance){
