@@ -218,16 +218,14 @@ export default defineComponent({
         instance.reset()
       }
     }
-    
-    const main = (
-      <div class="xform-builder-main">
+        
+    return (
+      <tagName {...props}>
         {isFunction(slots.header) && slots.header()}
         {schema.fields.map(field => renderField(instance, field))}
         {isFunction(slots.default) ? slots.default() : null}
         {isFunction(slots.footer) && slots.footer()}
-      </div>
+      </tagName>
     )
-        
-    return h(tagName, props, main)
   }
 })

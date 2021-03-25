@@ -89,6 +89,12 @@ export default defineComponent({
 <style>
 .example-builder{
   padding: 15px 0;
+  max-width: 640px;
+}
+
+.is-wide .example-builder{
+  width: calc(100vw - 702px);
+  max-width: none;
 }
 
 .example-builder-footer{

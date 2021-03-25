@@ -54,7 +54,7 @@
 
 .xform-item-label{
   box-sizing: border-box;
-  width: 120px;
+  width: var(--xform-label-width);
   padding: 5px 10px 0 10px;  
   line-height: 20px;
   word-break: break-all;

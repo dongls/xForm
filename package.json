@@ -98,12 +98,21 @@
     ],
     "production": [
       "chrome >= 51",
-      "firefox >= 52",
+      "firefox >= 53",
       "safari >= 11",
       "edge >= 15"
     ],
     "esm": [
-      "since 2020-07"
+      "chrome >= 61",
+      "firefox >= 60",
+      "safari >= 11",
+      "edge >= 16"
+    ],
+    "bundler": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 safari versions",
+      "last 2 edge versions"
     ]
   },
   "engines": {

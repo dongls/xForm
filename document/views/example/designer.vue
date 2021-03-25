@@ -1,6 +1,6 @@
 <script lang="ts">
 import { XField } from '@dongls/xform'
-import { useLocalSchema } from '@document/util/common'
+import { useLocalSchema, useIsWide } from '@document/util/common'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
@@ -10,6 +10,7 @@ export default defineComponent({
     const { schema, reset } = useLocalSchema()    
 
     return {
+      isWide: useIsWide(),
       schema,
       reset,
       clear(){
@@ -30,9 +31,17 @@ export default defineComponent({
   <xform-designer v-model:schema="schema" mode="example" @remove="remove">
     <template #tool>
       <div class="designer-tool">
-        <button type="button" class="btn btn-link btn-text btn-sm" @click="reset">重置</button>
-        <button type="button" class="btn btn-link btn-text btn-sm" @click="clear">清空</button>
-        <button type="button" class="btn btn-link btn-text btn-sm" @click="viewJson">查看JSON</button>
+        <div class="designer-tool-left">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="prop-is-wide" v-model="isWide">
+            <label class="custom-control-label" for="prop-is-wide">宽屏</label>
+          </div>
+        </div>
+        <div class="designer-tool-right">
+          <button type="button" class="btn btn-link btn-text btn-sm" @click="reset">重置</button>
+          <button type="button" class="btn btn-link btn-text btn-sm" @click="clear">清空</button>
+          <button type="button" class="btn btn-link btn-text btn-sm" @click="viewJson">查看JSON</button>
+        </div>
       </div>
     </template>
 
@@ -71,5 +80,20 @@ $--xform-color-primary: #409EFF !default;
   padding: 0 10px;
   line-height: 38px;
   height: 38px;
+
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.designer-tool-left .custom-checkbox{
+  height: 24px;
+  line-height: 24px;
+}
+
+.is-wide .xform-is-pc{
+  width: auto;
+  max-width: none;
 }
 </style>

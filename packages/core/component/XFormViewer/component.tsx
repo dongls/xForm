@@ -111,12 +111,10 @@ export default defineComponent({
 
     return (
       <div class="xform-viewer">
-        <div class="xform-viewer-main">
-          {typeof slots.header == 'function' && slots.header()}
-          {schema.fields.map(field => renderField(instance, field))}
-          {typeof slots.default == 'function' && slots.default()}
-          {typeof slots.footer == 'function' && slots.footer()}
-        </div>
+        {typeof slots.header == 'function' && slots.header()}
+        {schema.fields.map(field => renderField(instance, field))}
+        {typeof slots.default == 'function' && slots.default()}
+        {typeof slots.footer == 'function' && slots.footer()}
       </div>
     )
   }

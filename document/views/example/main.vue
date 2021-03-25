@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-    <div class="main xform-is-scroll">
+    <div class="main xform-is-scroll" :class="{'is-wide': isWide}">
       <router-view :key="state.key" @view="viewJson"/>
     </div>
 
@@ -37,8 +37,9 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import { usePreset } from './preset'
 import { version } from '@dongls/xform'
+import { usePreset } from './preset'
+import { useIsWide } from '../../util/common'
 
 export default defineComponent({
   name: 'example',
@@ -56,6 +57,7 @@ export default defineComponent({
     usePreset('bootstrap', state)
 
     return {
+      isWide: useIsWide(),
       state,
       version,
       viewJson(event: any){

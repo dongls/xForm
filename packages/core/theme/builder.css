@@ -3,10 +3,6 @@
   
   font-size: 14px;
   color: var(--xform-text-color);
-}
-
-.xform-builder-main{
-  width: 640px;
-  margin: 0 auto;
   padding: 0 10px;
+  margin: 0 auto;
 }

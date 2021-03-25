@@ -6,14 +6,14 @@ const util = require('./util')
 const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
 
-const target = (
-  IS_PRODUCTION 
-    ? RELEASE_TARGET == 'esm' ? 'browserslist:esm' : 'browserslist:production' 
-    : 'web'
-)
+function genTarget(){
+  if(!IS_PRODUCTION) return 'web'
+  if(RELEASE_TARGET == 'esm') return 'browserslist:esm'
+  return 'browserslist:production'
+}
 
 module.exports = {
-  target,
+  target: genTarget(),
   module: {
     rules: [
       {
@@ -76,7 +76,6 @@ module.exports = {
     extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
   },
   plugins: [
-    new VueLoaderPlugin(),
     new webpack.DefinePlugin({
       '__IS_DEV__': JSON.stringify(process.env.NODE_ENV == 'development'),
       '__IS_TEST__': JSON.stringify(false),
@@ -84,6 +83,7 @@ module.exports = {
       '__VUE_OPTIONS_API__': JSON.stringify(true),
       '__VUE_PROD_DEVTOOLS__': JSON.stringify(!IS_PRODUCTION),
       '__VUE_VERSION__': JSON.stringify(process.env.VUE_VERSION),
-    })
+    }),
+    new VueLoaderPlugin()
   ]
 }

@@ -44,7 +44,7 @@ const esm = {
   },
   output: {
     path: props.outPath,
-    filename: 'index.mjs',
+    filename: 'index.esm.js',
     libraryTarget: 'module',
     clean: true,
     module: true,
@@ -83,4 +83,4 @@ const umd = {
   }
 }
 
-module.exports = merge(baseConfig, common, RELEASE_TARGET == 'ESM' ? esm : umd)
+module.exports = merge(baseConfig, common, RELEASE_TARGET == 'esm' ? esm : umd)
