@@ -1,5 +1,6 @@
-export const XFORM_CONTEXT_PROVIDE_KEY = Symbol.for('@@xform.builder.context.provide@@')
-export const XFORM_FORM_SCHEMA_PROVIDE_KEY = Symbol.for('@@xform.schema.provide@@')
+export const XFORM_CONTEXT_PROVIDE_KEY = Symbol(__IS_DEV__ ? 'xform.builder.context.provide' : '')
+export const XFORM_SCHEMA_PROVIDE_KEY = Symbol(__IS_DEV__ ? 'xform.schema.provide' : '')
+export const XFORM_ITEM_EXTERNAL_PROVIDE_KEY = Symbol(__IS_DEV__ ? 'xform.item.external.provide' : '')
 
 export const CLASS = Object.freeze({
   DRAGGABLE: 'xform-draggable',

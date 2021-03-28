@@ -3,17 +3,16 @@ import {
   inject,
   ref,
   Ref,
-  toRef
 } from 'vue'
 
 import { isObject } from './util/lang'
 
 import {  
   XFORM_CONTEXT_PROVIDE_KEY, 
+  XFORM_SCHEMA_PROVIDE_KEY,
+  XField,
   XFormRenderContext,
   XSchema,
-  XField,
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
 } from './model'
 
 export {
@@ -24,7 +23,9 @@ export {
   getHtmlElement,
   getXField,
   normalizeClass,
-  normalizeWheel
+  normalizeWheel,
+  isEmpty,
+  genRandomStr
 } from './util'
 
 export function useRenderContext<T = XFormRenderContext>(){
@@ -41,17 +42,16 @@ export function createSchemaRef(origin?: any, model?: any){
 }
 
 export function useValue<T>(props: { field: XField }, defValue?: T){
-  const r = toRef(props, 'field') as Ref<XField>
   return computed<T>({
     get(){
-      return r.value.value ?? defValue
+      return props.field.value ?? defValue
     },
     set(v){
-      r.value.value = v 
+      props.field.value = v 
     }
   })
 }
 
 export function useSchema(){
-  return inject(XFORM_FORM_SCHEMA_PROVIDE_KEY) as Ref<XSchema>
+  return inject(XFORM_SCHEMA_PROVIDE_KEY) as Ref<XSchema>
 }

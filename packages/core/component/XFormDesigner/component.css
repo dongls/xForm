@@ -126,12 +126,20 @@
   transition: border-color ease .3s, background-color ease .3s;
 }
 
+.xform-preview.xform-is-hidden .xform-item{
+  position: relative;
+}
+
 .xform-preview + .xform-preview{
   margin-top: 5px;
 }
 
 .xform-preview .xform-item-top .xform-item-label{
   padding-top: 0;
+}
+
+.xform-preview.xform-is-hidden .xform-preview-cover{
+  background-color: #fdc45c;
 }
 
 .xform-preview:hover,
@@ -145,7 +153,7 @@
 }
 
 .xform-preview-cover:hover,
-.xform-is-selected > .xform-preview-cover{
+.xform-preview.xform-is-selected > .xform-preview-cover{
   background-color: var(--xform-color-primary);
 }
 
@@ -380,27 +388,7 @@
   font-size: 14px;
   text-align: center;
   font-weight: 700;
-  color: #9a9a9a;
-}
-
-.xform-setting-head{
-  margin: 0;
-  line-height: 24px;
-  font-size: 16px;
-  padding-bottom: 3px;
-  border-bottom: 1px solid rgba(0,0,0,.125);
-  font-weight: 700;
-}
-
-.xform-setting{
-  margin-top: 10px;
-}
-
-.xform-setting > header{
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 20px;
-  margin-bottom: 5px;
+  color: #fff4f4;
 }
 
 .xform-tabs{
@@ -442,37 +430,7 @@
   padding: 10px;
 }
 
-.xform-setting-inline{
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-}
-
-.xform-setting-inline-item{
-  margin-right: 10px;
-}
-
 .xform-is-scope .xform-preview{
   z-index: 9;
 }
 
-.xform-setting-row{
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-}
-
-.xform-setting-row > label{
-  width: 100px;
-  display: block;
-  margin: 0;
-}
-
-.xform-setting-row + .xform-setting-row{
-  margin-top: 5px;
-}
-
-.xform-setting-row-content{
-  flex: 1;
-  width: 0;
-}

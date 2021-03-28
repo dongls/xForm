@@ -4,6 +4,7 @@ import {
   SELECTOR,
   PROPS
 } from '../model'
+
 import { isString } from './lang'
 
 /**
@@ -64,16 +65,6 @@ export function normalizeWheel(event: WheelEvent){
   const unit = event.deltaMode == 0 ? 1 : event.deltaMode == 1 ? 40 : 800
 
   return { pixelX: deltaX * unit, pixelY: deltaY * unit }
-}
-
-/**
- * 查询需要触发hook的元素
- * @param {Element} target - 目标元素 
- * @returns {Element} 如果目标元素位于单独的scope中，那么返回scope对应的元素，否则返回目标元素
- */
-export function findHookEl(target: Element){
-  const scope = target.closest(SELECTOR.SCOPE)
-  return scope ? scope : target
 }
 
 /** 获取dom元素上的属性 */

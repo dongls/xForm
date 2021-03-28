@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { mockOption } from './mock'
 import { XFormItem, store, XField, XFieldConf } from '../index'
-import { EnumLabelPosition, XFORM_FORM_SCHEMA_PROVIDE_KEY } from '../model'
+import { EnumLabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
 import { createSchemaRef } from '../api'
 
 describe('XFormItem slots: default', () => {
@@ -114,7 +114,7 @@ describe('XFormItem props: labelPosition', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_FORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.LEFT })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.LEFT })
         }
       }
     })
@@ -135,7 +135,7 @@ describe('XFormItem props: labelPosition', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_FORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.RIGHT })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.RIGHT })
         }
       }
     })
@@ -156,7 +156,7 @@ describe('XFormItem props: labelPosition', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_FORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.TOP })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.TOP })
         }
       }
     })
@@ -198,7 +198,7 @@ describe('XFormItem props: labelSuffix', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_FORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
         }
       }
     })
@@ -225,7 +225,7 @@ describe('XFormItem props: label', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_FORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
         }
       }
     })
@@ -250,7 +250,7 @@ describe('XFormItem props: label', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_FORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
         }
       }
     })

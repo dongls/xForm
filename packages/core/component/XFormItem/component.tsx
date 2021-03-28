@@ -13,18 +13,20 @@ import {
 } from 'vue'
 
 import { 
+  CLASS,
   EnumComponent,
   EnumLabelPosition,
   EnumValidityState,
+  RawProps,
   ValidateFunc,
   XFORM_CONTEXT_PROVIDE_KEY,
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  XFORM_ITEM_EXTERNAL_PROVIDE_KEY,
+  XFORM_SCHEMA_PROVIDE_KEY,
   XField, 
   XFormBuilderContext,
-  XFormSchema,
-  CLASS,
-  RawProps,
   XFormRenderContext,
+  XFormSchema,
+  AnyProps,
 } from '../../model'
 
 import { 
@@ -37,10 +39,12 @@ type XFormItemProps = {
   field: XField;
   validation: boolean | ValidateFunc;
   label: string | boolean;
+  custom: boolean;
   virtual: boolean;
   title: string;
   type: string;
   name: string;
+  disabled: boolean;
 }
 
 function isBuilderContext(context: XFormRenderContext): context is XFormBuilderContext {
@@ -60,13 +64,13 @@ function renderMessage(field: XField){
   return null
 }
 
-function renderContent(slots: Slots, field: XField, context: XFormRenderContext){
-  if(isFunction(slots.default)) return slots.default({ field })
+function renderContent(slots: Slots, field: XField, context: XFormRenderContext, disabled: boolean){
+  if(isFunction(slots.default)) return slots.default({ field, disabled })
 
   const component = getFieldComponent(field, EnumComponent.BUILD)
   if(null == component) return null
 
-  const allProps = { field: field } as RawProps
+  const allProps = { field: field, disabled } as RawProps
 
   if(isBuilderContext(context)){
     allProps.value = field.value
@@ -94,7 +98,6 @@ enum EnumComponentName {
   INTERNAL = 'xform-item-internal'
 }
 
-const XFORM_ITEM_EXTERNAL_PROVIDE_KEY = Symbol.for('@@xform.item.external.provide@@')
 
 function createComponent(name: EnumComponentName){
   return defineComponent({
@@ -111,6 +114,10 @@ function createComponent(name: EnumComponentName){
       label: {
         type: [String, Boolean],
         default: null
+      },
+      custom: {
+        type: Boolean,
+        default: false
       },
       /** 
        * 默认情况下，组件会使用`props.field`作为字段数据的来源
@@ -134,10 +141,14 @@ function createComponent(name: EnumComponentName){
       type: {
         type: String,
         default: null
+      },
+      disabled: {
+        type: Boolean,
+        default: false
       }
     },
     setup(props: XFormItemProps, { slots }){
-      const schema = inject<Ref<XFormSchema>>(XFORM_FORM_SCHEMA_PROVIDE_KEY, null)
+      const schema = inject<Ref<XFormSchema>>(XFORM_SCHEMA_PROVIDE_KEY, null)
       const context = inject<XFormRenderContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
       const fieldRef = normalizeField(props)
       
@@ -157,34 +168,46 @@ function createComponent(name: EnumComponentName){
       }
       
       onMounted(() => {
-        fieldRef.value.mounted = true
+        fieldRef.value.state.mounted = true
       })
       onBeforeUnmount(() => {
-        fieldRef.value.mounted = false
+        fieldRef.value.state.mounted = false
       })
 
       return function(){
         const field = fieldRef.value
   
         // 字段完全自定义时, 只显示用户自定义的内容
-        if(field?.conf?.custom === true) {
-          return renderContent(slots, field, context)
+        if(props.custom || field?.conf?.custom === true) {
+          return renderContent(slots, field, context, props.disabled)
         }
   
         const label = props.label === false ? false : props.label || field.title
         const labelPosition = schema?.value?.labelPosition ?? EnumLabelPosition.LEFT
         const labelSuffix = schema?.value?.labelSuffix
-        const className =  {
-          'xform-item': true,
-          [`xform-is-${labelPosition}`]: true,
-          'xform-is-required': isBuilderContext(context) ? !context.novalidate.value && field.required : field.required, 
-          [CLASS.IS_ERROR]: field.validation.valid == EnumValidityState.ERROR
+        const required = (
+          isBuilderContext(context) && props.validation === false || props.disabled || field.disabled 
+            ? false
+            : field.required
+        )
+
+        const _props = {
+          'class': {
+            'xform-item': true,
+            [`xform-is-${labelPosition}`]: true,
+            'xform-is-required': required,
+            [CLASS.IS_ERROR]: field.validation.valid == EnumValidityState.ERROR
+          }
+        } as AnyProps
+
+        if(__IS_TEST__ === true){
+          _props.name = field.name
         }
         
         return (
-          <div class={className}>
+          <div {..._props}>
             {
-              label ===  false 
+              label === false 
                 ? null
                 : (
                   <label class="xform-item-label" for={field.uid}>
@@ -194,7 +217,7 @@ function createComponent(name: EnumComponentName){
                 )
             }
             <div class="xform-item-content">
-              {renderContent(slots, field, context)}
+              {renderContent(slots, field, context, props.disabled)}
               {renderMessage(field)}       
             </div>
           </div>

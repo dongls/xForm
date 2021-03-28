@@ -1,4 +1,4 @@
-import { createVNode, defineComponent, Fragment } from 'vue'
+import { defineComponent } from 'vue'
 import { 
   XField,
   XFieldConf,
@@ -7,75 +7,16 @@ import {
   useRenderContext,
   useSchema,
   useValue,
+  isEmpty,
 } from '@dongls/xform'
 
-import { updateField } from '../util'
 import icon from '@common/svg/subform.svg'
+import { Row, DEF_COLUMN_WIDTH, BODY_CLASS, DEF_INDEX_WIDTH } from './common'
+import { useInlineLayout } from './inline'
+import { useModalLayout } from './modal'
+import setting from './setting.vue'
 
-type RowCell = {[prop: string]: XField}
-type Row = Array<RowCell>
 const { CLASS, PROPS, EVENTS, EnumValidateMode } = constant
-const BODY_CLASS = 'xform-bs-subform-columns'
-const DEF_COLUMN_WIDTH = 150
-
-const setting = defineComponent({
-  name: 'xform-bs-subform-setting',
-  props: {
-    field: {
-      type: XField,
-      required: true
-    }
-  },
-  emits: [EVENTS.UPDATE_FIELD],
-  setup(props, { emit }){
-    function updateColWidth(event: Event, key: string){
-      const target = event.target as HTMLInputElement
-      const value = parseFloat(target.value)
-      const colWidths = props.field.attributes.colWidths
-      colWidths[key] = isNaN(value) ? null : value
-      emit(EVENTS.UPDATE_FIELD, { prop: 'colWidths', value: colWidths, scope: 'attributes' })
-    }
-    
-    return function(){
-      const field = props.field
-      const fields = field.fields
-      return (
-        <Fragment>
-          <h3 class="xform-setting-head">子表单</h3>
-          <section class="xform-setting">
-            <header>标题：</header>
-            <input
-              value={field.title}
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="请输入标题..."
-              onInput={e => updateField(emit, e, 'title')}
-            />
-          </section>
-          <section class="xform-setting">
-            <header>列宽：</header>
-            {fields.map(f => {
-              return (
-                <div class="xform-setting-row">
-                  <label>{f.title}</label>
-                  <div class="xform-setting-row-content">
-                    <input 
-                      type="number"
-                      placeholder={`[数字] 默认宽度${DEF_COLUMN_WIDTH}`}
-                      class="form-control form-control-sm"
-                      value={field.attributes.colWidths[f.name]}
-                      onInput={e => updateColWidth(e, f.name)}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </section>
-        </Fragment>
-      )
-    }
-  }
-})
 
 const preview = defineComponent({
   name: 'xform-bs-subform-preview',
@@ -91,7 +32,7 @@ const preview = defineComponent({
     return function(){
       const field = props.field
       const fields = field.fields
-      const colWidths = field.attributes.colWidths
+      const colWidths = field.attributes.colWidths ?? {}
       const content = (
         fields.length == 0 
           ? <p class={`${CLASS.IS_EMPTY_TIP} xform-bs-empty-tip`}>请将左侧控件拖动到此处</p>
@@ -136,103 +77,20 @@ const subform = defineComponent({
     field: {
       type: XField,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   emits: [EVENTS.UPDATE_VALUE],
   setup(props){
-    const rc = useRenderContext()
-    const value = useValue<Row>(props)
-
-    function addRow(){
-      const row = props.field.fields.reduce((acc, f) => {
-        acc[f.name] = f.clone(true, null)
-        return acc
-      }, {} as any)
-
-      const v = value.value
-      v.push(row)
-      value.value = v
-    }
-
-    function removeRow(row: any){
-      const v = value.value
-      const index = v.indexOf(row)
-      if(index >= 0){
-        v.splice(index, 1)
-        value.value = v
-      }
-    }
+    const value = useValue<Row[]>(props)
+    const modalLayout = useModalLayout(props, value)
+    const inlineLayout = useInlineLayout(props, value)
 
     return function(){
-      const columns = props.field.fields
-      if(columns.length == 0){
-        return <div class="xform-is-unknown">请放入至少一个字段</div>
-      }
-
-      let total = 60
-      const colWidths = props.field.attributes.colWidths
-      const cols = columns.map(column => {
-        const width = colWidths[column.name] ?? DEF_COLUMN_WIDTH
-        total += width
-        const style = { width: `${width}px` }
-        return <col style={style}></col>
-      })
-
-      const rows = value.value.map(((row, index) => {
-        const tds = columns.map(column => {
-          const cell = rc.renderField(row[column.name], {
-            renderItem(component, props, children){
-              props.label = false
-              return createVNode(component, props, children)
-            }
-          })
-          return <td>{cell}</td>
-        })
-
-        return (
-          <tr class="xform-bs-subform-row">
-            <td class="xform-bs-subform-operate">
-              <strong>{index + 1}</strong>
-              <button type="button" class="btn btn-link text-danger" onClick={removeRow.bind(null, row)}>删除</button>
-            </td>
-            {tds}
-          </tr>
-        )
-      }))
-
-      const tip = (
-        rows.length > 0 
-          ? null 
-          : <tr>
-            <td colspan={columns.length + 1} class="xform-bs-subform-tip">
-              <span>点击</span>
-              <button type="button" class="btn btn-link btn-sm shadow-none " onClick={addRow}>+ 添加</button>
-              <span>按钮插入数据</span>
-            </td>
-          </tr>
-      )
-
-      return (
-        <div class="xform-bs-subform">
-          <div class="table-responsive">
-            <table class="table table-hover" style={{ width: total + 'px' }}>
-              <colgroup><col style="width: 60px"></col>{cols}</colgroup>
-              <thead>
-                <th class="xform-bs-subform-operate">#</th>
-                {columns.map(column => {
-                  const klass = {
-                    'xform-bs-subform-cell': true,
-                    'xform-is-required': column.required
-                  }
-                  return <th class={klass}><span>{column.title}</span></th>
-                })}
-              </thead>
-              <tbody>{rows}{tip}</tbody>
-            </table>
-          </div>
-          <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>+ 添加</button>
-        </div>
-      )
+      return props.field.attributes.layout == 'inline' ? inlineLayout() : modalLayout()
     }
   }
 })
@@ -243,10 +101,14 @@ const view = defineComponent({
     field: {
       type: XField,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props){
-    const value = useValue<Row>(props)
+    const value = useValue<Row[]>(props)
     const rc = useRenderContext<XFormViewerContext>()
     const schema = useSchema()
 
@@ -256,19 +118,22 @@ const view = defineComponent({
         return <span class="xform-viewer-value">{schema.value.viewerPlaceholder}</span>
       }
 
-      let total = 60
-      const colWidths = props.field.attributes.colWidths
-      const cols = columns.map(column => {
+      const colWidths = props.field.attributes.colWidths ?? {}
+      const { cols, total } = columns.reduce((acc, column) => {
         const width = colWidths[column.name] ?? DEF_COLUMN_WIDTH
-        total += width
-        const style = { width: `${width}px` }
-        return <col style={style}></col>
-      })
+        acc.total += width
+        acc.cols.push(<col style={`width: ${width}px`}/>)
+        return acc
+      }, { cols: [], total: DEF_INDEX_WIDTH })
 
       const rows = value.value.map((row, index) => {
         const cells = columns.map(column => {
-          const options = { renderItem: (c: any, p: any, ch: any) => ch() }
-          return <td>{ rc.renderField(row[column.name], options) }</td>
+          return <td>{ 
+            rc.renderField(row[column.name], {
+              parentProps: { disabled: props.disabled },
+              renderItem: (c: any, p: any, ch: any) => ch(), 
+            }) 
+          }</td>
         })
 
         const opreate = <td class="xform-bs-subform-operate"><strong>{index + 1}</strong></td>
@@ -276,16 +141,19 @@ const view = defineComponent({
       })
 
       return (
-        <div class="xform-bs-subform">
+        <div class="xform-bs-subform xform-bs-subform-view">
           <div class="table-responsive">
             <table class="table table-hover" style={{ width: total + 'px' }}>
-              <colgroup><col style="width: 60px"></col>{cols}</colgroup>
+              <colgroup>
+                <col style={`width: ${DEF_INDEX_WIDTH}px`}></col>
+                {cols}
+              </colgroup>
               <thead>
                 <th class="xform-bs-subform-operate">#</th>
                 {columns.map(column => {
                   const klass = {
                     'xform-bs-subform-cell': true,
-                    'xform-is-required': column.required
+                    'xform-is-required': !props.disabled && !column.disabled && column.required
                   }
                   return <th class={klass}><span>{column.title}</span></th>
                 })}
@@ -325,7 +193,10 @@ export default XFieldConf.create({
     event.stopPropagation()
   },
   onCreate(field, params, init){
-    if(init) field.attributes.colWidths = {}
+    if(init) {
+      field.attributes.colWidths = {}
+      field.attributes.layout = 'modal'
+    }
   },
   onSubmit(data){
     const colWidths = data.attributes?.colWidths ?? {}
@@ -359,9 +230,9 @@ export default XFieldConf.create({
       }, {} as any)
     })
   },
-  validator(field, value: Row, options){
-    if(field.required && value.length == 0) return Promise.reject('必填') 
-    
+  validator(field, value: Row[], options){
+    if(isEmpty(value)) return Promise.reject('必填')
+
     const promise = value
       .reduce((acc, item) => acc.concat(Object.values(item)), [])
       .map(f => {
@@ -374,5 +245,9 @@ export default XFieldConf.create({
     return Promise.allSettled(promise).then(r => {
       return r.some(i => i.status === 'rejected') ? Promise.reject('请补全必填内容') : Promise.resolve()
     })
+  },
+  onValidate(field: XField){
+    if(isEmpty(field.title)) return Promise.reject('标题为空')
+    return field.fields.length == 0 ? Promise.reject('至少需要一个字段') : Promise.resolve()
   }
 })

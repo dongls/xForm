@@ -27,7 +27,7 @@ function getLocalSchema(){
 
     return createSchemaRef(schema, getLocalModel())
   } catch (error) {
-    console.error(error)
+    __IS_DEV__ && console.warn(error.message)
     const schema = createSchemaRef(createDefaultSchema())
     saveToLocalSchema(schema.value)
     return schema

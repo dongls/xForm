@@ -6,7 +6,6 @@ test('XFieldConf: alias', () => {
     type: 'text',
     title: '单行文本',
     icon: 'icon-text',
-
     setting: { 
       name: 'setting-component', 
       render(){

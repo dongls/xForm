@@ -1,4 +1,4 @@
-import { isReactive, isRef, toRaw } from '@vue/reactivity'
+import { isReactive, isRef, toRaw } from 'vue'
 import { AnyProps } from '../model'
 
 const OBJECT_TO_STRING = Object.prototype.toString
@@ -23,9 +23,20 @@ export function isString(value: unknown): value is string{
   return typeof value === 'string'
 }
 
-/** 是否为空串 */
+/** 
+ * 是否为空值
+ * - null、undefined
+ * - string: 空字符串
+ * - number: NaN, Infinity
+ * - Array: 长度为0
+ */
 export function isEmpty(value: unknown){
-  return isString(value) && value.trim().length == 0 
+  if(value == null) return true
+  if(isString(value)) return value.trim().length == 0
+  if(isNumber(value)) return isNaN(value) || !isFinite(value)
+  if(Array.isArray(value)) return value.length == 0 
+
+  return false
 }
 
 export function isNumber(value: unknown): value is number{
@@ -48,6 +59,10 @@ export function isRegExp(value: unknown): value is RegExp{
 
 export function isFunction(value: unknown): value is Function{
   return typeof value == 'function'
+}
+
+export function isSymbol(value: unknown): value is Symbol{
+  return typeof value == 'symbol'
 }
 
 /** 是否为简单对象 @see https://github.com/lodash/lodash/blob/master/isPlainObject.js */
@@ -77,33 +92,26 @@ export function clonePlainObject(target: any): any{
   if(null == target || typeof target != 'object') return target
   if(Array.isArray(target)) return target.map(clonePlainObject)
   
-  const obj: any = {}
-  for(const prop in target){
-    // 只复制对象本身的属性，忽略原型上的属性
-    if(!Object.prototype.hasOwnProperty.call(target, prop)) continue
-
-    const value = target[prop]
-    obj[prop] = (null == value || typeof target != 'object') ? value : clonePlainObject(value)
-  }
-
-  return obj
+  return Object.keys(target).reduce((acc, key) => {
+    acc[key] = clonePlainObject(target[key])
+    return acc
+  }, {} as any)
 }
 
 function merge(target: any, source: any){
-  for(const prop in source){
-    // 只合并对象本身的属性，忽略原型上的属性
-    if(!Object.prototype.hasOwnProperty.call(source, prop) || null == source[prop]) continue
-
+  Object.keys(source).forEach(prop => {
     const value = source[prop]
-    // 数组和非object对象直接替换
-    if(typeof value != 'object' || Array.isArray(value)){
+    if(value === undefined) return
+
+    // null、数组和非object对象直接替换
+    if(null === value || typeof value != 'object' || Array.isArray(value)){
       target[prop] = value
-      continue
+      return
     }
 
     const tarValue = target[prop]
     target[prop] = merge(isObject(tarValue) ? tarValue : {}, value)
-  }
+  })
 
   return target
 }
@@ -147,7 +155,7 @@ export function flat<T>(arr: T[]): T[]{
 
 export function ignoreError(v: unknown): void{
   if(v instanceof Promise) {
-    v.catch(e => __IS_DEV__ && console.warn(e))
+    v.catch(e => __IS_DEV__ && console.error(e))
     return
   }
 
@@ -155,7 +163,7 @@ export function ignoreError(v: unknown): void{
     try {
       return ignoreError(v())
     } catch (e) {
-      __IS_DEV__ && console.warn(e)
+      __IS_DEV__ && console.error(e)
       return
     }
   }
@@ -191,28 +199,28 @@ export function getRaw<T>(v: unknown){
   return v as T
 }
 
-export function usePrivateProps<T extends object, P extends object>(){
-  const storage = new WeakMap<T, P>()
+export function usePrivateProps<P extends object>(){
+  const storage = new WeakMap<any, P>()
   const o = Object.create(null)
 
-  o.get = function<V>(target: T, key: string){
-    const raw = getRaw<T>(target)
+  o.get = function(target: any, key: string){
+    const raw = getRaw<any>(target)
     const props = storage.get(raw)
     if(isNull(props)) return null
 
-    return Reflect.get(props, key, props) as V
+    return Reflect.get(props, key, props)
   }
 
-  o.set = function(target: T, key: string, value: any){
-    const raw = getRaw<T>(target)
+  o.set = function(target: any, key: string, value: any){
+    const raw = getRaw<any>(target)
     const props = storage.get(raw)
     if(isNull(props)) return
 
     Reflect.set(props, key, value, props)
   }
 
-  o.create = function(target: T, props: P){
-    const raw = getRaw<T>(target)
+  o.create = function(target: any, props: P){
+    const raw = getRaw<any>(target)
     const old = storage.get(raw)
     storage.set(raw, { ...old, ...props })
   }
@@ -220,9 +228,9 @@ export function usePrivateProps<T extends object, P extends object>(){
   __IS_DEV__ && (o.storage = storage)
 
   return o as {
-    get: <V>(target: T, key: string) => V,
-    set: (target: T, key: string, value: any) => void,
-    create: (target: T, props: P) => void
+    get: <V>(target: any, key: string) => V,
+    set: (target: any, key: string, value: any) => void,
+    create: (target: any, props: P) => void
   }
 }
 

@@ -14,7 +14,6 @@ import {
 import {
   isEmpty,
   isFunction,
-  isNull,
   getHtmlElement,
   getProperty,
   isString,
@@ -181,7 +180,7 @@ export class InternalDragContext{
 
   trigger(event: PublicDragEvent){
     const hook = event.context.hook
-    if(isNull(hook) || isEmpty(hook)) return
+    if(isEmpty(hook)) return
 
     const elements = event.path
     for(const element of elements){

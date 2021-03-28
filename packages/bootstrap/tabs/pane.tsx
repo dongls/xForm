@@ -25,6 +25,10 @@ export default XFieldConf.create({
         type: String,
         default: null,
       },
+      disabled: {
+        type: Boolean,
+        default: false
+      }
     },
     setup(props) {
       return function () {
@@ -33,10 +37,11 @@ export default XFieldConf.create({
         const value = props.field.value ?? {}
         const inDesigner = props.behavior == 'designer'
 
-        const content =
-          props.behavior == 'designer' && fields.length == 0 ? (
-            <p class={[CLASS.IS_EMPTY_TIP, 'xform-bs-empty-tip']}>请将左侧控件拖动到此处</p>
-          ) : fields.map((f) => context.renderField(inDesigner ? f : value[f.name]))
+        const content = (
+          props.behavior == 'designer' && fields.length == 0 
+            ? <p class={[CLASS.IS_EMPTY_TIP, 'xform-bs-empty-tip']}>请将左侧控件拖动到此处</p>
+            : fields.map((f) => context.renderField(inDesigner ? f : value[f.name], { parentProps: { disabled: props.disabled } }))
+        )
 
         const _p = {
           class: {
@@ -59,6 +64,10 @@ export default XFieldConf.create({
         type: XField,
         required: true,
       },
+      disabled: {
+        type: Boolean,
+        default: false
+      }
     },
     setup(props) {
       const context = useRenderContext()
@@ -67,7 +76,7 @@ export default XFieldConf.create({
         const fields = props.field.fields
         return (
           <div class="tab-pane">
-            {fields.map((f) => context.renderField(f))}
+            {fields.map((f) => context.renderField(f, { parentProps: { disabled: props.disabled } }))}
           </div>
         )
       }

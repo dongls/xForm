@@ -11,5 +11,12 @@ export default XFieldConf.create({
   custom: true,
   setting: setting,
   build: divider,
-  view: divider
+  view: divider,
+  onCreate(field, params, init){
+    if(init){
+      field.attributes.type = 'solid'
+      field.attributes.top = 0
+      field.attributes.bottom = 0
+    }
+  }
 })

@@ -1,11 +1,12 @@
 <template>
   <input
-    :id="field.uid"
     v-model="value"
+    :id="field.uid"
     :name="field.name"
     type="text"
     class="form-control form-control-sm"
     :placeholder="field.placeholder"
+    :disabled="disabled || field.disabled"
   >
 </template>
 
@@ -19,6 +20,10 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props){

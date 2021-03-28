@@ -1,7 +1,8 @@
 import {
   clonePlainObject,
   mergePlainObject,
-  flat
+  flat,
+  isEmpty
 } from '../util/lang'
 
 test('lang: clonePlainObject', () => {
@@ -24,24 +25,35 @@ test('lang: clonePlainObject', () => {
   expect(origin).toStrictEqual(clone)
 })
 
-describe('lang: mergePlainObject', () => {
-  test('simple', () => {
-    const x = { a: 1, b: false, e: function(){/* */}, f: [1, 3] }
-    const y = { b: 2, e: function(){/* */} }
-    const z = { a: 0, c: 'c', b: null, f: [1, 2, 3] } as any
-    const o = mergePlainObject({}, x, y, z)
+test('lang: mergePlainObject', () => {
+  const x = { a: 1, b: false, e: function(){/* */}, f: [1, 3], g: 1 }
+  const y = { b: 2, e: function(){/* */}, g: undefined } as any
+  const z = { a: 0, c: 'c', b: null, f: [1, 2, 3] } as any
+  const o = mergePlainObject({}, x, y, z)
 
-    expect(o).not.toBe(x)
-    expect(o.a).toBe(0)
-    expect(o.b).toBe(2)
-    expect(o.e).toBe(y.e)
-    expect(o.f).toBe(z.f)
-  })
+  expect(o).not.toBe(x)
+  expect(o.a).toBe(z.a)
+  expect(o.b).toBe(z.b)
+  expect(o.e).toBe(y.e)
+  expect(o.f).toBe(z.f)
+  expect(o.g).toBe(x.g)
 })
 
-test('flat', () => {
+test('lang: flat', () => {
   expect(flat(null)).toStrictEqual([])
   expect(flat([1, 2, 3])).toStrictEqual([1, 2, 3])
   expect(flat([1, [2, 3]])).toStrictEqual([1, 2, 3])
   expect(flat([1, [2], [[3]]])).toStrictEqual([1, 2, [3]])
+})
+
+test('lang: isEmpty', () => {
+  expect(isEmpty(null)).toBe(true)
+  expect(isEmpty(undefined)).toBe(true)
+  expect(isEmpty('  ')).toBe(true)
+  expect(isEmpty([])).toBe(true)
+  expect(isEmpty(NaN)).toBe(true)
+  expect(isEmpty(Infinity)).toBe(true)
+  expect(isEmpty(-Infinity)).toBe(true)
+  expect(isEmpty(0)).toBe(false)
+  expect(isEmpty({})).toBe(false)
 })

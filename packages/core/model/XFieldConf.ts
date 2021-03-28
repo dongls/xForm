@@ -12,27 +12,31 @@ export type ValidateFunc = (field: XField, value: any, options?: { mode: EnumVal
 export type ValidateObj = { mode: EnumValidateMode, validator: ValidateFunc }
 type Validator = ValidateFunc | ValidateObj | Rule | Rule[] | false
 type DragHookFn = (e: PublicDragEvent) => void | boolean;
+
 const CALL_FROM_CREATE = Symbol()
 
 class Hook{
-  // 字段值初始化时触发
+  /** 字段值初始化时触发 */
   onValueInit?: (field: XField, value: any) => any;
-  // 字段值提交时触发
+  /** 字段值提交时触发 */
   onValueSubmit?: (field: XField) => any;
-  // 字段创建时调用
+  /** 验证字段自身时调用 */
+  onValidate?: (field: XField) => Promise<string | void>;
+  /** 字段创建时调用 */
   onCreate?: (field: XField, params: any, init: boolean) => void;
-  // 字段删除后时调用
+  /** 字段删除后时调用 */
   onRemoved?: (field: XField, scope: XFormScope, instance: ComponentInternalInstance) => void;
-  // 字段提交时触发，一般在转换为JSON时调用
+  /** 字段提交时触发，一般在转换为JSON时调用 */
   onSubmit?: (data: any) => object;
-  // 字段拖到该字段上方时调用
+  /** 字段拖到该字段上方时调用 */
   [EnumDragHook.DRAGOVER]?: DragHookFn;
-  // 字段放到该字段上调用, 只对scoped值为true的字段生效
+  /** 字段放到该字段上调用 */
   [EnumDragHook.DROP]?: DragHookFn;
 
   constructor(options: Partial<Hook> = {}){
     this.onValueInit = toFunction(options.onValueInit)
     this.onValueSubmit = toFunction(options.onValueSubmit)
+    this.onValidate = toFunction(options.onValidate)
     this.onCreate = toFunction(options.onCreate)
     this.onRemoved = toFunction(options.onRemoved)
     this.onSubmit = toFunction(options.onSubmit)
@@ -75,6 +79,7 @@ export class XFieldConf extends Hook{
   accept?: string[];
   scoped?: boolean;
   custom?: boolean;
+  /** 验证器，用于验证表单值 */
   validator?: Validator;
 
   setting?: VueComponent | FieldComponent;
@@ -82,7 +87,7 @@ export class XFieldConf extends Hook{
   build?: VueComponent | FieldComponent;
   view?: VueComponent | FieldComponent;
 
-  // 依赖的子组件
+  /** 依赖的子组件 */
   dependencies: XFieldConf[];
 
   constructor(options: any = {}, from?: Symbol){

@@ -1,8 +1,7 @@
-import { usePrivateProps } from '../util'
+import { usePrivateProps } from '../util/lang'
 type Callbacks = Map<string, Set<Function>>
 
-// eslint-disable-next-line no-use-before-define
-const PRIV_PROPS = usePrivateProps<Emitter, { callbacks: Callbacks}>()
+const PRIV_PROPS = usePrivateProps<{ callbacks: Callbacks }>()
 
 export class Emitter{
   constructor(){

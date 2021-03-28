@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted } from '@vue/runtime-core'
+import { defineComponent, onBeforeUnmount, onMounted } from 'vue'
 
 export default defineComponent({
   name: 'modal',
@@ -19,8 +19,13 @@ export default defineComponent({
       props.show && emit('update:show', false)
     }
 
-    onMounted(() => document.addEventListener('keydown', close))
-    onBeforeUnmount(() => document.removeEventListener('keydown', close))
+    function onEsc(event: KeyboardEvent){
+      const key = event.key.toLowerCase()
+      if(key == 'escape' && props.show) close()
+    }
+
+    onMounted(() => document.addEventListener('keydown', onEsc))
+    onBeforeUnmount(() => document.removeEventListener('keydown', onEsc))
 
     return { close }
   }

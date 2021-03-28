@@ -1,3 +1,20 @@
+<template>
+  <div class="xform-bs-radio">
+    <div v-for="(option, i) in field.options" :key="i" :class="radioClassName">
+      <input 
+        v-model="value"
+        :id="field.uid + '_' + i" 
+        :name="field.name"
+        :value="option.value" 
+        type="radio" 
+        class="custom-control-input"
+        :disabled="disabled || field.disabled"
+      >
+      <label class="custom-control-label" :for="field.uid + '_' + i">{{ option.value }}</label>
+    </div>
+  </div>
+</template>
+
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useValue, XField } from '@dongls/xform'
@@ -8,6 +25,10 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
@@ -22,22 +43,6 @@ export default defineComponent({
   }
 })
 </script>
-
-<template>
-  <div class="xform-bs-radio">
-    <div v-for="(option, i) in field.options" :key="i" :class="radioClassName">
-      <input 
-        :id="field.uid + '_' + i" 
-        v-model="value"
-        :name="field.name"
-        :value="option.value" 
-        type="radio" 
-        class="custom-control-input"
-      >
-      <label class="custom-control-label" :for="field.uid + '_' + i">{{ option.value }}</label>
-    </div>
-  </div>
-</template>
 
 <style>
 .xform-bs-radio {

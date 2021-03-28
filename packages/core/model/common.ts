@@ -58,6 +58,7 @@ export type XFormConfig = {
 }
 
 export type RenderOptions = {
+  parentProps?: RawProps;
   renderPreivew?: (component: ConcreteComponent | string, props: RawProps, children: () => any, content: () => any) => VNode;
   renderItem?: (component: ConcreteComponent | string, props: RawProps, children: () => any) => VNode;
   renderContent?: (component: ConcreteComponent | string, props: RawProps) => VNode;
@@ -74,8 +75,7 @@ export interface XFormBuilderContext{
   // 更新字段值
   onUpdateValue: (event: any) => void;
   // 渲染字段
-  renderField: RenderField,
-  novalidate: Ref<boolean>
+  renderField: RenderField;
 }
 
 export interface XFormDesignerContext{

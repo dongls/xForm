@@ -94,6 +94,7 @@ textarea.example-value{
   font-size: 14px;
   font-family: 'cascadia code', Consolas, Arial, Helvetica, sans-serif;
   box-sizing: border-box;
+  line-height: 20px;
 }
 
 .icon-outbound{

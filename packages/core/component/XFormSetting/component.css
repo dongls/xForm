@@ -1,0 +1,40 @@
+.xform-setting-head{
+  margin: 0;
+  line-height: 24px;
+  font-size: 16px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(0,0,0,.125);
+  font-weight: 700;
+}
+
+.xform-setting{
+  margin-top: 10px;
+}
+
+.xform-setting > header{
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 5px;
+}
+
+.xform-setting-row{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.xform-setting-row > label{
+  width: 100px;
+  display: block;
+  margin: 0;
+}
+
+.xform-setting-row + .xform-setting-row{
+  margin-top: 5px;
+}
+
+.xform-setting-row-content{
+  flex: 1;
+  width: 0;
+}

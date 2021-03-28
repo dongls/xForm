@@ -2,7 +2,6 @@ import {
   ComponentPublicInstance,
   Ref,
   Slots,
-  computed,
   createVNode,
   defineComponent, 
   getCurrentInstance,
@@ -19,7 +18,7 @@ import {
   RawProps,
   RenderOptions,
   XFORM_CONTEXT_PROVIDE_KEY, 
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  XFORM_SCHEMA_PROVIDE_KEY,
   XField,
   XFormBuilderContext,
   XFormSchema,
@@ -42,6 +41,7 @@ interface XFormBuilderProps{
   schema: XFormSchema;
   tag: string;
   novalidate: boolean;
+  disabled: boolean;
 }
 
 interface XFormBuilderSetupState{
@@ -71,14 +71,15 @@ function renderUnknown(field: XField){
 function renderContent(instance: XFormBuilderInstance, field: XField, options: RenderOptions){
   const slots = instance.$slots
   const value = field.value
+  const disabled = instance.disabled || field.disabled || options.parentProps?.disabled === true
 
   const nameSlot = slots[`name_${field.name}`]
-  if(isFunction(nameSlot)) return nameSlot({ field, value })
+  if(isFunction(nameSlot)) return nameSlot({ field, value, disabled })
 
   const typeSlot = slots[`type_${field.type}`]
-  if(isFunction(typeSlot)) return typeSlot({ field, value })
+  if(isFunction(typeSlot)) return typeSlot({ field, value, disabled })
 
-  const all = { field, value, 'onUpdate:value': instance.onUpdateValue }
+  const all = { field, value, 'onUpdate:value': instance.onUpdateValue, disabled }
   const component = getFieldComponent(field, EnumComponent.BUILD, instance.mode)
   if(null == component) return null
 
@@ -88,7 +89,16 @@ function renderContent(instance: XFormBuilderInstance, field: XField, options: R
 }
 
 function renderField(instance: XFormBuilderInstance, field: XField, options: RenderOptions = {}){
-  const props = { key: field.uid, field, validation: true }
+  if(field.hidden === true) return null
+
+  const disabled = instance.disabled || field.disabled || options.parentProps?.disabled === true
+  const props = { 
+    key: field.uid, 
+    field, 
+    validation: !instance.novalidate && !disabled, 
+    disabled
+  } as RawProps
+
   const children = function(){
     return renderContent(instance, field, options) ?? renderUnknown(field)
   }
@@ -116,6 +126,10 @@ export default defineComponent({
     novalidate: {
       type: Boolean,
       default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   emits: [
@@ -126,7 +140,6 @@ export default defineComponent({
     const instance = getCurrentInstance()
     const pending = ref(false)
     const preventValidate = ref(false)
-    const isEnableValidate = computed(() => !preventValidate.value && props.novalidate !== true)
     const validator = useValidator({ onValueChange })
 
     function onValueChange(e: any){
@@ -143,7 +156,12 @@ export default defineComponent({
       validator.registerField(fieldRef.value.uid, {
         fieldRef,
         onValidate: function(options?: ValidateOptions){
-          if(!isEnableValidate.value) return Promise.resolve()
+          if(
+            props.novalidate === true || 
+            props.disabled === true ||
+            preventValidate.value === true ||
+            fieldRef.value.disabled
+          ) return Promise.resolve()
           return validator.validateField(fieldRef.value, options)
         },
         onValidChange: null
@@ -160,14 +178,13 @@ export default defineComponent({
       validator.resetValidate(fields)
     }
 
-    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
+    provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormBuilderContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'builder',
       registerField, 
       removeField, 
       onUpdateValue,
       renderField: renderField.bind(null, instance.proxy),
-      novalidate: toRef(props, 'novalidate')
     })
 
     return {
@@ -198,10 +215,8 @@ export default defineComponent({
     const schema = instance.schema
     const tagName = (isString(instance.tag) ? instance.tag : 'form').toLowerCase()
 
-    const props = { 
-      ...instance.$attrs,
-      novalidate: tagName == 'form'
-    } as RawProps
+    const props = { ...instance.$attrs } as RawProps
+    if(tagName == 'form') props.novalidate = true
 
     const klass = normalizeClass(props.class)
     klass['xform-builder'] = true

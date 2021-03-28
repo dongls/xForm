@@ -10,22 +10,30 @@ export default defineComponent({
     const instance = getCurrentInstance()
     const { schema } = useLocalSchema()
     const pending = ref(false)
+    const disabled = ref(false)
 
-    const viewJSON = function(){
+    function viewJSON(){
       const model = schema.value.model
       emit('view', { title: 'Form JSON', json: JSON.stringify(model, null, '  ') })
     }
 
+    function reset(){
+      (instance.refs.builder as any).reset()
+    }
+
     return {
+      disabled,
+      disableForm(){
+        disabled.value = !disabled.value
+        if(disabled.value) reset()
+      },
       schema, 
       pending,
       change(/* e: any */){
         // console.log(`${e.field.name}[${e.field.title}] value change:`, e.field.value,)
         saveToLocalModel(schema.value.model)
       },
-      reset(){
-        (instance.refs.builder as any).reset()
-      },
+      reset,
       viewJSON,
       submit(validate: Function){
         pending.value = true
@@ -61,6 +69,7 @@ export default defineComponent({
     class="example-builder"
     @value:change="change"
     @submit="submit"
+    :disabled="disabled"
   >
     <template #header>
       <h3 class="example-builder-title">笔记本电脑报修单</h3>
@@ -70,7 +79,7 @@ export default defineComponent({
 
     <xform-item name="address" title="地址" :validation="validator" virtual>
       <template #default="{field}">
-        <input v-model="field.value" type="text" class="form-control form-control-sm" placeholder="详细地址">
+        <input v-model="field.value" type="text" class="form-control form-control-sm" placeholder="详细地址" :disabled="disabled">
         <p class="example-builder-tip">该字段并非由设计器生成，而是页面单独添加的字段</p>
       </template>
     </xform-item>
@@ -79,8 +88,9 @@ export default defineComponent({
     <template #footer>
       <div class="example-builder-footer">
         <button type="button" class="btn btn-link btn-text btn-sm" :disabled="pending" @click="viewJSON">查看JSON</button>
-        <button type="reset" class="btn btn-light btn-text btn-sm" :disabled="pending">重置</button>
-        <button type="submit" class="btn btn-primary btn-sm" :disabled="pending">提交</button>
+        <button type="button" class="btn btn-link btn-text btn-sm" @click="disableForm">{{ disabled ? '启用' : '禁用' }}表单</button>
+        <button type="reset" class="btn btn-light btn-text btn-sm" :disabled="pending || disabled">重置</button>
+        <button type="submit" class="btn btn-primary btn-sm" :disabled="pending || disabled">提交</button>
       </div>
     </template>
   </xform-builder>

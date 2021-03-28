@@ -1,7 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { createSchemaRef } from '../api'
 import { mockOption, mockSchema } from './mock/index'
-import { store, XFormDesigner, XFormItem } from '../index'
+import { store, XFormDesigner, XFormItem, createSchemaRef } from '../index'
 import { ModeGroup, PROPS } from '../model'
 import { h } from 'vue'
 

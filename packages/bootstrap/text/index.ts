@@ -1,4 +1,4 @@
-import { XFieldConf, XField } from '@dongls/xform'
+import { XFieldConf, XField, isEmpty } from '@dongls/xform'
 import icon from '@common/svg/text.svg'
 
 import text from './text.vue'
@@ -11,8 +11,7 @@ export default XFieldConf.create({
   setting: setting,
   build: text,
   validator(field: XField, value: string){
-    const isEmpty = null == value || typeof value == 'string' && value.length == 0
-    if(field.required && isEmpty) return Promise.reject('必填')
+    if(field.required && isEmpty(value)) return Promise.reject('必填')
     return Promise.resolve()
   }
 })

@@ -55,6 +55,10 @@ const build = defineComponent({
     behavior: {
       type: String,
       default: null
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props){
@@ -66,6 +70,7 @@ const build = defineComponent({
       const fields = props.field.fields
       const inDesigner = props.behavior == EnumBehavior.DESIGNER
       const message = props.field.validation.message
+      const disabled = props.disabled
 
       const className = {
         'xform-item': true,
@@ -91,13 +96,17 @@ const build = defineComponent({
         [PROPS.SCOPE]: props.field
       }
 
+      const content = fields.map(f => {
+        return renderField(inDesigner ? f : value[f.name], { parentProps: { disabled } })
+      })
+
       return (
         <div class={className}>
           <div class="card">
             { renderHeader(props.field) }          
             <div {...bodyProps}>
               { tip }
-              { fields.map(f => renderField(inDesigner ? f : value[f.name])) }
+              { content }
             </div>
           </div>
           { message && <p class="xform-item-message">{message}</p> }
@@ -113,6 +122,10 @@ const view = defineComponent({
     field: {
       type: XField,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props){
@@ -133,7 +146,7 @@ const view = defineComponent({
           <div class="card">
             { renderHeader(props.field) }          
             <div class={['card-body', GROUP_LIST_CLASS]}>
-              { fields.map(f => renderField(value[f.name])) }
+              { fields.map(f => renderField(value[f.name], { parentProps: { disabled: props.disabled } })) }
             </div>  
           </div>
         </div>

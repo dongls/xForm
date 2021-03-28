@@ -118,44 +118,4 @@ $xform-divider-border-color: #666;
   font-weight: 600;
   background-color: #fff;
 }
-
-.xform-el-divider-preview{
-  padding: 8px;
-}
-
-.xform-el-divider-setting-types .el-radio-group{
-  width: 100%;
-}
-
-.xform-el-divider-setting-type{
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-
-  .el-radio{
-    margin-right: 10px;
-  }
-
-  .el-radio__label{
-    display: none;
-  }
-
-  .xform-divider{
-    flex: 1;
-  }
-}
-
-.xform-el-divider-margin{
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-
-  label{
-    margin-right: 10px;
-  }
-
-  .el-slider{
-    flex: 1;
-  }
-}
 </style>

@@ -1,15 +1,19 @@
 <script lang="ts">
 import { XField } from '@dongls/xform'
 import { useLocalSchema, useIsWide } from '@document/util/common'
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
+
+let timer: any = null
 
 export default defineComponent({
   name: 'designer-view',
   emits: ['view'],
   setup(){
     const { schema, reset } = useLocalSchema()    
+    const isSchemaValid = ref(false)
 
     return {
+      isSchemaValid,
       isWide: useIsWide(),
       schema,
       reset,
@@ -21,6 +25,21 @@ export default defineComponent({
       },
       remove(e: { field: XField, defaultAction: Function }){
         window.confirm(`确定要删除字段[${e.field.title}]?`) && e.defaultAction()
+      },
+      validateSchema(){
+        return schema.value.validate().then(r => {
+          if(!r.valid){
+            return this.$emit('view', { title: '错误信息', json: JSON.stringify(r.result, null, '  ') })
+          }
+
+          isSchemaValid.value = true
+          if(timer) clearTimeout(timer)
+
+          timer = setTimeout(() => {
+            isSchemaValid.value = false
+            timer = null
+          }, 2000)
+        })
       }
     }
   }
@@ -38,6 +57,8 @@ export default defineComponent({
           </div>
         </div>
         <div class="designer-tool-right">
+          <strong class="is-schema-valid" v-if="isSchemaValid">验证通过</strong>
+          <button type="button" class="btn btn-link btn-text btn-sm" @click="validateSchema">验证</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="reset">重置</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="clear">清空</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="viewJson">查看JSON</button>
@@ -95,5 +116,10 @@ $--xform-color-primary: #409EFF !default;
 .is-wide .xform-is-pc{
   width: auto;
   max-width: none;
+}
+
+.is-schema-valid{
+  color: #28a745;
+  margin-right: 5px;
 }
 </style>

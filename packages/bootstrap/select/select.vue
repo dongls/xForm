@@ -1,3 +1,22 @@
+<template>
+  <select
+    v-model="value"
+    :id="field.uid"
+    :name="field.name"
+    :class="className"
+    :disabled="disabled || field.disabled"
+  >
+    <option class="xform-bs-is-placeholer" value="">---- {{ field.placeholder || '请选择' }} ----</option>
+    <option 
+      v-for="option in field.options" 
+      :key="option.value" 
+      :value="option.value"
+    >
+      {{ option.value }}
+    </option>
+  </select>
+</template>
+
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useValue, XField } from '@dongls/xform'
@@ -8,6 +27,10 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
@@ -26,24 +49,6 @@ export default defineComponent({
   }
 })
 </script>
-
-<template>
-  <select
-    :id="field.uid"
-    v-model="value"
-    :name="field.name"
-    :class="className"
-  >
-    <option class="xform-bs-is-placeholer" value="">---- {{ field.placeholder || '请选择' }} ----</option>
-    <option
-      v-for="option in field.options"
-      :key="option.value"
-      :value="option.value"
-    >
-      {{ option.value }}
-    </option>
-  </select>
-</template>
 
 <style>
 .xform-bs-is-empty{

@@ -16,15 +16,17 @@ interface Validation {
   external: () => boolean | ValidateFunc;
 }
 
-interface Option { value: string }
-
-interface XFieldStorage{
-  uid: string;
-  broadcast: Function
+// TODO: 支持显示颜色，标签
+interface Option { 
+  value: string;
+  label?: string;
+  color?: string;
 }
 
-// eslint-disable-next-line no-use-before-define
-const PRIV_PROPS = usePrivateProps<XField, XFieldStorage>()
+const PRIV_PROPS = usePrivateProps<{
+  uid: string;
+  broadcast: Function
+}>()
 
 function cleanName(o: any){
   delete o.name
@@ -45,13 +47,27 @@ function cleanName(o: any){
 export class XField extends Serializable{
   [prop: string]: any
 
+  // 类型
   type: string;
-  name: string;  
+  // 标识，不唯一
+  name: string;
+  // 名称
   title?: string;
 
   placeholder?: string;
-  required?: boolean;
   options?: Option[];
+
+  // 必填
+  required?: boolean;
+  /**
+   * 禁用当前字段：
+   * - 禁用时，字段本身无法填写
+   * - 禁用时，如果存在子字段，那么子字段也被禁用
+   * - 禁用时，验证失效
+   */
+  disabled?: boolean;
+  // 隐藏
+  hidden?: boolean;
 
   // 各字段类型的私有属性都存储在此
   attributes?: { [prop: string]: any };
@@ -62,7 +78,7 @@ export class XField extends Serializable{
 
   // 子类型
   fields: XField[]
-  // 验证相关属性
+  // 表单验证相关属性
   validation: Validation = {
     valid: EnumValidityState.NONE,
     validating: false,
@@ -71,13 +87,18 @@ export class XField extends Serializable{
   }
 
   value: any;
+  /** 初始值，只在字段首次添加时生效 */
+  initialValue: any;
 
-  // 组件是否挂载
-  mounted = false
-  
+  // 字段状态
+  state = {
+    // 组件是否挂载
+    mounted: false
+  }
+
   static EVENT_VALUE_CHANGE = 'xfield.value.change'
   static EVENT_VALIDATE = 'xfield.validate'
-  static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'mounted', 'value']
+  static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'value', 'state']
 
   static create(f: Partial<XField>, value?: any){
     return f instanceof XField ? f : new XField(f, value)
@@ -88,6 +109,7 @@ export class XField extends Serializable{
 
     const params = (o instanceof XFieldConf ? o.toParams() : o) as Partial<XField>
     const fc = findFieldConf(params.type)
+    const init = o instanceof XFieldConf
 
     this.type = params.type
     this.name = params.name ?? getConfig().genName(o)
@@ -95,6 +117,8 @@ export class XField extends Serializable{
     
     this.placeholder = params.placeholder 
     this.required = params.required === true
+    this.disabled = params.disabled === true
+    this.hidden = params.hidden === true
     this.options = Array.isArray(params.options) ? params.options : undefined
     this.attributes = params.attributes ?? {}
     this.fields = (
@@ -106,16 +130,15 @@ export class XField extends Serializable{
     this.allowRemove = params.allowRemove
     this.allowClone = params.allowClone
     
-    createValue(this, value)
-
-    PRIV_PROPS.create(this, {
-      uid: 'field__' + getIncNum(),
-      broadcast: null
-    })
-
+    this.initialValue = params.initialValue
+    // 创建表单值
+    createValue(this, init ? this.initialValue : value)
+    // 混入用户自定义属性
     mixinRestParams(this, params)
+    // 初始化私有属性
+    PRIV_PROPS.create(this, { uid: 'field__' + getIncNum(), broadcast: null })
     // 调用onCreate hook, 可在此初始化字段
-    isFunction(fc?.onCreate) && fc.onCreate(this, params, o instanceof XFieldConf)
+    isFunction(fc?.onCreate) && fc.onCreate(this, params, init)
   }
 
   /** 创建时自动生成，全局唯一 */
@@ -128,6 +151,7 @@ export class XField extends Serializable{
     return findFieldConf(this.type)
   }
 
+  /** 字段是否验证失败 */
   get invalid(){
     return this.validation.valid === EnumValidityState.ERROR
   }
@@ -155,6 +179,7 @@ export class XField extends Serializable{
     PRIV_PROPS.set(this, 'broadcast', v)
   }
 
+  /** 验证字段 */
   validate(options?: { mode: EnumValidateMode }){
     return new Promise((resolve, reject) => {
       this.broadcast(XField.EVENT_VALIDATE, { 
@@ -167,6 +192,7 @@ export class XField extends Serializable{
     })
   }
 
+  /** 重置字段的验证状态 */
   resetValidate(){
     this.validation.valid = EnumValidityState.NONE
     this.validation.validating = false

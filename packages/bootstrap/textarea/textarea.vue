@@ -1,3 +1,15 @@
+<template>
+  <textarea 
+    v-model="value"
+    :id="field.uid"
+    rows="3"
+    :name="field.name"
+    class="form-control form-control-sm"
+    :placeholder="field.placeholder"
+    :disabled="disabled || field.disabled"
+  />
+</template>
+
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useValue, XField } from '@dongls/xform'
@@ -8,6 +20,10 @@ export default defineComponent({
     field: {
       type: XField,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props){
@@ -15,14 +31,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<template>
-  <textarea 
-    :id="field.uid" 
-    v-model="value" 
-    rows="3" 
-    :name="field.name" 
-    class="form-control form-control-sm" 
-    :placeholder="field.placeholder"
-  />
-</template>

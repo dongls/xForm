@@ -1,3 +1,39 @@
+<template>
+  <h3 class="xform-setting-head">{{ field.conf.title }}</h3>
+
+  <section class="xform-setting">
+    <header>标题：</header>
+    <input :value="field.title" type="text" class="form-control form-control-sm" placeholder="请输入标题..." @input="updateField($event, 'title')">
+  </section>
+
+  <section class="xform-setting xform-divider-types">
+    <header>样式：</header>
+    <div v-for="type in types" :key="type" class="custom-control custom-radio">
+      <input 
+        :id="`divider-${type}`" name="setting-divider-type" 
+        type="radio" :value="type" class="custom-control-input" 
+        :checked="field.attributes.type == type"
+        @change="update('type', type, 'attributes')"
+      >
+      <label class="custom-control-label" :for="`divider-${type}`">
+        <xform-divider :type="type"/>
+      </label>
+    </div>
+  </section>
+
+  <section class="xform-setting">
+    <header>间距：</header>
+    <div class="xform-bs-divider-range">
+      <label>上间距：</label>
+      <input :value="field.attributes.top" type="range" class="custom-range" min="0" max="100" step="5" @input="updateField($event, 'top', 'attributes')">
+    </div>
+    <div class="xform-bs-divider-range">
+      <label>下间距：</label>
+      <input :value="field.attributes.bottom" type="range" class="custom-range" min="0" max="100" step="5" @input="updateField($event, 'bottom', 'attributes')">    
+    </div>
+  </section>
+</template>
+
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { XField } from '@dongls/xform'
@@ -27,9 +63,6 @@ export default defineComponent({
         }
       
         emit('update:field', { prop, value, scope })
-      },
-      isChecked(type: string){
-        return props.field.attributes.type == type || (type == 'solid' && props.field.attributes.type == null)
       }
     }
   },
@@ -38,41 +71,6 @@ export default defineComponent({
   }
 })
 </script>
-
-<template>
-  <h3 class="xform-setting-head">分割线</h3>
-
-  <section class="xform-setting">
-    <header>标题：</header>
-    <input :value="field.title" type="text" class="form-control form-control-sm" placeholder="请输入标题..." @input="updateField($event, 'title')">
-  </section>
-
-  <section class="xform-setting xform-divider-types">
-    <header>样式：</header>
-    <div v-for="type in types" :key="type" class="custom-control custom-radio">
-      <input 
-        :id="`divider-${type}`" name="setting-divider-type" 
-        type="radio" :value="type" class="custom-control-input" 
-        :checked="isChecked(type)" @change="update('type', type, 'attributes')"
-      >
-      <label class="custom-control-label" :for="`divider-${type}`">
-        <xform-divider :type="type"/>
-      </label>
-    </div>
-  </section>
-
-  <section class="xform-setting">
-    <header>间距：</header>
-    <div class="xform-bs-divider-range">
-      <label>上间距：</label>
-      <input :value="field.attributes.top" type="range" class="custom-range" min="0" max="100" step="5" @input="updateField($event, 'top', 'attributes')">
-    </div>
-    <div class="xform-bs-divider-range">
-      <label>下间距：</label>
-      <input :value="field.attributes.bottom" type="range" class="custom-range" min="0" max="100" step="5" @input="updateField($event, 'bottom', 'attributes')">    
-    </div>
-  </section>
-</template>
 
 <style>
 .xform-divider-types .custom-control{

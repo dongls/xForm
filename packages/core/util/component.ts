@@ -1,5 +1,5 @@
-import { ConcreteComponent, VNode } from '@vue/runtime-core'
-import { RawProps, XField, EnumComponent, FieldComponent, XFormScope } from '../model'
+import { ConcreteComponent, VNode } from 'vue'
+import { RawProps, XField, EnumComponent, FieldComponent } from '../model'
 import { isObject, isPlainObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
@@ -61,17 +61,4 @@ function _normalizeClass(value: unknown){
 export function normalizeClass(value: unknown, o?: unknown){
   const klass = _normalizeClass(value)
   return isPlainObject(o) ? Object.assign(klass, o) : klass
-}
-
-export function getAllFields(scope: XFormScope): XField[] {
-  return scope.fields.reduce((acc, f) => {
-    acc.push(f)
-
-    if(Array.isArray(f.fields) && f.fields.length > 0){
-      const sub = getAllFields(f)
-      return acc.concat(sub)
-    }
-
-    return acc
-  }, []) as XField[]
 }

@@ -97,10 +97,10 @@
       "last 1 chrome version"
     ],
     "production": [
-      "chrome >= 51",
+      "chrome >= 56",
       "firefox >= 53",
       "safari >= 11",
-      "edge >= 15"
+      "edge >= 16"
     ],
     "esm": [
       "chrome >= 61",

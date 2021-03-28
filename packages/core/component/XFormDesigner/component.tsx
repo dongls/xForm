@@ -30,7 +30,7 @@ import {
   RawProps,
   SELECTOR,
   XFORM_CONTEXT_PROVIDE_KEY,
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  XFORM_SCHEMA_PROVIDE_KEY,
   XField, 
   XFieldConf,
   XFormDesignerContext,
@@ -183,18 +183,19 @@ function renderUnknown(field: XField){
  */
 function renderContent(instance: XFormDesignerInstance, field: XField, options: RenderOptions){
   const slots = instance.$slots
+  const disabled = field.disabled || options.parentProps?.disabled === true
 
   const nameSlot = slots[`preview_name_${field.name}`]
-  if(isFunction(nameSlot)) return nameSlot({ field })
+  if(isFunction(nameSlot)) return nameSlot({ field, disabled })
 
   const typeSlot = slots[`preview_type_${field.type}`]
-  if(isFunction(typeSlot)) return typeSlot({ field })
+  if(isFunction(typeSlot)) return typeSlot({ field, disabled })
 
   const mode = instance.mode
   const component = getFieldComponent(field, EnumComponent.PREVIEW, mode) || getFieldComponent(field, EnumComponent.BUILD, mode)
   if(component == null) return null
 
-  const props = fillComponentProps(component, { field, behavior: EnumBehavior.DESIGNER })
+  const props = fillComponentProps(component, { field, behavior: EnumBehavior.DESIGNER, disabled })
   const create = isFunction(options?.renderContent) ? options.renderContent : h
   return create(component, props)
 }
@@ -203,8 +204,10 @@ function renderItem(instance: XFormDesignerInstance, field: XField, options: Ren
   const children = function(){
     return renderContent(instance, field, options) ?? renderUnknown(field)
   }
+
+  const disabled = field.disabled || options.parentProps?.disabled === true
   const component = resolveComponent('xform-item')
-  const props = { field, validation: false }
+  const props = { field, validation: false, disabled }
   const create = isFunction(options?.renderItem) ? options.renderItem : h
   return create(component, props, children)
 }
@@ -219,7 +222,8 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: XField, opti
       'xform-droppable': true,
       ['xform-preview-' + field.type]: true,
       'xform-is-selected': field == instance.selectedField,
-      [CLASS.SCOPE]: field.conf?.scoped ?? false
+      [CLASS.SCOPE]: field.conf?.scoped,
+      'xform-is-hidden': field.hidden
     },
     'key': field.uid,
     [PROPS.XFIELD]: field,
@@ -438,7 +442,7 @@ export default defineComponent({
       emit(EVENTS.UPDATE_SCHEMA, {})
     }
 
-    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
+    provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormDesignerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'designer',
       renderField: renderFieldPreview.bind(null, instance.proxy)

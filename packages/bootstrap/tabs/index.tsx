@@ -1,10 +1,10 @@
 import { 
-  Fragment,
   defineComponent,
   ref,
   watch,
   h,
   getCurrentInstance,
+  onBeforeUnmount,
 } from 'vue'
 
 import {
@@ -86,40 +86,30 @@ const setting = defineComponent({
         )
       })
 
-      return (
-        <Fragment>
-          <h3 class="xform-setting-head">选项卡</h3>
-          <section class="xform-setting">
-            <div class="xform-bs-tabs-setting-title">
-              <header>标题：</header>
-              <div class="custom-control custom-checkbox">
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id={`${field.name}-show-title`}
-                  name={`${field.name}-show-title`}
-                  checked={field.attributes.showTitle}
-                  onInput={(e) => updateField(emit, e, 'showTitle', 'attributes')}
-                />
-                <label class="custom-control-label" for={`${field.name}-show-title`}>显示标题</label>
-              </div>
-            </div>
-            <input
-              value={field.title}
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="请输入标题..."
-              onInput={updateTitle.bind(null, field)}
-            />
-          </section>
-
+      const slots = {
+        default: () => (
           <div class="xform-setting">
             <header>标签：</header>
             {tabs}
             <button type="button" class="btn btn-link btn-sm" onClick={addTab}>添加标签</button>
           </div>
-        </Fragment>
-      )
+        ),
+        properties: () => (
+          <div class="custom-control custom-checkbox custom-control-inline">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id={`${field.name}-show-title`}
+              name={`${field.name}-show-title`}
+              checked={field.attributes.showTitle}
+              onInput={(e) => updateField(emit, e, 'showTitle', 'attributes')}
+            />
+            <label class="custom-control-label" for={`${field.name}-show-title`}>显示标题</label>
+          </div>
+        )
+      }
+
+      return <xform-setting field={field} placeholder={false} required={false} v-slots={slots}/>
     }
   },
 })
@@ -153,6 +143,10 @@ const build = defineComponent({
     behavior: {
       type: String,
       default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
@@ -176,18 +170,21 @@ const build = defineComponent({
       list.style.transform = `translateX(${-offset}px)`
     }
 
-    watch(props.field.fields, (fields) => {
+    const stop = watch(props.field.fields, (fields) => {
       if (fields.every((f) => f.name != current.value)) {
         current.value = fields[fields.length - 1].name
       }
     })
+
+    onBeforeUnmount(stop)
 
     return function () {
       const rc = useRenderContext()
       const field = props.field
       const value = field.value ?? {}
       const title = field.attributes.showTitle === true ? <strong class="nav-tabs-title">{field.title}</strong> : null
-      
+      const disabled = props.disabled
+
       const tabs = field.fields.map((f) => {
         const className = {
           'nav-link': true,
@@ -199,6 +196,7 @@ const build = defineComponent({
 
       const content = field.fields.map((f) => {
         return rc.renderField(props.behavior == 'designer' ? f : value[f.name], {
+          parentProps: { disabled },
           renderContent(component, props){
             props.class = normalizeClass(props.class, {
               active: current.value == f.name,
@@ -212,7 +210,7 @@ const build = defineComponent({
       const klass = {
         'xform-item': true,
         'xform-bs-tabs': true,
-        [CLASS.IS_ERROR]: field.validation.valid === EnumValidityState.ERROR,
+        [CLASS.IS_ERROR]: field.invalid,
       }
 
       return (

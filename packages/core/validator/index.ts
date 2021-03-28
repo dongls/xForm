@@ -242,7 +242,10 @@ export function useValidator(handles: ComponentHandles){
   function validateSchema(schema: XSchema){
     const promises = schema
       .getNeedValidateFields()
-      .map(f => validateField(f, { mode: EnumValidateMode.RECURSIVE }))
+      .map(f => {
+        const state = RFS.get(f.uid)
+        return state.onValidate({ mode: EnumValidateMode.RECURSIVE })
+      })
 
     return Promise.allSettled(promises).then(r => {
       const result = { valid: r.every(i => i.status == 'fulfilled') } as any

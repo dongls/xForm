@@ -10,7 +10,7 @@ import {
 import { 
   EnumComponent,
   XFORM_CONTEXT_PROVIDE_KEY,
-  XFORM_FORM_SCHEMA_PROVIDE_KEY,
+  XFORM_SCHEMA_PROVIDE_KEY,
   XField, 
   XFormSchema,
   XFormViewerContext,
@@ -47,23 +47,27 @@ type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormVie
  */
 function renderContent(instance: XFormViewerInstance, field: XField, value: any, options: RenderOptions){
   const slots = instance.$slots
+  const disabled = field.disabled || options.parentProps?.disabled === true
 
   const nameSlot = slots[`name_${field.name}`]
-  if(isFunction(nameSlot)) return nameSlot({ field, value })
+  if(isFunction(nameSlot)) return nameSlot({ field, value, disabled })
 
   const typeSlot = slots[`type_${field.type}`]
-  if(isFunction(typeSlot)) return typeSlot({ field, value })
+  if(isFunction(typeSlot)) return typeSlot({ field, value, disabled })
   const component = getFieldComponent(field, EnumComponent.VIEW, instance.mode)
   if(component == null) return null
 
-  const props = fillComponentProps(component, { field, value })
+  const props = fillComponentProps(component, { field, value, disabled })
   const create = isFunction(options?.renderContent) ? options.renderContent : createVNode
   return create(component, props)
 }
 
 function renderField(instance: XFormViewerInstance, field: XField, options: RenderOptions = {}){
+  if(field.hidden === true) return null
+
+  const disabled = options.parentProps?.disabled === true || field.disabled
   const value = instance.fmtValue(field, instance.$props, instance)  
-  const props = { key: field.name, field, validation: false }
+  const props = { key: field.name, field, validation: false, disabled }
   const children = function(){
     return renderContent(instance, field, value, options) ?? <span class="xform-viewer-value">{value}</span>
   }
@@ -96,7 +100,7 @@ export default defineComponent({
       return fmt(field, props, instance.proxy)
     }
 
-    provide(XFORM_FORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
+    provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<XFormViewerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'viewer',
       renderField: renderField.bind(null, instance.proxy),

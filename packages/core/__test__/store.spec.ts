@@ -4,13 +4,13 @@ import { XFieldConf } from '../model'
 import { mockFieldConfs } from './mock/index'
 
 describe('store: reset', () => {
-  test('resetConfig', () => {
+  test('reset config', () => {
     store.resetConfig()
     const config = store.getConfig()
     expect(config).toStrictEqual(CONFIG)
   })
 
-  test('resetPreset', () => {
+  test('reset preset', () => {
     store.resetPreset()
     expect(store.getPreset()).toBeNull()
   })
@@ -43,7 +43,6 @@ describe('store: useConfig', () => {
     const config = store.getConfig()
     expect(config.validation.immediate).toBe(false)
   })
-
 })
 
 describe('store: findFieldGroups', () => {

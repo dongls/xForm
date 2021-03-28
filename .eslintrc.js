@@ -99,7 +99,8 @@ module.exports = {
     'vue/html-closing-bracket-spacing': 'off',
     'vue/no-v-html': 'off',
     'vue/one-component-per-file': 'off',
-    'vue/attributes-order': 'off'
+    'vue/attributes-order': 'off',
+    'vue/multiline-html-element-content-newline': 'off'
   },
   overrides: [
     {

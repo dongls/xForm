@@ -1,4 +1,4 @@
-import { XFieldConf, XField } from '@dongls/xform'
+import { XFieldConf, XField, isEmpty } from '@dongls/xform'
 import icon from '@common/svg/checkbox.svg'
 
 import checkbox from './checkbox.vue'
@@ -11,13 +11,15 @@ export default XFieldConf.create({
   setting: setting,
   build: checkbox,
   validator(field: XField, value: any[]){
-    const isEmpty = Array.isArray(value) ? value.length == 0 : true
-    if(field.required && isEmpty) return Promise.reject('必填')
+    if(field.required && isEmpty(value)) return Promise.reject('必填')
     return Promise.resolve()
   },
   onCreate(field, params, init){
     const options = Array.isArray(params.options) ? params.options : []
-    if(init) options.push({ value: '选项1' })
+    if(init) {
+      options.push({ value: '选项1' })
+      field.attributes.layout = 'inline'
+    }
 
     field.options = options
   }
