@@ -1,17 +1,12 @@
-import { getCurrentInstance, nextTick, ref, Ref, Teleport, onBeforeUnmount, h } from 'vue'
+import { getCurrentInstance, ref, Ref, onBeforeUnmount, h } from 'vue'
 import {
   XField,
-  genRandomStr,
   XFormSchema,
   useSchema,
   useRenderContext,
 } from '@dongls/xform'
 
 import { DEF_COLUMN_WIDTH, DEF_INDEX_WIDTH, DEF_OPERATE_WIDTH, Row } from './common'
-
-function getJQuery(){
-  return (window as any).jQuery
-}
 
 function createModel(fields: XField[], row: Row){
   if(row == null) return {}
@@ -25,7 +20,6 @@ function createModel(fields: XField[], row: Row){
 }
 
 export function useModalLayout(props: { field: XField, disabled: boolean }, value: Ref<Row[]>){
-  const id = `subform-modal-${genRandomStr()}`
   const show = ref(false)
   const instance = getCurrentInstance()
   const rootSchema = useSchema()
@@ -35,8 +29,6 @@ export function useModalLayout(props: { field: XField, disabled: boolean }, valu
   let currentRow = null as Row
 
   onBeforeUnmount(() => {
-    const $ = getJQuery()
-    $('#' + id).removeClass('fade').modal('hide').modal('dispose')
     formSchema.value = null
     currentRow = null
   })
@@ -51,22 +43,20 @@ export function useModalLayout(props: { field: XField, disabled: boolean }, valu
     showModal()
   }
 
+  function updateShow(v: boolean){
+    show.value = v
+  }
+
   function showModal(){
-    const $ = getJQuery()
     const model = createModel(props.field.fields, currentRow)
     const fields = props.field.fields.map(f => f.clone(true, model[f.name]))
     
     formSchema.value = rootSchema.value.genSchema({ fields })
     show.value = true
-
-    nextTick(() => $('#' + id).modal('show'))
   }
 
   function closeModal(){
-    const $ = getJQuery()
-    $('#' + id).modal('hide').on('hidden.bs.modal', () => {
-      show.value = false
-    })
+    show.value = false
   }
 
   function submit(){
@@ -119,30 +109,6 @@ export function useModalLayout(props: { field: XField, disabled: boolean }, valu
         <span>点击</span>
         <button type="button" class="btn btn-link btn-sm shadow-none" onClick={showInsertModal}>+ 添加</button>
         <span>按钮插入数据</span>
-      </div>
-    )
-  }
-
-  function createModal(){
-    if(!show.value) return null
-
-    return (
-      <div id={id} class="modal fade xform-bs-subform-modal" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-dialog-scrollable">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">{currentRow == null ? '添加' : '编辑'}数据</h5>
-              <button type="button" class="close" onClick={closeModal}><span>&times;</span></button>
-            </div>
-            <div class="modal-body">
-              <xform-builder schema={formSchema.value} ref="form"></xform-builder>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-link" onClick={closeModal}>关闭</button>
-              <button type="button" class="btn btn-sm btn-primary" onClick={submit}>保存</button>
-            </div>
-          </div>
-        </div>
       </div>
     )
   }
@@ -221,7 +187,14 @@ export function useModalLayout(props: { field: XField, disabled: boolean }, valu
           {createTip(rows.length, disabled, width)}
         </div>
         { disabled ? null : <button type="button" class="btn btn-sm btn-link shadow-none" onClick={showInsertModal}>+ 添加</button> }
-        <Teleport to="body">{createModal()}</Teleport>
+        <modal
+          title={`${currentRow == null ? '添加' : '编辑'}数据`}
+          class="xform-bs-subform-modal-layout"
+          onConfirm={submit}
+          {...{ visible: show.value, 'onUpdate:visible': updateShow }}
+        >
+          <xform-builder schema={formSchema.value} ref="form"></xform-builder>
+        </modal>
       </div>
     )
   }

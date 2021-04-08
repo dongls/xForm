@@ -34,11 +34,12 @@ export function usePreset(preset: XFormPreset){
   if(null == preset) return
   store.preset = Object.assign(store.preset || {}, preset)
   preset.fieldConfs.forEach(registerField)
+  if(null != preset.config) useConfig(preset.config)
 }
 
 export function use(option: XFormOption){
-  if(option.config) useConfig(option.config)
   if(option.preset) usePreset(option.preset)
+  if(option.config) useConfig(option.config)
 }
 
 export function resetPreset(){

@@ -157,33 +157,13 @@
   line-height: 31px;
 }
 
-.xform-bs-subform-modal{
+.xform-bs-subform-modal-layout{
   .modal-dialog{
-    max-width: 640px;
     margin-top: 12vh;
     max-height: 76vh;
   }
 
-  .modal-header{
-    padding: 10px 10px 10px 20px;
-    align-items: center;
-  }
-
   .modal-body{
     padding: 10px 0 0 0;
-  }
-
-  .modal-footer{
-    padding: 10px;
-
-    .btn{
-      margin: 0 0 0 10px;
-      min-width: 60px;
-    }
-  }
-
-  .modal-title{
-    margin: 0;
-    padding: 0;
   }
 }

@@ -8,7 +8,6 @@ import XFormDesigner from './component/XFormDesigner/component'
 import XFormBuilder from './component/XFormBuilder/component'
 import XFormViewer from './component/XFormViewer/component'
 import XFormItem from './component/XFormItem/component'
-import XFormSetting from './component/XFormSetting/component'
 
 const version = __VERSION__
 const install = function(app: App, options: XFormOption){
@@ -18,7 +17,6 @@ const install = function(app: App, options: XFormOption){
   app.component(XFormBuilder.name, XFormBuilder)
   app.component(XFormViewer.name, XFormViewer)
   app.component(XFormItem.name, XFormItem)
-  app.component(XFormSetting.name, XFormSetting)
 }
 
 const XForm = {
@@ -32,7 +30,6 @@ export {
   XFormDesigner,
   XFormItem,
   XFormViewer,
-  XFormSetting,
   install,
   store,
   version,

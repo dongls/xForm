@@ -90,8 +90,9 @@ export function isPlainObject<T>(value: unknown): value is T{
  */
 export function clonePlainObject(target: any): any{
   if(null == target || typeof target != 'object') return target
+  if(isRaw(target)) return target
   if(Array.isArray(target)) return target.map(clonePlainObject)
-  
+
   return Object.keys(target).reduce((acc, key) => {
     acc[key] = clonePlainObject(target[key])
     return acc
@@ -240,4 +241,8 @@ export function mixinRestParams(target: AnyProps, origin: AnyProps){
   Object.keys(origin).forEach(key => {
     if(!(key in target)) target[key] = origin[key]
   })
+}
+
+export function isRaw(value: object){
+  return (value as any)['__v_skip'] === true
 }

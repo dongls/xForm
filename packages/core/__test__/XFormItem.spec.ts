@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { mockOption } from './mock'
 import { XFormItem, store, XField, XFieldConf } from '../index'
-import { EnumLabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
+import { LabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
 import { createSchemaRef } from '../api'
 
 describe('XFormItem slots: default', () => {
@@ -114,7 +114,7 @@ describe('XFormItem props: labelPosition', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.LEFT })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: LabelPosition.LEFT })
         }
       }
     })
@@ -135,7 +135,7 @@ describe('XFormItem props: labelPosition', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.RIGHT })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: LabelPosition.RIGHT })
         }
       }
     })
@@ -156,7 +156,7 @@ describe('XFormItem props: labelPosition', () => {
       global: {
         components: { [XFormItem.name]: XFormItem },
         provide: {
-          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: EnumLabelPosition.TOP })
+          [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: LabelPosition.TOP })
         }
       }
     })

@@ -398,6 +398,10 @@ export default defineComponent({
       shwoSelectedField(instance)
     }
 
+    const resetSelectedField = function(){
+      selectedField.value = null
+    }
+
     const doScroll = function(event: WheelEvent){
       const { pixelY } = normalizeWheel(event)
       const scroll = instance.refs.scroll as HTMLElement
@@ -457,6 +461,7 @@ export default defineComponent({
       icon: { clone: IconClone, remove: IconRemove },
       remove,
       reset,
+      resetSelectedField,
       selectedField,
       selectedTab,
       updateSchema,

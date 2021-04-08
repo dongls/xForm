@@ -15,7 +15,7 @@ import {
 import { 
   CLASS,
   EnumComponent,
-  EnumLabelPosition,
+  LabelPosition,
   EnumValidityState,
   RawProps,
   ValidateFunc,
@@ -183,7 +183,7 @@ function createComponent(name: EnumComponentName){
         }
   
         const label = props.label === false ? false : props.label || field.title
-        const labelPosition = schema?.value?.labelPosition ?? EnumLabelPosition.LEFT
+        const labelPosition = schema?.value?.labelPosition ?? LabelPosition.LEFT
         const labelSuffix = schema?.value?.labelSuffix
         const required = (
           isBuilderContext(context) && props.validation === false || props.disabled || field.disabled 

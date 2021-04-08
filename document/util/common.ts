@@ -73,6 +73,6 @@ export function useLocalSchema(){
 
   return {
     schema,
-    reset: () => schema.value = createSchema(createDefaultSchema())
+    resetSchema: () => schema.value = createSchema(createDefaultSchema())
   }
 }

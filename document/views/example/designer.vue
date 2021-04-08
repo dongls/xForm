@@ -9,16 +9,20 @@ export default defineComponent({
   name: 'designer-view',
   emits: ['view'],
   setup(){
-    const { schema, reset } = useLocalSchema()    
+    const { schema, resetSchema } = useLocalSchema()    
     const isSchemaValid = ref(false)
 
     return {
       isSchemaValid,
       isWide: useIsWide(),
       schema,
-      reset,
+      reset(){
+        resetSchema()
+        this.$refs.designer.resetSelectedField()
+      },
       clear(){
         schema.value.fields = []
+        this.$refs.designer.resetSelectedField()
       },
       viewJson(){
         this.$emit('view', { title: 'Schema JSON', json: JSON.stringify(schema.value, null, '  ') })
@@ -47,7 +51,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <xform-designer v-model:schema="schema" mode="example" @remove="remove">
+  <xform-designer ref="designer" v-model:schema="schema" mode="example" @remove="remove">
     <template #tool>
       <div class="designer-tool">
         <div class="designer-tool-left">

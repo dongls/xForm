@@ -1,29 +1,30 @@
 <template>
-  <xform-setting :field="field" :placeholder="false">
-    <section class="xform-setting">
+  <field-setting :field="field" :placeholder="false">
+    <section class="xform-bs-field-setting-prop">
       <header>布局：</header>
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-sm btn-primary" :class="{'active': field.attributes.layout == 'inline' }" @click="update('layout', 'inline', 'attributes')"> 行内 </button>
         <button type="button" class="btn btn-sm btn-primary" :class="{'active': field.attributes.layout == 'block'}" @click="update('layout', 'block', 'attributes')"> 换行 </button>
       </div>
     </section>
-    <section class="xform-setting">
+    <section class="xform-bs-field-setting-prop">
       <header>选项：</header>
       <div 
         v-for="(option, i) in field.options" :key="i"
         class="xform-bs-setting-option"
       >
         <input :value="option.value" class="form-control form-control-sm" placeholder="请输入选项内容" @input="updateOption($event, option)">
-        <button type="button" class="btn btn-link text-danger" @click="removeOption(option)">删除</button>
+        <button type="button" class="btn btn-link text-danger" @click="removeOption(option)" :disabled="field.options.length <= 1">删除</button>
       </div>
-      <button type="text" class="btn btn-link btn-sm" @click="addOption">添加选项</button>
+      <button type="text" class="btn btn-sm btn-link bs-btn-text" @click="addOption">添加选项</button>
     </section>
-  </xform-setting>
+  </field-setting>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { XField } from '@dongls/xform'
+import FieldSetting from '../FieldSetting.vue'
 
 export default defineComponent({
   name: 'xform-bs-radio-setting',
@@ -58,6 +59,8 @@ export default defineComponent({
         update('options', props.field.options)
       },
       removeOption(option: any){
+        if(props.field.options.length <= 1) return
+
         const options = props.field.options
         const index = options.indexOf(option)
         if(index >= 0) options.splice(index, 1)
@@ -65,6 +68,9 @@ export default defineComponent({
         update('options', options)
       }
     }
+  },
+  components: {
+    [FieldSetting.name]: FieldSetting
   }
 })
 </script>

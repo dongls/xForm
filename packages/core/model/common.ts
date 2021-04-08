@@ -22,16 +22,6 @@ export type VueComponent = Component
 export type RawProps = VNodeProps & AnyProps
 export type XFormScope = XField | XFormSchema
 
-export interface XFormPreset {
-  name: string;
-  version?: string;
-  slots?: {
-    [prop: string]: VueComponent;
-    'setting_form': VueComponent;
-  };
-  fieldConfs: XFieldConf[];
-}
-
 export interface ModeGroup {
   title?: string;
   types: string[];
@@ -50,11 +40,22 @@ export interface XFormConfigBase{
   modes: ModeConf;
   validation: ValidationConf;
   genName: (o: any) => string;
-  formatter: (field: XField, props: RawProps, instance: ComponentPublicInstance) => any
+  formatter: (field: XField, props: RawProps, instance: ComponentPublicInstance) => any;
 }
 
 export type XFormConfig = {
   [P in keyof XFormConfigBase]?: XFormConfigBase[P] extends ValidationConf ? Partial<XFormConfigBase[P]> : XFormConfigBase[P];
+}
+
+export interface XFormPreset {
+  name: string;
+  version?: string;
+  slots?: {
+    [prop: string]: VueComponent;
+    'setting_form': VueComponent;
+  };
+  fieldConfs: XFieldConf[];
+  config?: XFormConfig;
 }
 
 export type RenderOptions = {

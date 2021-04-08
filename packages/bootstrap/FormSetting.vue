@@ -1,8 +1,9 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { constant } from '@dongls/xform'
 
-const { EVENTS } = constant
+const { EVENTS, LabelPosition } = constant
+const positions = Object.values(LabelPosition)
 
 export default defineComponent({
   name: 'xform-bs-setting',
@@ -17,7 +18,11 @@ export default defineComponent({
     return {
       updateProp(prop: string, value: any){
         emit(EVENTS.UPDATE_PROP, { prop, value })
-      }
+      },
+      labelPosition: computed(() => {
+        const value = props.schema.labelPosition
+        return positions.includes(value) ? value : 'left'
+      })
     }
   }
 })
@@ -35,9 +40,9 @@ export default defineComponent({
   <section class="xform-setting">
     <header>标题位置：</header>
     <div class="btn-group" role="group">
-      <button type="button" class="btn btn-sm btn-primary" :class="{'active': schema.labelPosition == 'left'}" @click="updateProp('labelPosition', 'left')">左对齐</button>
-      <button type="button" class="btn btn-sm btn-primary" :class="{'active': schema.labelPosition == 'top'}" @click="updateProp('labelPosition', 'top')">顶部对齐</button>
-      <button type="button" class="btn btn-sm btn-primary" :class="{'active': schema.labelPosition == 'right'}" @click="updateProp('labelPosition', 'right')">右对齐</button>
+      <button type="button" class="btn btn-sm btn-primary" :class="{'active': labelPosition == 'left'}" @click="updateProp('labelPosition', 'left')">左对齐</button>
+      <button type="button" class="btn btn-sm btn-primary" :class="{'active': labelPosition == 'top'}" @click="updateProp('labelPosition', 'top')">顶部对齐</button>
+      <button type="button" class="btn btn-sm btn-primary" :class="{'active': labelPosition == 'right'}" @click="updateProp('labelPosition', 'right')">右对齐</button>
     </div>
   </section>
 </template>

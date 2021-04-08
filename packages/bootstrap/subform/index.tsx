@@ -15,6 +15,7 @@ import { Row, DEF_COLUMN_WIDTH, BODY_CLASS, DEF_INDEX_WIDTH } from './common'
 import { useInlineLayout } from './inline'
 import { useModalLayout } from './modal'
 import setting from './setting.vue'
+import Modal from '../Modal.vue'
 
 const { CLASS, PROPS, EVENTS, EnumValidateMode } = constant
 
@@ -92,6 +93,9 @@ const subform = defineComponent({
     return function(){
       return props.field.attributes.layout == 'inline' ? inlineLayout() : modalLayout()
     }
+  },
+  components: {
+    [Modal.name]: Modal
   }
 })
 

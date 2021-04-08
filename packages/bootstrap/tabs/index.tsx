@@ -20,6 +20,7 @@ import {
 import { updateField } from '../util'
 import icon from '@common/svg/tabs.svg'
 import pane from './pane'
+import FieldSetting from '../FieldSetting.vue'
 
 const { CLASS, EnumValidityState } = constant
 const OFFSET_PROP = '__offset__'
@@ -88,13 +89,13 @@ const setting = defineComponent({
 
       const slots = {
         default: () => (
-          <div class="xform-setting">
+          <div class="xform-bs-field-setting-prop">
             <header>标签：</header>
             {tabs}
-            <button type="button" class="btn btn-link btn-sm" onClick={addTab}>添加标签</button>
+            <button type="button" class="btn btn-link btn-sm bs-btn-text" onClick={addTab}>添加标签</button>
           </div>
         ),
-        properties: () => (
+        attributes: () => (
           <div class="custom-control custom-checkbox custom-control-inline">
             <input
               type="checkbox"
@@ -109,9 +110,12 @@ const setting = defineComponent({
         )
       }
 
-      return <xform-setting field={field} placeholder={false} required={false} v-slots={slots}/>
+      return <field-setting field={field} placeholder={false} required={false} v-slots={slots}/>
     }
   },
+  components: {
+    [FieldSetting.name]: FieldSetting
+  }
 })
 
 function renderMessage(field: XField) {

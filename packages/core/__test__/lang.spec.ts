@@ -1,3 +1,4 @@
+import { markRaw } from '@vue/reactivity'
 import {
   clonePlainObject,
   mergePlainObject,
@@ -15,7 +16,8 @@ test('lang: clonePlainObject', () => {
     f: function(){/* */},
     g: { a: 1, b: 'abc' }, 
     h: [1, 2, 3, 4], 
-    i: [{ a: 1 }, { a: 1 }]
+    i: [{ a: 1 }, { a: 1 }],
+    j: markRaw({})
   } as any
   
   const clone = clonePlainObject(origin)
@@ -23,6 +25,7 @@ test('lang: clonePlainObject', () => {
   expect(origin.g).not.toBe(clone.g)
   expect(origin.f).toBe(clone.f)
   expect(origin).toStrictEqual(clone)
+  expect(origin.j).toBe(clone.j)
 })
 
 test('lang: mergePlainObject', () => {

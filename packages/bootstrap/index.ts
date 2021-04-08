@@ -1,7 +1,7 @@
 import './index.scss'
 import { XFormPreset } from '@dongls/xform'
 
-import Setting from './Setting.vue'
+import FormSetting from './FormSetting.vue'
 
 import Text from './text'
 import Textarea from './textarea'
@@ -19,7 +19,7 @@ const bootstrap: XFormPreset = {
   name: 'bootstrap',
   version: __VERSION__,
   slots: {
-    'setting_form': Setting
+    'setting_form': FormSetting
   },
   fieldConfs: [
     Text,

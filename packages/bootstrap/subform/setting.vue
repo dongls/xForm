@@ -1,6 +1,6 @@
 <template>
-  <xform-setting :field="field" :placeholder="false">
-    <section class="xform-setting">
+  <field-setting :field="field" :placeholder="false">
+    <section class="xform-bs-field-setting-prop">
       <header>表单布局：</header>
       <div class="btn-group" role="group">
         <button
@@ -17,7 +17,7 @@
         >行内</button>
       </div>
     </section>
-    <section class="xform-setting">
+    <section class="xform-bs-field-setting-prop">
       <header>列宽：</header>
       <div class="xform-bs-subform-column" v-for="column in field.fields" :key="column.uid">
         <div class="xform-bs-subform-column-bar" :style="{ width: `${getColumnWidth(column.name) ?? DEF_COLUMN_WIDTH}px` }"/>
@@ -30,14 +30,16 @@
           @input="updateColWidth($event, column.name)"
         >
       </div>
+      <div class="text-secondary" v-if="field.fields.length == 0">请至少放入一个字段</div>
     </section>
-  </xform-setting>
+  </field-setting>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { XField, constant } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH } from './common'
+import FieldSetting from '../FieldSetting.vue'
 
 const { EVENTS } = constant
 
@@ -68,6 +70,9 @@ export default defineComponent({
     }
 
     return { updateColWidth, update, DEF_COLUMN_WIDTH, getColumnWidth }
+  },
+  components: {
+    [FieldSetting.name]: FieldSetting
   }
 })
 </script>

@@ -1,7 +1,7 @@
 <template>
-  <xform-setting :field="field" :placeholder="false" :required="false">
-    <template #properties>
-      <div class="custom-control custom-checkbox custom-control-inline">
+  <field-setting :field="field" :placeholder="false" :required="false">
+    <template #attributes>
+      <div class="custom-control custom-checkbox custom-control-inline" title="勾选则支持展开/收起分组">
         <input 
           :id="`${field.name}-collapsable`" 
           :name="`${field.name}-collapsable`" 
@@ -10,16 +10,17 @@
           class="custom-control-input" 
           @input="updateField($event, 'collapsable', 'attributes')"
         >
-        <label class="custom-control-label" :for="`${field.name}-collapsable`">允许展开/收起</label>
+        <label class="custom-control-label" :for="`${field.name}-collapsable`">允许收起</label>
       </div>
     </template>
-  </xform-setting>
+  </field-setting>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { XField } from '@dongls/xform'
 import { updateField } from '../util'
+import FieldSetting from '../FieldSetting.vue'
 
 export default defineComponent({
   name: 'xform-bs-group-setting',
@@ -31,6 +32,9 @@ export default defineComponent({
     return { 
       updateField: updateField.bind(null, emit) 
     }
+  },
+  components: {
+    [FieldSetting.name]: FieldSetting
   }
 })
 </script>

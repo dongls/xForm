@@ -1,6 +1,6 @@
 import store from '../store'
 import CONFIG from '../config'
-import { XFieldConf } from '../model'
+import { XFieldConf, XFormPreset } from '../model'
 import { mockFieldConfs } from './mock/index'
 
 describe('store: reset', () => {
@@ -23,6 +23,25 @@ describe('store: reset', () => {
     expect(config).toStrictEqual(CONFIG)
     expect(store.getPreset()).toBeNull()
     expect(fg.length).toBe(0)
+  })
+})
+
+describe('store: usePreset', () => {
+  test('with config', () => {
+    const preset: XFormPreset = {
+      name: 'demo',
+      fieldConfs: [],
+      config: {
+        validation: {
+          immediate: false
+        }
+      }
+    }
+
+    store.reset()
+    store.usePreset(preset)
+
+    expect(store.isImmediateValidate()).toBe(false)
   })
 })
 

@@ -48,11 +48,11 @@ export const EVENTS = Object.freeze({
   UPDATE_PROP: 'update:prop'
 })
 
-export enum EnumLabelPosition {
-  LEFT = 'left',
-  RIGHT = 'right',
-  TOP = 'top',
-}
+export const LabelPosition = Object.freeze({
+  LEFT: 'left',
+  RIGHT: 'right',
+  TOP: 'top'
+})
 
 export enum EnumDragMode {
   INSERT = 'insert',
