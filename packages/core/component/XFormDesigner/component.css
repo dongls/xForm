@@ -376,10 +376,9 @@
 .xform-designer-setting{
   min-width: 360px;
   height: 100%;
-  border-left: 1px solid transparent;
+  border-left: 1px solid #eee;
   overflow: hidden;
   background-color: #fff;
-  border-color: #eee;
   box-sizing: content-box;
 }
 

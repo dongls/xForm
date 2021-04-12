@@ -1,5 +1,5 @@
 import { isEmpty, isRegExp } from '../util/lang'
-import { XField } from '../model'
+import { FormField } from '../model'
 
 /**
  * @deprecated
@@ -9,7 +9,7 @@ import { XField } from '../model'
  * @param {*} field 
  * @param {*} value 
  */
-export function validateRules(rules: any, field: XField, value: any){
+export function validateRules(rules: any, field: FormField, value: any){
   if(!Array.isArray(rules)) rules = [rules]
 
   for(let i = 0; i < rules.length; i++){
@@ -34,7 +34,7 @@ export function validateRules(rules: any, field: XField, value: any){
  * @param {*} field 
  * @param {*} value 
  */
-export function validateRule(rule: any, field: XField, value: any){
+export function validateRule(rule: any, field: FormField, value: any){
   // 非必填且为空值时不验证
   if(field.required !== true && isEmpty(value)) return null
 

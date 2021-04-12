@@ -1,111 +1,123 @@
-import { EnumLogicOperate, Logic, test as t } from '../util/logic'
+import { LogicOperator, LogicRule } from '../model'
+import { test as t } from '../util/logic'
 
 describe('logic', () => {
   test('operator lt', () => {  
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: 1 }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: 10 }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: 11 }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: '1' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: '10' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: '11' }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: 1 }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: 10 }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: 11 }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: '1' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: '10' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: '11' }, { a: 10 })).toBe(true)
   
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: 10 }, { })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: false }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: [] }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT, name: 'a', value: {} }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: 10 }, { })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: false }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: [] }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value, name: 'a', value: {} }, { a: 10 })).toBe(false)
   })
   
   test('operator lte', () => {  
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: 1 }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: 11 }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: 10 }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: '1' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: '11' }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: '10' }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: 1 }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: 11 }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: 10 }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: '1' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: '11' }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: '10' }, { a: 10 })).toBe(true)
   
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: 10 }, { })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: false }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: [] }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LTE, name: 'a', value: {} }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: 10 }, { })).toBe(false)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: false }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: [] }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.LTE.value, name: 'a', value: {} }, { a: 10 })).toBe(false)
   })
   
   test('operator gt', () => {  
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: 1 }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: 11 }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: '10' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: '1' }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: '11' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: '10' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: 1 }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: 11 }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: '10' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: '1' }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: '11' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: '10' }, { a: 10 })).toBe(false)
   
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: 10 }, { })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: false }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: [] }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GT, name: 'a', value: {} }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: 10 }, { })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: false }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: [] }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GT.value, name: 'a', value: {} }, { a: 10 })).toBe(false)
   })
 
   test('operator gte', () => {  
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: 1 }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: 11 }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: '10' }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: '1' }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: '11' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: '10' }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: 1 }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: 11 }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: '10' }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: '1' }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: '11' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: '10' }, { a: 10 })).toBe(true)
   
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: 10 }, { })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: false }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: [] }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.GTE, name: 'a', value: {} }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: 10 }, { })).toBe(false)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: false }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: [] }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.GTE.value, name: 'a', value: {} }, { a: 10 })).toBe(false)
   })
 
   test('operator eq', () => {  
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: 1 }, { a: 1 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: 2 }, { a: 1 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: '1' }, { a: 1 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: '2' }, { a: 1 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: '' }, { a: 0 })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: 1 }, { a: 1 })).toBe(true)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: 2 }, { a: 1 })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: '1' }, { a: 1 })).toBe(true)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: '2' }, { a: 1 })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: '' }, { a: 0 })).toBe(false)
 
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: 10 }, { })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: false }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: [] }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EQ, name: 'a', value: {} }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: 10 }, { })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: false }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: [] }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.EQ.value, name: 'a', value: {} }, { a: 10 })).toBe(false)
   })
   
   test('operator ne', () => {
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: 1 }, { a: 1 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: 2 }, { a: 1 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: '1' }, { a: 1 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: '2' }, { a: 1 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: '' }, { a: 0 })).toBe(false)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: 1 }, { a: 1 })).toBe(false)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: 2 }, { a: 1 })).toBe(true)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: '1' }, { a: 1 })).toBe(false)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: '2' }, { a: 1 })).toBe(true)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: '' }, { a: 0 })).toBe(false)
 
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a' }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: 10 }, { })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: false }, { a: 10 })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: [] }, { a: 10 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.NE, name: 'a', value: {} }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a' }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: 10 }, { })).toBe(false)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: false }, { a: 10 })).toBe(true)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: [] }, { a: 10 })).toBe(false)
+    expect(t({ operator: LogicOperator.NE.value, name: 'a', value: {} }, { a: 10 })).toBe(false)
   })
 
   test('operator empty', () => {
-    expect(t({ operator: EnumLogicOperate.EMPTY, name: 'a' }, { a: 1 })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EMPTY, name: 'a' }, {})).toBe(true)
-    expect(t({ operator: EnumLogicOperate.EMPTY, name: 'a' }, { a: null })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.EMPTY, name: 'a' }, { a: undefined })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.EMPTY, name: 'a' }, { a: false })).toBe(false)
-    expect(t({ operator: EnumLogicOperate.EMPTY, name: 'a' }, { a: [] })).toBe(true)
-    expect(t({ operator: EnumLogicOperate.EMPTY, name: 'a' }, { a: {} })).toBe(false)
+    expect(t({ operator: LogicOperator.EMPTY.value, name: 'a' }, { a: 1 })).toBe(false)
+    expect(t({ operator: LogicOperator.EMPTY.value, name: 'a' }, {})).toBe(true)
+    expect(t({ operator: LogicOperator.EMPTY.value, name: 'a' }, { a: null })).toBe(true)
+    expect(t({ operator: LogicOperator.EMPTY.value, name: 'a' }, { a: undefined })).toBe(true)
+    expect(t({ operator: LogicOperator.EMPTY.value, name: 'a' }, { a: false })).toBe(false)
+    expect(t({ operator: LogicOperator.EMPTY.value, name: 'a' }, { a: [] })).toBe(true)
+    expect(t({ operator: LogicOperator.EMPTY.value, name: 'a' }, { a: {} })).toBe(false)
+  })
+
+  test('operator contains', () => {
+    expect(t({ operator: LogicOperator.CONTAINS.value, name: 'a', value: '1' }, { a: '1' })).toBe(true)
+    expect(t({ operator: LogicOperator.CONTAINS.value, name: 'a', value: '2' }, { a: '1211' })).toBe(true)
+    expect(t({ operator: LogicOperator.CONTAINS.value, name: 'a', value: 1 }, { a: '1' })).toBe(false)
+    expect(t({ operator: LogicOperator.CONTAINS.value, name: 'a', value: '' }, { a: '1' })).toBe(false)
+    expect(t({ operator: LogicOperator.CONTAINS.value, name: 'a', value: null }, { a: '1' })).toBe(false)
+
+    expect(t({ operator: LogicOperator.CONTAINS.value, name: 'a', value: 1 }, { a: [1, 2] })).toBe(true)
+    expect(t({ operator: LogicOperator.CONTAINS.value, name: 'a', value: null }, { a: [1, 2] })).toBe(false)
   })
 
   test('operator and', () => {
-    const logic: Logic = {
-      operator: EnumLogicOperate.AND,
+    const logic: LogicRule = {
+      operator: LogicOperator.AND.value,
       condition: [
-        { operator: EnumLogicOperate.EQ, name: 'a', value: 1 },
-        { operator: EnumLogicOperate.LT, name: 'b', value: 18 },
-        { operator: EnumLogicOperate.EMPTY, name: 'c' }
+        { operator: LogicOperator.EQ.value, name: 'a', value: 1 },
+        { operator: LogicOperator.LT.value, name: 'b', value: 18 },
+        { operator: LogicOperator.EMPTY.value, name: 'c' }
       ]
     }
 
@@ -116,12 +128,12 @@ describe('logic', () => {
   })
 
   test('operator or', () => {
-    const logic: Logic = {
-      operator: EnumLogicOperate.OR,
+    const logic: LogicRule = {
+      operator: LogicOperator.OR.value,
       condition: [
-        { operator: EnumLogicOperate.EQ, name: 'a', value: 1 },
-        { operator: EnumLogicOperate.LT, name: 'b', value: 18 },
-        { operator: EnumLogicOperate.EMPTY, name: 'c' }
+        { operator: LogicOperator.EQ.value, name: 'a', value: 1 },
+        { operator: LogicOperator.LT.value, name: 'b', value: 18 },
+        { operator: LogicOperator.EMPTY.value, name: 'c' }
       ]
     }
 
@@ -133,12 +145,12 @@ describe('logic', () => {
   })
 
   test('operator not', () => {
-    const logic: Logic = {
-      operator: EnumLogicOperate.NOT,
+    const logic: LogicRule = {
+      operator: LogicOperator.NOT.value,
       condition: [
-        { operator: EnumLogicOperate.EQ, name: 'a', value: 1 },
-        { operator: EnumLogicOperate.LT, name: 'b', value: 18 },
-        { operator: EnumLogicOperate.EMPTY, name: 'c' }
+        { operator: LogicOperator.EQ.value, name: 'a', value: 1 },
+        { operator: LogicOperator.LT.value, name: 'b', value: 18 },
+        { operator: LogicOperator.EMPTY.value, name: 'c' }
       ]
     }
 
@@ -152,19 +164,19 @@ describe('logic', () => {
   test('edge case', () => {
     expect(t(null, null)).toBe(false)
     expect(t({} as any, null)).toBe(false)
-    expect(t({ operator: EnumLogicOperate.LT }, 1)).toBe(false)
+    expect(t({ operator: LogicOperator.LT.value }, 1)).toBe(false)
     expect(t({ operator: 'any', name: 'a', value: 1 } as any, { a: 1 })).toBe(false)
   })
   
   test('complex case', () => {
-    const logic: Logic = {
-      operator: EnumLogicOperate.AND,
+    const logic: LogicRule = {
+      operator: LogicOperator.AND.value,
       condition: [
-        { operator: EnumLogicOperate.LT, value: 20, name: 'a' },
-        { operator: EnumLogicOperate.EQ, value: 'test', name: 'b' },
-        { operator: EnumLogicOperate.OR, condition: [
-          { operator: EnumLogicOperate.GT, value: 10, name: 'c' },
-          { operator: EnumLogicOperate.EQ, value: 15, name: 'd' }
+        { operator: LogicOperator.LT.value, value: 20, name: 'a' },
+        { operator: LogicOperator.EQ.value, value: 'test', name: 'b' },
+        { operator: LogicOperator.OR.value, condition: [
+          { operator: LogicOperator.GT.value, value: 10, name: 'c' },
+          { operator: LogicOperator.EQ.value, value: 15, name: 'd' }
         ] }
       ]
     }

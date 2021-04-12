@@ -1,10 +1,10 @@
 import { 
-  XFieldConf, 
-  XFormConfig, 
-  XFormOption, 
-  XFormPreset,
+  FieldConf, 
+  FormConfig, 
+  FormConfigBase,
+  FormOption, 
+  FormPreset,
   ModeGroup, 
-  XFormConfigBase
 } from './model'
 
 import { 
@@ -20,24 +20,24 @@ import CONFIG from './config'
 const DELIMITER = '.'
 
 const store = {
-  preset: null as XFormPreset,
-  config: clonePlainObject(CONFIG) as XFormConfigBase,
-  fields: new Map<string, XFieldConf>()
+  preset: null as FormPreset,
+  config: clonePlainObject(CONFIG) as FormConfigBase,
+  fields: new Map<string, FieldConf>()
 }
 
-export function useConfig(config: XFormConfig){
+export function useConfig(config: FormConfig){
   const clone = clonePlainObject(config)
   mergePlainObject(store.config, clone)
 }
 
-export function usePreset(preset: XFormPreset){
+export function usePreset(preset: FormPreset){
   if(null == preset) return
   store.preset = Object.assign(store.preset || {}, preset)
   preset.fieldConfs.forEach(registerField)
   if(null != preset.config) useConfig(preset.config)
 }
 
-export function use(option: XFormOption){
+export function use(option: FormOption){
   if(option.preset) usePreset(option.preset)
   if(option.config) useConfig(option.config)
 }
@@ -61,7 +61,7 @@ export function resetField(){
   store.fields.clear()
 }
 
-export function reset(option?: XFormOption){
+export function reset(option?: FormOption){
   resetPreset()
   resetConfig()
   if(store.fields.size > 0) resetField()
@@ -69,15 +69,15 @@ export function reset(option?: XFormOption){
 }
 
 /** 注册单个字段 */
-export function registerField(fc: XFieldConf){
-  if(!(fc instanceof XFieldConf) || !fc.available) return
+export function registerField(fc: FieldConf){
+  if(!(fc instanceof FieldConf) || !fc.available) return
   
   store.fields.set(fc.type, fc)
 }
 
 /** 注册任意个字段 */
 export function registerManyField(...fcs: Array<unknown>){
-  flat(fcs).forEach(f => f instanceof XFieldConf && registerField(f))  
+  flat(fcs).forEach(f => f instanceof FieldConf && registerField(f))  
 }
 
 export function hasField(type: string){
@@ -90,9 +90,20 @@ export function findFieldConf(path: string){
   const index = path.indexOf(DELIMITER)
   const type = index >= 0 ? path.slice(0, index) : path
   const fc = store.fields.get(type)
-  if(isNull(fc) || index < 0) return fc
+  
+  if(isNull(fc)) {
+    if(__IS_DEV__) console.warn(`[xform]: 请先注册字段类型[${type}]`)
+    return null
+  }
 
-  return fc.dependencies.find(f => f.type == path)
+  if(index < 0) return fc
+  const dep = fc.dependencies.find(f => f.type == path)
+  if(isNull(dep)){
+    if(__IS_DEV__) console.warn(`[xform]: 请先注册字段类型[${path}]`)
+    return null
+  }
+
+  return dep
 }
 
 function findMode(mode?: string){

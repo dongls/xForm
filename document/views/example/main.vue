@@ -18,15 +18,15 @@
           <label>UI库：</label>
           <div class="lib-picker">
             <select :value="state.preset" @input="handlePreset">
-              <option value="bootstrap">Bootstrap</option>
-              <!-- <option value="antdv">Ant Design Vue</option> -->
+              <option value="bootstrap">Bootstrap@4.6.0</option>
+              <option value="antdv" v-if="isDev">Ant Design Vue@2.1.2</option>
             </select>
           </div>
         </div>
       </div>
     </div>
     <div class="main xform-is-scroll" :class="{'is-wide': isWide}">
-      <router-view :key="state.key" @view="viewJson"/>
+      <router-view @view="viewJson"/>
     </div>
 
     <modal v-model:show="state.show" :title="state.title">
@@ -36,9 +36,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, onBeforeUnmount, reactive } from 'vue'
 import { version } from '@dongls/xform'
-import { usePreset } from './preset'
+import { savePresetNameToLocal, usePreset } from './preset'
 import { useIsWide } from '../../util/common'
 
 export default defineComponent({
@@ -46,7 +46,6 @@ export default defineComponent({
   setup(){
     const state = reactive({
       loading: true,
-      key: 0,
       preset: '',
 
       show: false,
@@ -54,7 +53,12 @@ export default defineComponent({
       title: ''
     })
 
-    usePreset('bootstrap', state)
+    usePreset(state)
+
+    document.documentElement.classList.add('is-example')
+    onBeforeUnmount(() => {
+      document.documentElement.classList.remove('is-example')
+    })
 
     return {
       isWide: useIsWide(),
@@ -72,7 +76,8 @@ export default defineComponent({
         const option = target.options[target.selectedIndex]
         const value = option.value
 
-        usePreset(value, state)
+        savePresetNameToLocal(value)
+        window.location.reload()
       }
     }
   },
@@ -89,7 +94,9 @@ $--xform-color-primary: rgb(0,123,255) !default;
 $nav-link-darken: darken($--xform-color-primary, 12%); 
 
 textarea.example-value{
+  display: block;
   height: calc(100vh - 150px);
+  width: 100%;
   resize: none;
   font-size: 14px;
   font-family: 'cascadia code', Consolas, Arial, Helvetica, sans-serif;
@@ -104,6 +111,10 @@ textarea.example-value{
   margin-right: 2px;
 
   background: url('../../assets/svg/outbound.svg') no-repeat;
+}
+
+html.is-example{
+  overflow: hidden;
 }
 
 .example{
@@ -155,8 +166,13 @@ textarea.example-value{
     outline: none;
     background-color: transparent;
     color: #fff;
-    width: 120px;
+    width: 180px;
     appearance: none;
+    font-weight: 700;
+
+    option{
+      color: var(--doc-text-color-primary);
+    }
   }
 }
 
@@ -194,7 +210,6 @@ textarea.example-value{
 
   a {
     color: #fff !important;
-    text-decoration: none;
   }
 }
 
@@ -224,6 +239,7 @@ textarea.example-value{
   background-color: $--xform-color-primary;
   box-sizing: content-box;
   border: none;
+  text-decoration: none !important;
 
   &:after,
   &:before{

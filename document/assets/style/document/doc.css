@@ -1,3 +1,26 @@
+.doc a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  
+  transition: border-bottom-color ease .3s, background-color ease .3s;
+}
+
+.doc a:link,
+.doc a:visited{
+  color: var(--doc-link-color);
+}
+
+.doc a:hover {
+  text-decoration: none;
+  color: var(--doc-link-color);
+  border-bottom-color: var(--doc-link-color);
+  background-color: var(--doc-link-hover-bg-color);
+}
+
+.doc a:not([href]):not([tabindex]):focus {
+  outline: 0;
+}
+
 .doc-header{
   position: fixed;
   top: 0;

@@ -2,60 +2,51 @@ import type {
   Component,
   ComponentPublicInstance,
   ConcreteComponent,
-  Ref,
   VNode,
   VNodeProps,
 } from 'vue'
 
-import { 
-  XField, 
-  XFieldConf,
-} from '.'
+import { FieldConf } from './FieldConf'
+import { FormField } from './FormField'
 
-import { XFormSchema } from './XSchema'
-
-export interface AnyProps {
-  [propName: string]: any;
+export type DeepPartial<T, P = string | number | boolean | Function | Array<any>> = {
+  [K in keyof T]?: T[K] extends P ? T[K] : DeepPartial<T[K]> ;
 }
 
 export type VueComponent = Component
+export type AnyProps = { [propName: string]: any }
 export type RawProps = VNodeProps & AnyProps
-export type XFormScope = XField | XFormSchema
 
 export interface ModeGroup {
   title?: string;
   types: string[];
-  fieldConfs?: XFieldConf[];
+  fieldConfs?: FieldConf[];
 }
 
 export interface ModeConf {
   [propName: string]: Array<ModeGroup | string>;
 }
 
-interface ValidationConf {
-  immediate: boolean;
-}
-
-export interface XFormConfigBase{
+export interface FormConfigBase{
   modes: ModeConf;
-  validation: ValidationConf;
+  validation: {
+    immediate: boolean;
+  };
   genName: (o: any) => string;
-  formatter: (field: XField, props: RawProps, instance: ComponentPublicInstance) => any;
+  formatter: (field: FormField, props: RawProps, instance: ComponentPublicInstance) => any;
 }
 
-export type XFormConfig = {
-  [P in keyof XFormConfigBase]?: XFormConfigBase[P] extends ValidationConf ? Partial<XFormConfigBase[P]> : XFormConfigBase[P];
-}
+export type FormConfig = DeepPartial<FormConfigBase>
 
-export interface XFormPreset {
+export interface FormPreset {
   name: string;
   version?: string;
   slots?: {
     [prop: string]: VueComponent;
-    'setting_form': VueComponent;
+    'setting_form'?: VueComponent;
   };
-  fieldConfs: XFieldConf[];
-  config?: XFormConfig;
+  fieldConfs: FieldConf[];
+  config?: FormConfig;
 }
 
 export type RenderOptions = {
@@ -65,38 +56,46 @@ export type RenderOptions = {
   renderContent?: (component: ConcreteComponent | string, props: RawProps) => VNode;
 }
 
-export type RenderField = (field: XField, options?: RenderOptions) => VNode
+export type RenderField = (field: FormField, options?: RenderOptions) => VNode
+export type UpdateField = (field: FormField, event: { prop: string, value: any, scope?: string }) => void
 
-export interface XFormBuilderContext{
+export interface FormBuilderContext{
   type: 'builder';
-  // 注册字段
-  registerField: (field: Ref<XField>, isExternal: boolean) => void;
-  // 删除字段
-  removeField: (key: string) => void;
-  // 更新字段值
+  /** 更新字段值 */
   onUpdateValue: (event: any) => void;
-  // 渲染字段
+  /** 渲染字段 */
   renderField: RenderField;
 }
 
-export interface XFormDesignerContext{
-  type: 'designer',
-  // 渲染字段
-  renderField: RenderField
+export interface FormDesignerContext{
+  type: 'designer';
+  /** 渲染字段 */
+  renderField: RenderField;
+  /** 更新字段属性 */
+  updateField: UpdateField;
+  /** 选中字段 */
+  chooseField: (field: FormField) => void;
 }
 
-export interface XFormViewerContext{
+export interface FormViewerContext{
   type: 'viewer';
-  // 渲染字段
+  /** 渲染字段 */
   renderField: RenderField;
-  formatter: Function
+  formatter: Function;
 }
 
-export type XFormRenderContext = XFormBuilderContext | XFormDesignerContext | XFormViewerContext;
+export type FormRenderContext = FormBuilderContext | FormDesignerContext | FormViewerContext;
 
-export interface XFormOption {
-  // 组件配置
-  preset?: XFormPreset;
-  // 表单默认设置
-  config?: XFormConfig;
+export interface FormOption {
+  /** 组件配置 */
+  preset?: FormPreset;
+  /** 表单默认设置 */
+  config?: FormConfig;
+}
+
+export type LogicRule = {
+  operator: string;
+  name?: string;
+  value?: any;
+  condition?: LogicRule[]
 }

@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue'
-import { XFieldConf, XField, useValue, isEmpty } from '@dongls/xform'
+import { FieldConf, FormField, useValue, isEmpty } from '@dongls/xform'
 
 import icon from '@common/svg/number.svg'
 import setting from './setting.vue'
@@ -8,7 +8,7 @@ const build = defineComponent({
   name: 'xform-bs-number',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true
     },
     disabled: {
@@ -33,13 +33,13 @@ const build = defineComponent({
   }
 })
 
-export default XFieldConf.create({
+export default FieldConf.create({
   icon,
   type: 'number',
   title: '数字',
   setting,
   build,
-  validator(field: XField, value: number | string){
+  validator(field, value: number | string){
     if(field.required && isEmpty(value)) return Promise.reject('必填')
     if(field.attributes.integer && !/^[-+]?[1-9]\d*$/.test(value + '')) return Promise.reject('请输入整数')
 

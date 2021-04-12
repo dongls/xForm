@@ -16,14 +16,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { XField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
 import FieldSetting from '../FieldSetting.vue'
 
 // TODO: 支持批量修改
 export default defineComponent({
   name: 'xform-bs-select-setting',
   props: {
-    field: XField
+    field: FormField
   },
   emits: ['update:field'],
   setup(props, { emit }){

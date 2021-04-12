@@ -31,29 +31,21 @@
 
     <slot/>
 
-    <section v-if="logic" class="xform-bs-field-setting-prop">
-      <header>
-        <span>逻辑：</span>
-        <button type="button" class="btn btn-link is-logic-btn" @click="showLogicModal = true">配置</button>
-      </header>
-      <div>logic</div>
-      <modal title="配置字段逻辑" v-model:visible="showLogicModal" @confirm="saveLogic">
-        logic
-      </modal>
-    </section>
+    <field-logic v-model:field="fieldRef" v-if="logic"/>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef } from 'vue'
-import { XField } from '@dongls/xform'
-import Modal from './Modal.vue'
+import { defineComponent, toRef } from 'vue'
+import { FormField } from '@dongls/xform'
+
+import FieldLogic from './FieldLogic.vue'
 
 export default defineComponent({
   name: 'field-setting',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true
     },
     placeholder: {
@@ -66,7 +58,7 @@ export default defineComponent({
     },
     logic: {
       type: Boolean,
-      default: false
+      default: true
     },
     attributes: {
       type: Boolean,
@@ -74,21 +66,12 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const showLogicModal = ref(false)
     const fieldRef = toRef(props, 'field')
 
-    function saveLogic(){
-      showLogicModal.value = false
-    }
-
-    return {
-      showLogicModal,
-      saveLogic,
-      fieldRef
-    }
+    return { fieldRef }
   },
   components: {
-    [Modal.name]: Modal
+    [FieldLogic.name]: FieldLogic
   }
 })
 </script>
@@ -113,14 +96,5 @@ export default defineComponent({
   font-size: 14px;
   line-height: 20px;
   margin-bottom: 5px;
-}
-
-.is-logic-btn{
-  padding: 0;
-  box-shadow: none !important;
-  font-size: 14px;
-  line-height: 20px;
-  border: none;
-  float: right;
 }
 </style>

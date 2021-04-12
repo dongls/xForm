@@ -61,7 +61,7 @@ const production = {
     path: path.resolve(__dirname, '../../docs'),
     publicPath: require(`../env/${NODE_ENV}.js`).website.base,
     filename: '[name].[contenthash:8].js',
-    clean: true
+    clean: { keep: /libs\// }
   },
   resolve: {
     alias: {

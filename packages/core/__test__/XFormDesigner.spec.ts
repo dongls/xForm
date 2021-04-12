@@ -62,9 +62,7 @@ describe('XFormDesigner props: mode', () => {
 
       return {
         title: titleEl.exists() ? titleEl.text() : null,
-        types: fieldEl.map(f => {
-          return (f.element as any)[PROPS.XFIELD_TYPE]
-        })
+        types: fieldEl.map(f => (f.element as any)[PROPS.FIELD_TYPE])
       }
     })
     expect(group).toEqual(result)

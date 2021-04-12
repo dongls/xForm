@@ -1,3 +1,4 @@
-export * from './component'
-export * from './dom'
 export * from './lang'
+export * from './dom'
+export * from './component'
+export * from './logic'

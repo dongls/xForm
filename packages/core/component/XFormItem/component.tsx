@@ -22,10 +22,10 @@ import {
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_ITEM_EXTERNAL_PROVIDE_KEY,
   XFORM_SCHEMA_PROVIDE_KEY,
-  XField, 
-  XFormBuilderContext,
-  XFormRenderContext,
-  XFormSchema,
+  FormField, 
+  FormBuilderContext,
+  FormRenderContext,
+  FormSchema,
   AnyProps,
 } from '../../model'
 
@@ -36,7 +36,7 @@ import {
 } from '../../util'
 
 type XFormItemProps = {
-  field: XField;
+  field: FormField;
   validation: boolean | ValidateFunc;
   label: string | boolean;
   custom: boolean;
@@ -47,7 +47,7 @@ type XFormItemProps = {
   disabled: boolean;
 }
 
-function isBuilderContext(context: XFormRenderContext): context is XFormBuilderContext {
+function isBuilderContext(context: FormRenderContext): context is FormBuilderContext {
   return null != context && context.type == 'builder'
 }
 
@@ -57,14 +57,14 @@ function renderLabelSuffix(suffix: string){
   return <span>{suffix}</span>
 }
 
-function renderMessage(field: XField){
+function renderMessage(field: FormField){
   const { message, validating } = field.validation
   if(validating) return <p class="xform-is-validating">验证中...</p>
   if(message) return <p class="xform-item-message">{message}</p>
   return null
 }
 
-function renderContent(slots: Slots, field: XField, context: XFormRenderContext, disabled: boolean){
+function renderContent(slots: Slots, field: FormField, context: FormRenderContext, disabled: boolean){
   if(isFunction(slots.default)) return slots.default({ field, disabled })
 
   const component = getFieldComponent(field, EnumComponent.BUILD)
@@ -80,11 +80,11 @@ function renderContent(slots: Slots, field: XField, context: XFormRenderContext,
   return createVNode(component, fillComponentProps(component, allProps, {}))
 }
 
-function normalizeField(props: XFormItemProps): ComputedRef<XField>{
+function normalizeField(props: XFormItemProps): ComputedRef<FormField>{
   if(props.virtual !== true) return computed(() => props.field)
 
   // 为保证视图更新和数据格式一致性，这里使用reactive包裹虚拟字段
-  const virtualField = reactive(new XField()) as XField
+  const virtualField = reactive(new FormField()) as FormField
   return computed(() => {
     virtualField.type = props.type
     virtualField.name = props.name
@@ -104,7 +104,7 @@ function createComponent(name: EnumComponentName){
     name,
     props: {
       field: {
-        type: XField,
+        type: FormField,
         default: null
       },
       validation: {
@@ -148,8 +148,8 @@ function createComponent(name: EnumComponentName){
       }
     },
     setup(props: XFormItemProps, { slots }){
-      const schema = inject<Ref<XFormSchema>>(XFORM_SCHEMA_PROVIDE_KEY, null)
-      const context = inject<XFormRenderContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
+      const schema = inject<Ref<FormSchema>>(XFORM_SCHEMA_PROVIDE_KEY, null)
+      const context = inject<FormRenderContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
       const fieldRef = normalizeField(props)
       
       if(isBuilderContext(context)){
@@ -160,16 +160,13 @@ function createComponent(name: EnumComponentName){
         }
 
         fieldRef.value.validation.external = () => props.validation
-        context.registerField(fieldRef, isExternal)
-
-        onBeforeUnmount(() => {
-          context.removeField(fieldRef.value.name)
-        })
+        if(isExternal) schema.value.registerExternalField(fieldRef.value)
       }
       
       onMounted(() => {
         fieldRef.value.state.mounted = true
       })
+
       onBeforeUnmount(() => {
         fieldRef.value.state.mounted = false
       })

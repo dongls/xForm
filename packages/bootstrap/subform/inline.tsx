@@ -1,13 +1,15 @@
 import { h, Ref } from 'vue'
-import { useRenderContext, XField } from '@dongls/xform'
+import { useRenderContext, FormField } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH, DEF_INDEX_WIDTH, DEF_OPERATE_WIDTH, Row } from './common'
 
-export function useInlineLayout(props: { field: XField, disabled: boolean }, value: Ref<Row[]>){
+export function useInlineLayout(props: { field: FormField, disabled: boolean }, value: Ref<Row[]>){
   const rc = useRenderContext()
 
   function addRow(){
     const row = props.field.fields.reduce((acc, f) => {
-      acc[f.name] = f.clone(true, null)
+      const newField = f.clone(true, null)
+      newField.setParent(props.field)
+      acc[f.name] = newField
       return acc
     }, {} as any)
 

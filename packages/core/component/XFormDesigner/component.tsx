@@ -18,6 +18,7 @@ import {
   ConcreteComponent,
   createVNode,
   Ref,
+  onBeforeUnmount,
 } from 'vue'
 
 import { 
@@ -31,23 +32,28 @@ import {
   SELECTOR,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_SCHEMA_PROVIDE_KEY,
-  XField, 
-  XFieldConf,
-  XFormDesignerContext,
-  XFormSchema,
+  FormField, 
+  FieldConf,
+  FormDesignerContext,
+  FormSchema,
   RenderOptions,
+  UpdateField,
+  FormScope,
+  EVENTS
 } from '../../model'
 
 import {
   fillComponentProps,
-  findScope,
   genEventName,
   getFieldComponent,
   getHtmlElement,
   isFunction,
   isHidden,
   normalizeWheel,
+  toArray,
 } from '../../util'
+
+import { useLogic } from '../../util/logic'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
@@ -59,13 +65,13 @@ const SETTING_FORM_SLOT = 'setting_form'
 
 interface XFormDesignerProps {
   mode: string;
-  schema: XFormSchema;
+  schema: FormSchema;
 }
 
 interface XFormDesignerSetupState {
   groups?: ModeGroup[];
   icon?: any;
-  selectedField?: XField;
+  selectedField?: FormField;
   selectedTab?: string;
 
   clone?: Function;
@@ -74,6 +80,7 @@ interface XFormDesignerSetupState {
   chooseTab?: Function;
   chooseField?: Function;
   updateSchema?: Function;
+  updateField?: UpdateField;
   dragstart: (event: MouseEvent) => void;
 
   [prop: string]: any;
@@ -89,11 +96,6 @@ export interface XFormDesignerRefs{
 }
 
 export type XFormDesignerInstance = ComponentPublicInstance & XFormDesignerProps & XFormDesignerSetupState;
-
-const EVENTS = {
-  REMOVE: 'remove',
-  UPDATE_SCHEMA: 'update:schema' 
-}
 
 function shwoSelectedField(instance: ComponentInternalInstance){
   return nextTick(() => {
@@ -112,7 +114,7 @@ function shwoSelectedField(instance: ComponentInternalInstance){
  * 3. svg
  * 4. css class
  */
-function renderIcon(fc: XFieldConf){
+function renderIcon(fc: FieldConf){
   const icon = typeof fc.icon == 'function' ? fc.icon(fc) : fc.icon
 
   if(isVNode(icon)) return icon
@@ -122,7 +124,7 @@ function renderIcon(fc: XFieldConf){
   return <i class={icon}/>
 }
 
-function renderOperate(instance: XFormDesignerInstance, field: XField){
+function renderOperate(instance: XFormDesignerInstance, field: FormField){
   const { icon, clone, remove } = instance
   const buttons = []
 
@@ -145,11 +147,11 @@ function renderFieldPanel(groups: ModeGroup[]){
   return groups.map((group, i) => {
     const title = group.title ? <h3>{group.title}</h3> : null
     const fcs = group.fieldConfs
-    const types = fcs.filter(fc => fc != null).map(fc => {
+    const types = fcs.length == 0 ? <div class="xform-is-unknown">请先注册该分组下的字段类型</div> : fcs.map(fc => {
       const props = {
         'class': `${CLASS.FIELD} xform-template-${fc.type} ${CLASS.DRAGGABLE}`,
         'key': fc.type,
-        [PROPS.XFIELD_TYPE]: fc.type,
+        [PROPS.FIELD_TYPE]: fc.type,
         [PROPS.DRAG_MODE]: EnumDragMode.INSERT
       }
 
@@ -170,7 +172,7 @@ function renderFieldPanel(groups: ModeGroup[]){
   })
 }
 
-function renderUnknown(field: XField){
+function renderUnknown(field: FormField){
   console.warn(`field[${field.title}: ${field.name}] not implement preview component`)
   return <p class="xform-is-unknown">暂不支持的字段类型</p>
 }
@@ -179,9 +181,9 @@ function renderUnknown(field: XField){
  * 根据字段渲染对应的预览组件，按以下顺序逐次匹配：
  * 1. 检索是否有名为`preview_name_[name]`的slot
  * 2. 检索是否有名为`preview_type_[type]`的slot
- * 3. 检索字段对应的`XFieldConf`中配置的`preview`或`build`组件
+ * 3. 检索字段对应的`FieldConf`中配置的`preview`或`build`组件
  */
-function renderContent(instance: XFormDesignerInstance, field: XField, options: RenderOptions){
+function renderContent(instance: XFormDesignerInstance, field: FormField, options: RenderOptions){
   const slots = instance.$slots
   const disabled = field.disabled || options.parentProps?.disabled === true
 
@@ -200,7 +202,7 @@ function renderContent(instance: XFormDesignerInstance, field: XField, options: 
   return create(component, props)
 }
 
-function renderItem(instance: XFormDesignerInstance, field: XField, options: RenderOptions){
+function renderItem(instance: XFormDesignerInstance, field: FormField, options: RenderOptions){
   const children = function(){
     return renderContent(instance, field, options) ?? renderUnknown(field)
   }
@@ -213,7 +215,7 @@ function renderItem(instance: XFormDesignerInstance, field: XField, options: Ren
 }
 
 /** 渲染字段预览组件 */
-function renderFieldPreview(instance: XFormDesignerInstance, field: XField, options: RenderOptions = {}){
+function renderFieldPreview(instance: XFormDesignerInstance, field: FormField, options: RenderOptions = {}){
   const tag = 'div'
   const props = {
     'class': {
@@ -226,7 +228,7 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: XField, opti
       'xform-is-hidden': field.hidden
     },
     'key': field.uid,
-    [PROPS.XFIELD]: field,
+    [PROPS.FIELD]: field,
     [PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
   }
 
@@ -248,7 +250,7 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: XField, opti
   return h(tag, props, children())
 }
 
-function renderPreviewList(instance: XFormDesignerInstance, fields: XField[]){
+function renderPreviewList(instance: XFormDesignerInstance, fields: FormField[]){
   const content = (
     fields.length == 0 
       ? renderEmptyTip() 
@@ -272,9 +274,9 @@ function renderPreviewList(instance: XFormDesignerInstance, fields: XField[]){
  * 根据字段创建对应的设置组件，按以下顺序逐次匹配：
  * 1. 检索是否有名为`setting_name_[name]`的slot
  * 2. 检索是否有名为`setting_type_[type]`的slot
- * 3. 检索字段对应的XFieldConf中配置的组件
+ * 3. 检索字段对应的FieldConf中配置的组件
  */
-function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesignerInstance){
+function renderFieldSetting(field: FormField, slots: Slots, instance: XFormDesignerInstance){
   if(null == field || null == field.conf) return <p class="xform-setting-tip">点击字段设置属性</p>
 
   const props: RawProps = { field: field, key: field.name }
@@ -292,21 +294,12 @@ function renderFieldSetting(field: XField, slots: Slots, instance: XFormDesigner
   }
 
   // 监听字段更新
-  props['onUpdate:field'] = function(event: any){
-    const { prop, value, scope } = event
-    let target = field as any
-    if(null != scope){
-      if(target[scope] == null) target[scope] = {}
-      target = target[scope]
-    } 
-    target[prop] = value
-    instance.updateSchema()
-  }
+  props['onUpdate:field'] = instance.updateField.bind(field)
 
   return createVNode(component, props)
 }
 
-function renderFormSetting(slots: Slots, schema: XFormSchema, instance: XFormDesignerInstance){
+function renderFormSetting(slots: Slots, schema: FormSchema, instance: XFormDesignerInstance){
   if(isFunction(slots[SETTING_FORM_SLOT])) return slots[SETTING_FORM_SLOT]({ schema })
 
   const preset = Store.getPreset()
@@ -322,7 +315,7 @@ function renderFormSetting(slots: Slots, schema: XFormSchema, instance: XFormDes
   return null
 }
 
-function renderSetting(slots: Slots, schema: XFormSchema, instance: XFormDesignerInstance){
+function renderSetting(slots: Slots, schema: FormSchema, instance: XFormDesignerInstance){
   const { selectedField, selectedTab, chooseTab } = instance
   const formSetting = renderFormSetting(slots, schema, instance)
 
@@ -373,16 +366,42 @@ export default defineComponent({
   },
   emits: [
     EVENTS.UPDATE_SCHEMA,
-    EVENTS.REMOVE
+    EVENTS.REMOVE,
+    EVENTS.MESSAGE
   ],
   setup(props: XFormDesignerProps, { emit }){
     const instance = getCurrentInstance()
-    const selectedField = ref(null) as Ref<XField>
+    const selectedField = ref(null) as Ref<FormField>
     const selectedTab = ref<string>('form')
     const groups = computed(() => Store.findFieldGroups(props.mode))
     const { dragstart } = useDragging()
+    const logic = useLogic()
+
+    function cleanLogic(scope: FormScope, field: FormField){
+      const data = logic.clean(scope, field)
+      if(data.length > 0) {
+        emit(EVENTS.MESSAGE, { type: 'logic.change', title: '字段逻辑发生变更', data, field })
+      }
+    }
+
+    const stop = props.schema.useEffect(action => {
+      switch(action.type){
+        case 'field.move': {
+          const field = action.field
+          const scope = action.field.parent
+          cleanLogic(scope, field)
+          break
+        }
+        case 'field.remove': {
+          const field = action.field
+          const scope = action.oldParent
+          cleanLogic(scope, field)
+          break
+        }
+      }
+    })
     
-    const updateSchema = function(schema: XFormSchema = props.schema){
+    const updateSchema = function(schema: FormSchema = props.schema){
       emit(EVENTS.UPDATE_SCHEMA, schema)
     }
 
@@ -390,7 +409,7 @@ export default defineComponent({
       selectedTab.value = tab
     }
 
-    const chooseField = function(field: XField){
+    const chooseField = function(field: FormField){
       selectedField.value = field
       if(null == field) return
 
@@ -409,26 +428,24 @@ export default defineComponent({
       scroll.scrollTop += pixelY
     }
 
-    const clone = function(field: XField, event: Event){
+    const clone = function(field: FormField){
       if(field.allowClone === false) return
 
-      const target = (event.target as Element).closest(SELECTOR.PREVIEW)
-      const scope = findScope(target) ?? props.schema
+      const scope = field.parent
       const newField = field.clone()
-      scope.fields.splice(scope.fields.indexOf(field) + 1, 0, newField)
+      scope.insert(scope.indexOf(field) + 1, newField)
       updateSchema(props.schema)
       chooseField(newField)
     }
     
-    const remove = function(field: XField, event: Event){
+    const remove = function(field: FormField){
       if(field.allowRemove === false) return
 
       const name = genEventName(EVENTS.REMOVE)
       const listener = instance.vnode?.props?.[name]
       const defaultAction = function(){
-        const target = (event.target as Element).closest(SELECTOR.PREVIEW)
-        const scope = findScope(target) ?? props.schema
-        scope.fields.splice(scope.fields.indexOf(field), 1)
+        const scope = field.parent
+        scope.remove(field)
         chooseField(null)
         updateSchema(props.schema)
 
@@ -441,16 +458,28 @@ export default defineComponent({
       isFunction(listener) ? emit(EVENTS.REMOVE, { field, defaultAction }): defaultAction()
     }
 
-    
-    function reset(){
-      emit(EVENTS.UPDATE_SCHEMA, {})
+    const updateField: UpdateField = function(field, event){
+      const { prop, value, scope } = event
+
+      let target = field
+      if(null != scope){
+        if(target[scope] == null) target[scope] = {}
+        target = target[scope]
+      }
+
+      target[prop] = value
+      updateSchema()
     }
 
     provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
-    provide<XFormDesignerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
+    provide<FormDesignerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'designer',
-      renderField: renderFieldPreview.bind(null, instance.proxy)
+      renderField: renderFieldPreview.bind(null, instance.proxy),
+      updateField,
+      chooseField
     })
+
+    onBeforeUnmount(stop)
   
     return {
       clone,
@@ -460,11 +489,11 @@ export default defineComponent({
       groups,
       icon: { clone: IconClone, remove: IconRemove },
       remove,
-      reset,
       resetSelectedField,
       selectedField,
       selectedTab,
       updateSchema,
+      updateField,
       dragstart
     }
   },
@@ -472,7 +501,7 @@ export default defineComponent({
     const slots = instance.$slots
     const schema = instance.schema
     const groups = instance.groups as ModeGroup[]
-    const fields: XField[] = Array.isArray(schema.fields) ? schema.fields : []
+    const fields: FormField[] = toArray(schema.fields)
 
     return (
       <div class="xform-designer" ref="root" onMousedown={instance.dragstart}>

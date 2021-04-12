@@ -36,29 +36,6 @@ body{
   -webkit-tap-highlight-color: rgba(26,26,26,0);
 }
 
-a {
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  
-  transition: border-bottom-color ease .3s, background-color ease .3s;
-}
-
-a:link,
-a:visited{
-  color: var(--doc-link-color);
-}
-
-a:hover {
-  text-decoration: none;
-  color: var(--doc-link-color);
-  border-bottom-color: var(--doc-link-color);
-  background-color: var(--doc-link-hover-bg-color);
-}
-
-a:not([href]):not([tabindex]):focus {
-  outline: 0;
-}
-
 [hidden] {
   display: none !important;
 }

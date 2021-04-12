@@ -1,14 +1,15 @@
 export {
-  XFormPreset,
-  XFormBuilderContext,
-  XFormDesignerContext,
-  XFormViewerContext,
-  XFormRenderContext,
+  FormBuilderContext,
+  FormDesignerContext,
+  FormPreset,
+  FormRenderContext,
+  FormViewerContext,
+  LogicRule,
   RawProps,
 } from './common'
 
-export { XField } from './XField'
-export { XFieldConf } from './XFieldConf'
-export { XFormSchema } from './XSchema'
+export { FieldConf } from './FieldConf'
+export { FormField } from './FormField'
+export { FormSchema } from './FormSchema'
 
 export * as constant from './constant'

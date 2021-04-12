@@ -17,13 +17,13 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { useValue, XField } from '@dongls/xform'
+import { useValue, FormField } from '@dongls/xform'
 
 export default defineComponent({
   name: 'xform-bs-checkbox',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true
     },
     disabled: {

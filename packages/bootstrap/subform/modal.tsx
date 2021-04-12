@@ -1,14 +1,14 @@
 import { getCurrentInstance, ref, Ref, onBeforeUnmount, h } from 'vue'
 import {
-  XField,
-  XFormSchema,
+  FormField,
+  FormSchema,
   useSchema,
   useRenderContext,
 } from '@dongls/xform'
 
 import { DEF_COLUMN_WIDTH, DEF_INDEX_WIDTH, DEF_OPERATE_WIDTH, Row } from './common'
 
-function createModel(fields: XField[], row: Row){
+function createModel(fields: FormField[], row: Row){
   if(row == null) return {}
 
   return fields.reduce((acc, f) => {
@@ -19,11 +19,11 @@ function createModel(fields: XField[], row: Row){
   }, {} as any)
 }
 
-export function useModalLayout(props: { field: XField, disabled: boolean }, value: Ref<Row[]>){
+export function useModalLayout(props: { field: FormField, disabled: boolean }, value: Ref<Row[]>){
   const show = ref(false)
   const instance = getCurrentInstance()
   const rootSchema = useSchema()
-  const formSchema = ref<XFormSchema>(null)
+  const formSchema = ref<FormSchema>(null)
   const rc = useRenderContext()
 
   let currentRow = null as Row
@@ -73,7 +73,9 @@ export function useModalLayout(props: { field: XField, disabled: boolean }, valu
 
   function addRow(model: any){
     const row = props.field.fields.reduce((acc, f) => {
-      acc[f.name] = f.clone(true, model[f.name])
+      const newField = f.clone(true, model[f.name])
+      newField.setParent(props.field)
+      acc[f.name] = newField
       return acc
     }, {} as any)
 

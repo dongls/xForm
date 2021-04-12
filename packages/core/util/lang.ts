@@ -6,7 +6,7 @@ const OBJECT_TO_STRING_TAG = {
   RegExp: '[object RegExp]'
 }
 
-function getObjectTag(value: unknown): string{
+export function getObjectTag(value: unknown): string{
   if (value == null) {
     return value === undefined ? '[object Undefined]' : '[object Null]'
   }

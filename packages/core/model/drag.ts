@@ -1,4 +1,4 @@
-import { XField } from '.'
+import { FormField } from './FormField'
 
 import { ComponentInternalInstance } from 'vue'
 import {
@@ -31,9 +31,8 @@ export interface InternalDragUtils{
   getPublicInstance: () => XFormDesignerInstance;
   resetDragStatus: () => void,
   getMarkEl: () => HTMLElement,
-  getRootScopeEl: () =>HTMLElement,
+  getRootScopeEl: () => HTMLElement,
   moveMarkEl: (direction: number, target: Element, scope: Element, mark?: Element) => void
-  moveField: (a: number, b: number, fields: XField[]) => void;
 }
 
 export interface InternalDragEventContext extends InternalDragUtils, AnyProps{
@@ -41,7 +40,7 @@ export interface InternalDragEventContext extends InternalDragUtils, AnyProps{
   directionX?: number;
   mode?: EnumDragMode;
   hook?: EnumDragHook;
-  field?: XField;
+  field?: FormField;
   fieldType?: string;
 }
 
@@ -90,7 +89,7 @@ export class InternalDragContext{
   deltaY: number; // ghostEl上边与鼠标之间的偏移量
   dragElement: Element; // 拖拽的元素
   dropElement: Element; // 拖放的目标元素
-  field?: XField; // 字段
+  field?: FormField; // 字段
   fieldType: string; // 字段类型
   init = false; // 是否初始化
   mode: EnumDragMode; // 拖拽模式
@@ -98,8 +97,8 @@ export class InternalDragContext{
   directionX: number;
 
   constructor(event: MouseEvent, dragElement: Element) {
-    const field = getProperty<XField>(dragElement, PROPS.XFIELD)
-    const fieldType = field?.type ?? getProperty<string>(dragElement, PROPS.XFIELD_TYPE)
+    const field = getProperty<FormField>(dragElement, PROPS.FIELD)
+    const fieldType = field?.type ?? getProperty<string>(dragElement, PROPS.FIELD_TYPE)
     const mode = getProperty<string>(dragElement, PROPS.DRAG_MODE)
 
     const isFieldEl = dragElement.matches(SELECTOR.FIELD)
@@ -186,7 +185,7 @@ export class InternalDragContext{
     for(const element of elements){
       if(element == this.dragElement) continue
 
-      const field = getProperty<XField>(element, PROPS.XFIELD)
+      const field = getProperty<FormField>(element, PROPS.FIELD)
       if(field == null || field.conf == null || !isFunction(field.conf[hook])) continue
       
       const fc = field.conf

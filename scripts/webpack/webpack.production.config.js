@@ -40,16 +40,19 @@ const esm = {
       commonjs: '@dongls/xform',
       commonjs2: '@dongls/xform',
       amd: '@dongls/xform'
-    }
+    },
+    // 'vue': 'vue'
   },
   output: {
     path: props.outPath,
     filename: 'index.esm.js',
-    libraryTarget: 'module',
     clean: true,
     module: true,
     environment: {
       module: true
+    },
+    library: {
+      type: 'module'
     }
   },
   experiments: {

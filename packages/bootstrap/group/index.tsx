@@ -1,8 +1,8 @@
 import { defineComponent, ref } from 'vue'
 
 import { 
-  XField,
-  XFieldConf, 
+  FormField,
+  FieldConf, 
   constant,
   useRenderContext,
 } from '@dongls/xform'
@@ -14,7 +14,7 @@ const { SELECTOR, CLASS, EnumBehavior, PROPS, EnumValidateMode, EnumValidityStat
 const GROUP_LIST_CLASS = 'xform-bs-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
 
-type GroupValue = { [prop: string]: XField }
+type GroupValue = { [prop: string]: FormField }
 
 function useHeader(){
   const collasped = ref(false)
@@ -23,7 +23,7 @@ function useHeader(){
     collasped.value = !collasped.value
   }
 
-  function renderHeader(field: XField){
+  function renderHeader(field: FormField){
     if(null == field.title) return null
   
     const btn = (
@@ -49,7 +49,7 @@ const build = defineComponent({
   name: 'xform-bs-group',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true
     },
     behavior: {
@@ -92,7 +92,7 @@ const build = defineComponent({
           [CLASS.DROPPABLE]: inDesigner,
           [CLASS.SCOPE]: true
         },
-        [PROPS.XFIELD]: inDesigner ? props.field : undefined,
+        [PROPS.FIELD]: inDesigner ? props.field : undefined,
         [PROPS.SCOPE]: props.field
       }
 
@@ -120,7 +120,7 @@ const view = defineComponent({
   name: 'xform-bs-group-view',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true
     },
     disabled: {
@@ -155,7 +155,7 @@ const view = defineComponent({
   }
 })
 
-export default XFieldConf.create({
+export default FieldConf.create({
   icon: icon,
   type: 'group',
   title: '分组',
@@ -189,7 +189,9 @@ export default XFieldConf.create({
     const v = (null == value || typeof value != 'object') ? {} : value
 
     return field.fields.reduce((acc, f) => {
-      acc[f.name] = f.clone(true, v[f.name] ?? null)
+      const newField = f.clone(true, v[f.name] ?? null)
+      newField.setParent(field)
+      acc[f.name] = newField
       return acc
     }, {} as any) 
   },
@@ -198,7 +200,7 @@ export default XFieldConf.create({
     if(value == null || typeof value != 'object' || Object.keys(value).length == 0) return null
 
     return field.fields.map(f => f.name).reduce((acc, key) => {
-      const f = Reflect.get(value, key, value) as XField
+      const f = Reflect.get(value, key, value) as FormField
       if(f != null){
         const fc = f.conf
         const v = (typeof fc?.onValueSubmit == 'function') ? fc.onValueSubmit(f) : f.value

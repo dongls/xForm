@@ -1,6 +1,6 @@
-import { XField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
 
-export type Row = {[prop: string]: XField}
+export type Row = {[prop: string]: FormField}
 
 export const DEF_COLUMN_WIDTH = 150
 export const DEF_INDEX_WIDTH = 50

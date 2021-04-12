@@ -7,18 +7,15 @@ import {
   EnumDragDirection,
   InternalDragContext,
   InternalDragUtils,
-  PROPS, 
   SELECTOR, 
-  XField, 
-  XFormScope,
+  FormField,
 } from '../../model'
 
 import { 
   findElementsFromPoint,
-  getProperty,
-  getHtmlElement
+  getHtmlElement,
+  getScope
 } from '../../util'
-
 
 import { XFormDesignerInstance } from './component'
 import store from '../../store'
@@ -31,7 +28,6 @@ export default function useDragging(){
     getMarkEl,
     moveMarkEl,
     getRootScopeEl,
-    moveField
   } as InternalDragUtils
 
   const GLOBAL = {
@@ -105,22 +101,6 @@ export default function useDragging(){
     return path
   }
 
-  /** 
-   * 移动字段位置
-   * @param {number} a - 原位置
-   * @param {number} b - 新位置
-   * @param {XField[]} fields - 待排序的字段
-   */
-  function moveField(a: number, b: number, fields: XField[]){
-    if(a < 0 || b < 0 || a == b) return
-
-    const i = b > a ? b - 1 : b
-    if(a == i) return
-
-    const item = fields.splice(a, 1)[0]
-    fields.splice(i, 0, item)
-  }
-
   function dragstart(event: MouseEvent){
     // 屏蔽非鼠标左键的点击事件
     if(event.button !== 0) return
@@ -177,7 +157,8 @@ export default function useDragging(){
     const pInstance = getPublicInstance()
     const rootScopeEl = getRootScopeEl()
     const targetScopeEl = mark.closest(SELECTOR.SCOPE) ?? rootScopeEl
-    const targetScope = getProperty<XFormScope>(targetScopeEl, PROPS.SCOPE)
+    const targetScope = getScope(targetScopeEl)
+    
     // 新插入
     if(context.isInsert){
       const newIndex = (
@@ -189,8 +170,8 @@ export default function useDragging(){
 
       const fc = store.findFieldConf(context.fieldType)
       if(null != fc){
-        const field = new XField(fc)
-        targetScope.fields.splice(newIndex, 0, field)
+        const field = new FormField(fc)
+        targetScope.insert(newIndex, field)
         pInstance.updateSchema()
         pInstance.chooseField(field)
       }
@@ -199,20 +180,17 @@ export default function useDragging(){
     }
 
     // 原有字段重新排序
-    const originScopeEl = context.dragElement.parentElement.closest(SELECTOR.SCOPE) ?? rootScopeEl
-    const originScope = getProperty<XFormScope>(originScopeEl, PROPS.SCOPE)
-
+    const originScope = context.field.parent
     if(context.isSort){
       const field = context.field
       const newIndex = Array.prototype.indexOf.call(targetScopeEl.children, mark)
 
-      if(originScopeEl == targetScopeEl){
-        const oldIndex = originScope.fields.indexOf(field)
-        moveField(oldIndex, newIndex, originScope.fields)
+      // 在同一作用域下
+      if(originScope == targetScope){
+        field.move(newIndex)
       } else {
-        const oldIndex = originScope.fields.indexOf(field)
-        originScope.fields.splice(oldIndex, 1)
-        targetScope.fields.splice(newIndex, 0, field)
+        originScope.remove(field)
+        targetScope.insert(newIndex, field)
       }
 
       pInstance.updateSchema()

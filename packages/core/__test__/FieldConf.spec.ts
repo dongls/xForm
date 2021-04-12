@@ -1,8 +1,8 @@
-import { XFieldConf } from '../model'
+import { FieldConf } from '../model'
 import { h } from 'vue'
 
-test('XFieldConf: alias', () => {
-  const text = XFieldConf.create({
+test('FieldConf: alias', () => {
+  const text = FieldConf.create({
     type: 'text',
     title: '单行文本',
     icon: 'icon-text',
@@ -15,7 +15,7 @@ test('XFieldConf: alias', () => {
     validator(){ return Promise.resolve() }
   })
 
-  const email = XFieldConf.create({
+  const email = FieldConf.create({
     type: 'email',
     title: '邮箱',
     icon: 'icon-email',
@@ -24,11 +24,11 @@ test('XFieldConf: alias', () => {
     onRemoved(){/* */}
   })
   
-  expect(text).toBeInstanceOf(XFieldConf)
+  expect(text).toBeInstanceOf(FieldConf)
   expect(text.onRemoved).toBeNull()
 
-  expect(email).toBeInstanceOf(XFieldConf)
-  expect(email.alias).toBeInstanceOf(XFieldConf)
+  expect(email).toBeInstanceOf(FieldConf)
+  expect(email.alias).toBeInstanceOf(FieldConf)
 
   expect(email.type).toBe('email')
   expect(email.title).toBe('邮箱')

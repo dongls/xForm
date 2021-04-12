@@ -1,5 +1,5 @@
 import { createSchemaRef } from '../api'
-import { XField, XSchema } from '../model'
+import { FormField, FormSchema } from '../model'
 import { isRef } from 'vue'
 
 describe('api: createShema', () => {
@@ -8,7 +8,7 @@ describe('api: createShema', () => {
     for(const param of params){
       const schema = createSchemaRef(param)
       expect(isRef(schema)).toBeTruthy()
-      expect(schema.value).toBeInstanceOf(XSchema)
+      expect(schema.value).toBeInstanceOf(FormSchema)
       expect(schema.value.fields).toBeInstanceOf(Array)
       expect(schema.value.fields.length).toBe(0)
     }
@@ -29,6 +29,6 @@ describe('api: createShema', () => {
     expect(schema.value.test).toBe('1')
 
     expect(schema.value.fields).toBeInstanceOf(Array)
-    expect(schema.value.fields[0]).toBeInstanceOf(XField)
+    expect(schema.value.fields[0]).toBeInstanceOf(FormField)
   })
 })

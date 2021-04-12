@@ -1,20 +1,20 @@
-import { XField } from '../model'
+import { FormField } from '../model'
 
-test('XField: rest params', () => {
+test('FormField: rest params', () => {
   const o = {
     name: 'field_a',
     type: 'text',
     otherProp: 'other prop'
   }
 
-  const field = new XField(o)
+  const field = new FormField(o)
   expect(field.name).toBe(o.name)
   expect(field.type).toBe(o.type)
   expect(field.otherProp).toBe(o.otherProp)
 })
 
-test('XField: clone', () => {
-  const origin = new XField({
+test('FormField: clone', () => {
+  const origin = new FormField({
     name: 'origin',
     type: 'text',
     attributes: {
@@ -22,12 +22,12 @@ test('XField: clone', () => {
     }
   })
 
-  const child_1 = new XField({
+  const child_1 = new FormField({
     name: 'child_1',
     type: 'text'
   })
 
-  const child_2 = new XField({
+  const child_2 = new FormField({
     name: 'child_2',
     type: 'textarea',
     allowClone: false

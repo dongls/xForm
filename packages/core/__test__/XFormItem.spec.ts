@@ -1,13 +1,13 @@
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { mockOption } from './mock'
-import { XFormItem, store, XField, XFieldConf } from '../index'
+import { XFormItem, store, FormField, FieldConf } from '../index'
 import { LabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
 import { createSchemaRef } from '../api'
 
 describe('XFormItem slots: default', () => {
   test('slot is not empty', () => {
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -28,7 +28,7 @@ describe('XFormItem slots: default', () => {
   test('slot is empty', () => {
     store.reset(mockOption())
 
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -41,13 +41,13 @@ describe('XFormItem slots: default', () => {
     })
 
     expect(wrapper.find('.xform-item-title').text()).toBe(field.title)
-    expect(wrapper.find('.xform-item-content').html().includes('build for text')).toBe(true)
+    expect(wrapper.find('.xform-item-content').find('input[type="text"]').exists()).toBe(true)
   })
 
   test('slot is custom', () => {
     const content = '<div>slot is custom</div>'
     const text = 'build: slot is custom'
-    const conf = XFieldConf.create({
+    const conf = FieldConf.create({
       type: 'text',
       title: '单行文本',
       custom: true,
@@ -57,7 +57,7 @@ describe('XFormItem slots: default', () => {
     store.reset()
     store.registerField(conf)
 
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -87,7 +87,7 @@ describe('XFormItem props: labelPosition', () => {
   test('default', () => {
     store.reset()
 
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -103,7 +103,7 @@ describe('XFormItem props: labelPosition', () => {
   test('left', () => {
     store.reset()
 
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -124,7 +124,7 @@ describe('XFormItem props: labelPosition', () => {
   test('right', () => {
     store.reset()
 
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -145,7 +145,7 @@ describe('XFormItem props: labelPosition', () => {
   test('top', () => {
     store.reset()
 
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -168,7 +168,7 @@ describe('XFormItem props: labelSuffix', () => {
   test('is null', () => {
     store.reset()
   
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -187,7 +187,7 @@ describe('XFormItem props: labelSuffix', () => {
   test('not null', () => {
     store.reset()
   
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -213,7 +213,7 @@ describe('XFormItem props: label', () => {
   test('not null', () => {
     store.reset()
   
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'
@@ -238,7 +238,7 @@ describe('XFormItem props: label', () => {
   test('not null', () => {
     store.reset()
   
-    const field = XField.create({  
+    const field = FormField.create({  
       type: 'text',
       name: 'field_text01',
       title: '单行文本一'

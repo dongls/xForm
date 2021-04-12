@@ -1,7 +1,7 @@
-import { XFormConfigBase } from './model'
+import { FormConfigBase } from './model'
 import { isEmpty, isNull, genRandomStr } from './util'
 
-const config: XFormConfigBase = {
+const config: FormConfigBase = {
   modes: null,
   validation: {
     immediate: true

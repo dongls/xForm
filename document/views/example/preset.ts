@@ -5,6 +5,10 @@ enum TYPE {
   SCRIPT = 2
 }
 
+const publicPath = __IS_DEV__ ? '/docs' : '/xForm'
+const DEF_PRESEt = 'bootstrap'
+const LOCAL_PRESET_NAME_KEY = '__xform_preset_name__'
+
 const MODES = {
   example: [
     {
@@ -19,25 +23,28 @@ const MODES = {
   simple: ['text', 'textarea', 'number', 'select']
 }
 
-const CONFIGS = {
+const CONFIGS: any = {
   'bootstrap': {
     source: [
-      ['https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css', TYPE.STYLE],
-      ['https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js', TYPE.SCRIPT],
-      ['https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js', TYPE.SCRIPT],
-      ['https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js', TYPE.SCRIPT]
+      [publicPath + '/libs/bootstrap/bootstrap.min.css', TYPE.STYLE],
+      [publicPath + '/libs/bootstrap/jquery.slim.min.js', TYPE.SCRIPT],
+      [publicPath + '/libs/bootstrap/popper.min.js', TYPE.SCRIPT],
+      [publicPath + '/libs/bootstrap/bootstrap.min.js', TYPE.SCRIPT]
     ],
     factory(){
       return import(/* webpackPrefetch: true */ '../../../packages/bootstrap').then(r => r.default)
     }
   },
   'antdv': {
-    source: [],
+    source: [
+      [publicPath + '/libs/antdv/antd.min.css', TYPE.STYLE],
+      [publicPath + '/libs/antdv/antd.min.js', TYPE.SCRIPT],
+    ],
     factory(){
-      return Promise.resolve(null)
+      return import(/* webpackPrefetch: true */ '../../../packages/antdv').then(r => r.default)
     }
   }
-} as any
+}
 
 function findNode(link: string, type: number){
   const selector = (
@@ -102,11 +109,30 @@ function createScript(link: string){
   })
 }
 
-export async function usePreset(target: string, state: { preset: string, key: number, loading: boolean }){
+function getTarget(target: string){
+  if(target in CONFIGS) return target
+
+  const name = getLocalPresetName()
+  return name in CONFIGS ? name : DEF_PRESEt
+}
+
+function getLocalPresetName(){
+  try {
+    return localStorage.getItem(LOCAL_PRESET_NAME_KEY)
+  } catch (error) {
+    return DEF_PRESEt
+  } 
+}
+
+export function savePresetNameToLocal(value: string){
+  localStorage.setItem(LOCAL_PRESET_NAME_KEY, value)
+}
+
+export async function usePreset(state: { preset: string, loading: boolean }, _target?: string){
+  const target = getTarget(_target)
   if(target == state.preset) return
 
   const config = CONFIGS[target]
-  if(null == config) return
 
   state.loading = true
   const preset = await config.factory()
@@ -121,6 +147,5 @@ export async function usePreset(target: string, state: { preset: string, key: nu
   })
 
   state.preset = target
-  state.key++
   state.loading = false
 }

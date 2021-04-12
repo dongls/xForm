@@ -1,10 +1,10 @@
-import { XFieldConf } from '@dongls/xform'
+import { FieldConf } from '@dongls/xform'
 import icon from '@common/svg/divider.svg'
 
 import divider from './divider.vue'
 import setting from './setting.vue'
 
-export default XFieldConf.create({
+export default FieldConf.create({
   icon: icon,
   type: 'divider',
   title: '分割线',

@@ -1,15 +1,15 @@
 import { defineComponent } from 'vue'
 
 import {
-  XField,
-  XFieldConf,
+  FormField,
+  FieldConf,
   constant,
   useRenderContext,
 } from '@dongls/xform'
 
 const { SELECTOR, CLASS, PROPS, EnumValidateMode } = constant
 
-export default XFieldConf.create({
+export default FieldConf.create({
   type: 'tabs.pane',
   title: '标签面板',
   custom: true,
@@ -18,7 +18,7 @@ export default XFieldConf.create({
     name: 'tabs-pane',
     props: {
       field: {
-        type: XField,
+        type: FormField,
         required: true,
       },
       behavior: {
@@ -49,7 +49,7 @@ export default XFieldConf.create({
             [CLASS.DROPPABLE]: true,
             [CLASS.SCOPE]: true
           },
-          [PROPS.XFIELD]: props.field,
+          [PROPS.FIELD]: props.field,
           [PROPS.SCOPE]: props.field
         }
 
@@ -61,7 +61,7 @@ export default XFieldConf.create({
     name: 'tabs-pane-view',
     props: {
       field: {
-        type: XField,
+        type: FormField,
         required: true,
       },
       disabled: {
@@ -103,7 +103,9 @@ export default XFieldConf.create({
     const value = _value ?? {}
     return field.fields.reduce((acc, f) => {
       const k = f.name
-      acc[k] = f.clone(true, value[k] ?? null)
+      const newField = f.clone(true, value[k] ?? null)
+      newField.setParent(field)
+      acc[k] = newField
       return acc
     }, {} as any)
   },
@@ -111,14 +113,14 @@ export default XFieldConf.create({
     const value = field.value ?? {}
 
     return field.fields.map(f => f.name).reduce((acc: any, k: string) => {
-      const f = value[k] as XField
+      const f = value[k] as FormField
       const onValueSubmit = f.conf?.onValueSubmit
       acc[k] = typeof onValueSubmit == 'function' ? onValueSubmit(f) : f.value
       return acc
     }, {} as any)
   },
   validator(field, value, options){
-    const promise = Object.values(value ?? {}).map((f: XField) => {
+    const promise = Object.values(value ?? {}).map((f: FormField) => {
       if(options.mode == EnumValidateMode.RECURSIVE){
         return f.validate({ mode: EnumValidateMode.RECURSIVE })
       }

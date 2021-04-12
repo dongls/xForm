@@ -1,5 +1,5 @@
 import './index.scss'
-import { XFormPreset } from '@dongls/xform'
+import { FormPreset } from '@dongls/xform'
 
 import FormSetting from './FormSetting.vue'
 
@@ -15,7 +15,7 @@ import Group from './group'
 import Tabs from './tabs'
 import Subform from './subform'
 
-const bootstrap: XFormPreset = {
+const bootstrap: FormPreset = {
   name: 'bootstrap',
   version: __VERSION__,
   slots: {

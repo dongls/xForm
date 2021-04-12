@@ -1,0 +1,56 @@
+.notification-layout{
+  position: absolute;
+  z-index: 100;
+}
+
+.notification-layout[data-placement="top-right"]{
+  right: 10px;
+}
+
+.notification{
+  position: relative;
+  width: 360px;
+  padding: 10px;
+  border-radius: 2px;
+  background-color: #fff;
+  box-shadow: 1px 6px 20px 5px rgb(40 120 255 / 13%), 1px 16px 24px 2px rgb(0 0 0 / 8%);
+
+  h3{
+    margin: 0;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 5px 30px 5px 0;
+  }
+}
+
+.notification-content{
+  line-height: 20px;
+  padding: 5px 0;
+  word-break: break-all;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.notification-close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0;
+  font-size: 24px;
+  color: #666;
+  transition: color ease .3s;
+  outline: none !important;
+
+  &:hover{
+    color: red;
+  }
+}

@@ -14,7 +14,7 @@ function createDefaultSchema(){
   return JSON.parse(JSON.stringify(DEFAULT_SCHEMA))
 }
 
-function getLocalSchema(){
+function getLocalSchema(withModel: boolean){
   const str = localStorage.getItem(XFORM_SCHEMA_STORAGE_KEY)
   try {
     const schema: any = JSON.parse(str)
@@ -25,7 +25,7 @@ function getLocalSchema(){
       schema.fields.length == 0
     ) throw new Error('get local schema')
 
-    return createSchemaRef(schema, getLocalModel())
+    return createSchemaRef(schema, withModel ? getLocalModel() : null)
   } catch (error) {
     __IS_DEV__ && console.warn(error.message)
     const schema = createSchemaRef(createDefaultSchema())
@@ -66,8 +66,8 @@ export function useIsWide(){
   return isWide
 }
 
-export function useLocalSchema(){
-  const schema = getLocalSchema()
+export function useLocalSchema(withModel = true){
+  const schema = getLocalSchema(withModel)
 
   watch(schema, v => saveToLocalSchema(v), { deep: true })
 

@@ -5,7 +5,7 @@
       class="modal fade xform-bs-modal" v-bind="$attrs"
       data-backdrop="static" data-keyboard="false" 
     >
-      <div class="modal-dialog modal-dialog-scrollable" :style="{'width': width}" >
+      <div class="modal-dialog modal-dialog-centered" :style="{'width': width}" >
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" v-if="title">{{ title }}</h5>
@@ -13,6 +13,9 @@
           </div>
           <div class="modal-body"><slot/></div>
           <div class="modal-footer">
+            <div class="modal-footer-left" v-if="$slots['footer-left']">
+              <slot name="footer-left"/>
+            </div>
             <button type="button" class="btn btn-sm btn-link" @click="close">关闭</button>
             <button type="button" class="btn btn-sm btn-primary" @click="confirm">保存</button>
           </div>
@@ -114,12 +117,20 @@ export default defineComponent({
   }
 
   .modal-footer{
+    position: relative;
     padding: 10px;
 
     .btn{
       margin: 0 0 0 10px;
       min-width: 60px;
     }
+  }
+
+  .modal-footer-left{
+    margin: 0;
+    position: absolute;
+    left: 0;
+    top: 10px;
   }
 }
 </style>

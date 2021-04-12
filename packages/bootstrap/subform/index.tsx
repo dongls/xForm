@@ -1,8 +1,8 @@
 import { defineComponent } from 'vue'
 import { 
-  XField,
-  XFieldConf,
-  XFormViewerContext,
+  FormField,
+  FieldConf,
+  FormViewerContext,
   constant,
   useRenderContext,
   useSchema,
@@ -23,7 +23,7 @@ const preview = defineComponent({
   name: 'xform-bs-subform-preview',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true,
     }
   },
@@ -59,7 +59,7 @@ const preview = defineComponent({
 
       const _p = {
         class: `${BODY_CLASS} ${CLASS.DROPPABLE} ${CLASS.SCOPE}`,
-        [PROPS.XFIELD]: props.field,
+        [PROPS.FIELD]: props.field,
         [PROPS.SCOPE]: props.field
       }
       
@@ -76,7 +76,7 @@ const subform = defineComponent({
   name: 'xform-bs-subform',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true,
     },
     disabled: {
@@ -103,7 +103,7 @@ const view = defineComponent({
   name: 'xform-bs-subform-view',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true,
     },
     disabled: {
@@ -113,7 +113,7 @@ const view = defineComponent({
   },
   setup(props){
     const value = useValue<Row[]>(props)
-    const rc = useRenderContext<XFormViewerContext>()
+    const rc = useRenderContext<FormViewerContext>()
     const schema = useSchema()
 
     return function(){
@@ -171,7 +171,7 @@ const view = defineComponent({
   }
 })
 
-export default XFieldConf.create({
+export default FieldConf.create({
   type: 'subform',
   title: '子表单',
   icon,
@@ -215,8 +215,10 @@ export default XFieldConf.create({
     
     const columns = field.fields
     return value.map((v: any) => {
-      return columns.reduce((row, item: XField) => {
-        row[item.name] = item.clone(true, v[item.name] ?? null)
+      return columns.reduce((row, item: FormField) => {
+        const newField = item.clone(true, v[item.name] ?? null)
+        newField.setParent(field)
+        row[item.name] = newField
         return row
       }, {} as any)
     })
@@ -227,7 +229,7 @@ export default XFieldConf.create({
     const columns = field.fields
     return field.value.map((row: any) => {
       return columns.map(f => f.name).reduce((acc, key: string) => {
-        const f = row[key] as XField
+        const f = row[key] as FormField
         const onValueSubmit = f.conf?.onValueSubmit
         acc[f.name] = typeof onValueSubmit == 'function' ? onValueSubmit(f) : f.value
         return acc
@@ -250,7 +252,7 @@ export default XFieldConf.create({
       return r.some(i => i.status === 'rejected') ? Promise.reject('请补全必填内容') : Promise.resolve()
     })
   },
-  onValidate(field: XField){
+  onValidate(field: FormField){
     if(isEmpty(field.title)) return Promise.reject('标题为空')
     return field.fields.length == 0 ? Promise.reject('至少需要一个字段') : Promise.resolve()
   }

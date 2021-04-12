@@ -1,7 +1,7 @@
 import './non-standard-prop-compat'
 
 import { App } from 'vue'
-import { XFormOption } from './model'
+import { FormOption } from './model'
 import store from './store'
 
 import XFormDesigner from './component/XFormDesigner/component'
@@ -10,7 +10,7 @@ import XFormViewer from './component/XFormViewer/component'
 import XFormItem from './component/XFormItem/component'
 
 const version = __VERSION__
-const install = function(app: App, options: XFormOption){
+const install = function(app: App, options: FormOption){
   if(null != options) store.use(options)
 
   app.component(XFormDesigner.name, XFormDesigner)

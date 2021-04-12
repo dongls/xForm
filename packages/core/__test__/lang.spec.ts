@@ -1,4 +1,4 @@
-import { markRaw } from '@vue/reactivity'
+import { markRaw } from 'vue'
 import {
   clonePlainObject,
   mergePlainObject,

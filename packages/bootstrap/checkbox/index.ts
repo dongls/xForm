@@ -1,16 +1,16 @@
-import { XFieldConf, XField, isEmpty } from '@dongls/xform'
+import { FieldConf, isEmpty } from '@dongls/xform'
 import icon from '@common/svg/checkbox.svg'
 
 import checkbox from './checkbox.vue'
 import setting from './setting.vue'
 
-export default XFieldConf.create({
+export default FieldConf.create({
   icon: icon,
   type: 'checkbox',
   title: '多选',
   setting: setting,
   build: checkbox,
-  validator(field: XField, value: any[]){
+  validator(field, value: any[]){
     if(field.required && isEmpty(value)) return Promise.reject('必填')
     return Promise.resolve()
   },

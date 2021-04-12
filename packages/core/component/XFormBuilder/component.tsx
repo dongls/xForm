@@ -1,6 +1,5 @@
 import { 
   ComponentPublicInstance,
-  Ref,
   Slots,
   createVNode,
   defineComponent, 
@@ -11,6 +10,8 @@ import {
   toRef,
   nextTick,
   ComputedOptions,
+  onBeforeUnmount,
+  reactive,
 } from 'vue'
 
 import { 
@@ -19,18 +20,22 @@ import {
   RenderOptions,
   XFORM_CONTEXT_PROVIDE_KEY, 
   XFORM_SCHEMA_PROVIDE_KEY,
-  XField,
-  XFormBuilderContext,
-  XFormSchema,
-  XSchema,
+  FormField,
+  FormBuilderContext,
+  FormSchema,
+  EVENTS,
+  EnumValidityState,
 } from '../../model'
 
 import {
   fillComponentProps,
   getFieldComponent,
+  ignoreError,
   isFunction,
+  isNull,
   isString,
   normalizeClass,
+  test,
 } from '../../util'
 
 import { useValidator, ValidateOptions } from '../../validator'
@@ -38,7 +43,7 @@ import { XFormItemInternal } from '../XFormItem/component'
 
 interface XFormBuilderProps{
   mode: string;
-  schema: XFormSchema;
+  schema: FormSchema;
   tag: string;
   novalidate: boolean;
   disabled: boolean;
@@ -52,12 +57,7 @@ interface XFormBuilderSetupState{
 
 type XFormBuilderInstance = ComponentPublicInstance & XFormBuilderProps & XFormBuilderSetupState;
 
-const EVENTS = {
-  VALUE_CHANGE: 'value:change',
-  SUBMIT: 'submit',
-}
-
-function renderUnknown(field: XField){
+function renderUnknown(field: FormField){
   console.warn(`[xform] field not implement build component: ${field.title}(${field.name})`)
   return <p class="xform-is-unknown">暂不支持的字段类型</p>
 }
@@ -68,7 +68,7 @@ function renderUnknown(field: XField){
  * 2. 检索是否有名为`type_[type]`的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderContent(instance: XFormBuilderInstance, field: XField, options: RenderOptions){
+function renderContent(instance: XFormBuilderInstance, field: FormField, options: RenderOptions){
   const slots = instance.$slots
   const value = field.value
   const disabled = instance.disabled || field.disabled || options.parentProps?.disabled === true
@@ -88,8 +88,11 @@ function renderContent(instance: XFormBuilderInstance, field: XField, options: R
   return create(component, props)
 }
 
-function renderField(instance: XFormBuilderInstance, field: XField, options: RenderOptions = {}){
+function renderField(instance: XFormBuilderInstance, field: FormField, options: RenderOptions = {}){
   if(field.hidden === true) return null
+
+  // TODO: 处理字段逻辑
+  if(!isNull(field.logic) && !test(field.logic, field.parent.model)) return null
 
   const disabled = instance.disabled || field.disabled || options.parentProps?.disabled === true
   const props = { 
@@ -116,7 +119,7 @@ export default defineComponent({
       default: null
     },
     schema: {
-      type: XSchema,
+      type: FormSchema,
       required: true
     },
     tag: {
@@ -133,44 +136,60 @@ export default defineComponent({
     }
   },
   emits: [
-    EVENTS.VALUE_CHANGE, 
+    EVENTS.VALUE_CHANGE,
     EVENTS.SUBMIT
   ],
   setup(props: XFormBuilderProps, { emit }){
     const instance = getCurrentInstance()
     const pending = ref(false)
     const preventValidate = ref(false)
-    const validator = useValidator({ onValueChange })
+    const validator = useValidator()
 
-    function onValueChange(e: any){
-      emit(EVENTS.VALUE_CHANGE, e)
+    function validate(field: FormField, options?: ValidateOptions){
+      if(
+        props.novalidate === true || 
+        props.disabled === true ||
+        preventValidate.value === true ||
+        field.disabled
+      ) return Promise.resolve()
+      return validator.validateField(reactive(field) as FormField, options)
     }
 
-    function onUpdateValue(e: { field: XField, value: any }){
+    const stop = props.schema.useEffect(action => {
+      switch (action.type) {
+        case 'value.change': {
+          ignoreError(validate(action.field))
+          emit(EVENTS.VALUE_CHANGE)
+          break
+        }
+        case 'validate': {
+          const options = { mode: action.mode }
+          const callback = action.callback
+          validate(action.field, options)
+            .then((r: any) => isFunction(callback) && callback(true, r))
+            .catch(r => isFunction(callback) && callback(false, r))
+          break
+        }
+        case 'valid.change': {
+          const newValue = action.newValue
+          const oldValue = action.oldValue
+          if(
+            oldValue == newValue ||
+            oldValue == EnumValidityState.NONE && newValue == EnumValidityState.SUCCESS ||
+            newValue == EnumValidityState.NONE
+          ) return
+          
+          const parent = action.field.parent
+          if(parent instanceof FormField) ignoreError(validate(parent))
+          break
+        }
+      }
+    })
+
+    function onUpdateValue(e: { field: FormField, value: any }){
       e.field.value = e.value
     }
 
-    function registerField(fieldRef: Ref<XField>, isExternal: boolean){   
-      if(isExternal) props.schema.registerExternalField(fieldRef.value)
-      
-      validator.registerField(fieldRef.value.uid, {
-        fieldRef,
-        onValidate: function(options?: ValidateOptions){
-          if(
-            props.novalidate === true || 
-            props.disabled === true ||
-            preventValidate.value === true ||
-            fieldRef.value.disabled
-          ) return Promise.resolve()
-          return validator.validateField(fieldRef.value, options)
-        },
-        onValidChange: null
-      })
-    }
-    
-    function removeField(key: string){
-      validator.removeField(key)
-    }
 
     // 清除验证信息
     function resetValidate(){
@@ -179,12 +198,15 @@ export default defineComponent({
     }
 
     provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
-    provide<XFormBuilderContext>(XFORM_CONTEXT_PROVIDE_KEY, {
+    provide<FormBuilderContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'builder',
-      registerField, 
-      removeField, 
       onUpdateValue,
       renderField: renderField.bind(null, instance.proxy),
+    })
+
+    onBeforeUnmount(() => {
+      stop()
+      validator.destroy()
     })
 
     return {
@@ -206,8 +228,6 @@ export default defineComponent({
         nextTick(() => preventValidate.value = false)
       },
       onUpdateValue,
-      registerField,
-      removeField
     }
   },
   render(instance: XFormBuilderInstance){

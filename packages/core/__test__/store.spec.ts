@@ -1,6 +1,6 @@
 import store from '../store'
 import CONFIG from '../config'
-import { XFieldConf, XFormPreset } from '../model'
+import { FieldConf, FormPreset } from '../model'
 import { mockFieldConfs } from './mock/index'
 
 describe('store: reset', () => {
@@ -28,7 +28,7 @@ describe('store: reset', () => {
 
 describe('store: usePreset', () => {
   test('with config', () => {
-    const preset: XFormPreset = {
+    const preset: FormPreset = {
       name: 'demo',
       fieldConfs: [],
       config: {
@@ -47,6 +47,7 @@ describe('store: usePreset', () => {
 
 describe('store: useConfig', () => {
   test('default config', () => {
+    store.reset()
     const config = store.getConfig()
 
     expect(config).not.toBeNull()
@@ -84,11 +85,11 @@ describe('store: findFieldConf', () => {
   test('subtype', () => {
     store.resetField()
 
-    const subtype = XFieldConf.create({
+    const subtype = FieldConf.create({
       type: 'super.subtype'
     })
 
-    const supertype = XFieldConf.create({
+    const supertype = FieldConf.create({
       type: 'super',
       dependencies: [subtype]
     })

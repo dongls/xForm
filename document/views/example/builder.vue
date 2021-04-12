@@ -1,6 +1,6 @@
 <script lang="ts">
 import { getCurrentInstance, ref, defineComponent } from 'vue'
-import { XField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
 import { useLocalSchema, saveToLocalModel } from '@document/util/common'
 
 export default defineComponent({
@@ -42,13 +42,7 @@ export default defineComponent({
           if(r.valid) viewJSON()
         }).finally(() => pending.value = false)
       },
-      // field: reactive(new XField({
-      //   type: 'text',
-      //   name: 'field3',
-      //   title: '测试三',
-      //   required: true
-      // })),
-      validator(field: XField, value: any){
+      validator(field: FormField, value: any){
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             if(!value) return reject('必填')

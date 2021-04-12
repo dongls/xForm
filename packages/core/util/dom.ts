@@ -1,8 +1,7 @@
 import { 
-  XField,
-  XFormScope,
-  SELECTOR,
-  PROPS
+  FormField,
+  PROPS,
+  FormScope
 } from '../model'
 
 import { isString } from './lang'
@@ -73,12 +72,11 @@ export function getProperty<T>(element: Element, key: string){
 }
 
 /** 获取dom元素上绑定的XField字段值 */
-export function getXField(element: Element){
-  return getProperty<XField>(element, PROPS.XFIELD)
+export function getField(element: Element){
+  return getProperty<FormField>(element, PROPS.FIELD)
 }
 
-/** 查询元素所在的scope */
-export function findScope(element: Element){  
-  const scope = element.closest(SELECTOR.SCOPE)
-  return (null == scope || scope == element) ? null : getProperty<XFormScope>(scope, PROPS.SCOPE)
+/** 获取dom元素上绑定的scope */
+export function getScope(element: Element){
+  return getProperty<FormScope>(element, PROPS.SCOPE)
 }

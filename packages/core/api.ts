@@ -5,43 +5,46 @@ import {
   Ref,
 } from 'vue'
 
-import { isObject } from './util/lang'
+import { isObject } from './util'
 
 import {  
+  FormField,
+  FormRenderContext,
+  FormSchema,
   XFORM_CONTEXT_PROVIDE_KEY, 
   XFORM_SCHEMA_PROVIDE_KEY,
-  XField,
-  XFormRenderContext,
-  XSchema,
 } from './model'
 
 export {
+  checkCondition,
   findElementFromPoint,
   findElementsFromPoint,
+  genRandomStr,
+  getField,
+  getHtmlElement,
+  getOperator,
   getProperty,
   getRef,
-  getHtmlElement,
-  getXField,
+  isEmpty,
   normalizeClass,
   normalizeWheel,
-  isEmpty,
-  genRandomStr
 } from './util'
 
-export function useRenderContext<T = XFormRenderContext>(){
+export function useRenderContext<T = FormRenderContext>(){
   return inject<T>(XFORM_CONTEXT_PROVIDE_KEY)
 }
 
 export function createSchema(origin?: any, model?: any){
   const o = isObject(origin) ? origin : {}
-  return new XSchema(o, model)
+  return new FormSchema(o, model)
 }
 
 export function createSchemaRef(origin?: any, model?: any){
-  return ref(createSchema(origin, model)) as Ref<XSchema>
+  return ref(createSchema(origin, model)) as Ref<FormSchema>
 }
 
-export function useValue<T>(props: { field: XField }, defValue?: T){
+/** @deprecated */
+export function useValue<T>(props: { field: FormField }, defValue?: T){
   return computed<T>({
     get(){
       return props.field.value ?? defValue
@@ -53,5 +56,5 @@ export function useValue<T>(props: { field: XField }, defValue?: T){
 }
 
 export function useSchema(){
-  return inject(XFORM_SCHEMA_PROVIDE_KEY) as Ref<XSchema>
+  return inject(XFORM_SCHEMA_PROVIDE_KEY) as Ref<FormSchema>
 }

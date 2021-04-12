@@ -1,4 +1,6 @@
-import { XFieldConf, XFormOption } from '../../model'
+import { defineComponent } from '@vue/runtime-core'
+import { isEmpty } from '../../util'
+import { FieldConf, FormField, FormOption } from '../../model'
 
 export function mockFieldConfs(){
   return [
@@ -7,8 +9,22 @@ export function mockFieldConfs(){
       title: '单行文本',
       icon: 'icon-text',
       preview: <div>preview for text</div>,
-      build: <div>build for text</div>,
+      build: defineComponent({
+        name: 'test-text',
+        props: {
+          field: FormField
+        },
+        setup(props){
+          return function(){
+            return <input type="text" v-model={props.field.value}/>
+          }
+        }
+      }),
       setting: <div>setting for text</div>,
+      validator(field: FormField, value: any){
+        if(field.required && isEmpty(value)) return Promise.reject('必填')
+        return Promise.resolve()
+      }
     },
     {
       type: 'textarea',
@@ -26,7 +42,7 @@ export function mockFieldConfs(){
       build: <div>build for select</div>,
       setting: <div>setting for select</div>,
     },
-  ].map(XFieldConf.create)
+  ].map(FieldConf.create)
 }
 
 export function mockOption(){
@@ -44,7 +60,7 @@ export function mockOption(){
         ]
       }
     }
-  } as XFormOption
+  } as FormOption
 }
 
 export function mockSchema(){

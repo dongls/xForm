@@ -24,13 +24,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { XField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
 import FieldSetting from '../FieldSetting.vue'
 
 export default defineComponent({
   name: 'xform-bs-checkbox-setting',
   props: {
-    field: XField
+    field: FormField
   },
   emits: ['update:field'],
   setup(props, { emit }){

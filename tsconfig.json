@@ -19,6 +19,7 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "packages/**.d.ts",
-    "document/**/*.ts"
+    "document/**/*.ts",
+    "document/**/*.tsx"
   ]
 }

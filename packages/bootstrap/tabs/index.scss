@@ -3,7 +3,7 @@
   background-color: #fff;
 
   .tab-pane{
-    padding: 5px;
+    padding: 10px 5px;
     border-left: 1px solid #dee2e6;
     border-right: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
@@ -65,6 +65,7 @@
 
   .tab-pane{
     position: relative;
+    padding: 5px;
     .xform-preview:first-child{
       margin-top: 0px;
     }

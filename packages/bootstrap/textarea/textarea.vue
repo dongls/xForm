@@ -12,13 +12,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useValue, XField } from '@dongls/xform'
+import { useValue, FormField } from '@dongls/xform'
 
 export default defineComponent({
   name: 'xform-bs-textarea',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true
     },
     disabled: {

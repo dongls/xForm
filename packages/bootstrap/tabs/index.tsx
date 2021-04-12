@@ -9,8 +9,8 @@ import {
 
 import {
   useRenderContext,
-  XField,
-  XFieldConf,
+  FormField,
+  FieldConf,
   constant,
   normalizeClass,
   normalizeWheel,
@@ -29,7 +29,7 @@ const setting = defineComponent({
   name: 'xform-bs-tabs-setting',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true,
     },
   },
@@ -37,12 +37,12 @@ const setting = defineComponent({
   setup(props, { emit }) {
     function addTab() {
       const field = props.field
-      const tab = new XField(pane)
+      const tab = new FormField(pane)
       tab.title = `标签${props.field.fields.length + 1}`
       field.fields.push(tab)
     }
 
-    function removeTab(f: XField) {
+    function removeTab(f: FormField) {
       const fields = props.field.fields
       if (fields.length <= 1) return
 
@@ -50,7 +50,7 @@ const setting = defineComponent({
       if (index >= 0) fields.splice(index, 1)
     }
 
-    function updateTitle(f: XField, event: Event) {
+    function updateTitle(f: FormField, event: Event) {
       f.title = (event.target as HTMLInputElement).value
     }
 
@@ -118,7 +118,7 @@ const setting = defineComponent({
   }
 })
 
-function renderMessage(field: XField) {
+function renderMessage(field: FormField) {
   if (field.validation.valid !== EnumValidityState.ERROR) return null
 
   return <p class="xform-item-message">{field.validation.message}</p>
@@ -141,7 +141,7 @@ const build = defineComponent({
   name: 'tabs',
   props: {
     field: {
-      type: XField,
+      type: FormField,
       required: true,
     },
     behavior: {
@@ -157,7 +157,7 @@ const build = defineComponent({
     const current = ref(props.field.fields[0].name)
     const instance = getCurrentInstance()
 
-    function chooseTab(field: XField, event: Event) {
+    function chooseTab(field: FormField, event: Event) {
       event.preventDefault()
       current.value = field.name
     }
@@ -233,7 +233,7 @@ const build = defineComponent({
   },
 })
 
-export default XFieldConf.create({
+export default FieldConf.create({
   type: 'tabs',
   title: '标签页',
   icon,
@@ -244,9 +244,9 @@ export default XFieldConf.create({
   dependencies: [pane],
   onCreate(field, params, init) {
     if (init) {
-      const tab = new XField(pane)
+      const tab = new FormField(pane)
       tab.title = `标签${field.fields.length + 1}`
-      field.fields.push(tab)
+      field.push(tab)
       field.attributes.showTitle = true
     }
   },
@@ -255,21 +255,23 @@ export default XFieldConf.create({
 
     return field.fields.reduce((acc, f) => {
       const k = f.name
-      acc[k] = f.clone(true, value[k])
+      const newField = f.clone(true, value[k])
+      newField.setParent(field)
+      acc[k] = newField
       return acc
     }, {} as any)
   },
   onValueSubmit(field){
     const value = field.value ?? {}
     return field.fields.map(f => f.name).reduce((acc, k: string) => {
-      const f = value[k] as XField
+      const f = value[k] as FormField
       const onValueSubmit = f.conf?.onValueSubmit
       acc[k] = typeof onValueSubmit == 'function' ? onValueSubmit(f) : f.value
       return acc
     }, {} as any)
   },
   validator(field, value, options) {
-    const promise = Object.values(value ?? {}).map((f: XField) => f.validate({ mode: options.mode }))
+    const promise = Object.values(value ?? {}).map((f: FormField) => f.validate({ mode: options.mode }))
 
     return Promise.allSettled(promise).then(r => {
       const reason = r.map(i => i.status == 'rejected' ? i.reason : null).filter(i => i)

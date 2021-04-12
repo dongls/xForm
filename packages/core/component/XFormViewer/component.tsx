@@ -11,9 +11,9 @@ import {
   EnumComponent,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_SCHEMA_PROVIDE_KEY,
-  XField, 
-  XFormSchema,
-  XFormViewerContext,
+  FormField, 
+  FormSchema,
+  FormViewerContext,
   RenderOptions,
 } from '../../model'
 
@@ -28,7 +28,7 @@ import XFormItem from '../XFormItem/component'
 import Store from '../../store'
 
 interface XFormViewerProps{
-  schema: XFormSchema;
+  schema: FormSchema;
   mode: string;
   formatter: Function;
 }
@@ -45,7 +45,7 @@ type XFormViewerInstance = ComponentPublicInstance & XFormViewerProps & XFormVie
  * 2. 检索是否有名为`type_[type]`对应的slot
  * 3. 检索字段对应的XFieldConf中配置的组件
  */
-function renderContent(instance: XFormViewerInstance, field: XField, value: any, options: RenderOptions){
+function renderContent(instance: XFormViewerInstance, field: FormField, value: any, options: RenderOptions){
   const slots = instance.$slots
   const disabled = field.disabled || options.parentProps?.disabled === true
 
@@ -62,7 +62,7 @@ function renderContent(instance: XFormViewerInstance, field: XField, value: any,
   return create(component, props)
 }
 
-function renderField(instance: XFormViewerInstance, field: XField, options: RenderOptions = {}){
+function renderField(instance: XFormViewerInstance, field: FormField, options: RenderOptions = {}){
   if(field.hidden === true) return null
 
   const disabled = options.parentProps?.disabled === true || field.disabled
@@ -95,13 +95,13 @@ export default defineComponent({
   setup(props: XFormViewerInstance){
     const instance = getCurrentInstance()
   
-    function fmtValue(field: XField){
+    function fmtValue(field: FormField){
       const fmt = props.formatter ?? Store.getConfig().formatter
       return fmt(field, props, instance.proxy)
     }
 
     provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
-    provide<XFormViewerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
+    provide<FormViewerContext>(XFORM_CONTEXT_PROVIDE_KEY, {
       type: 'viewer',
       renderField: renderField.bind(null, instance.proxy),
       formatter: fmtValue
@@ -110,7 +110,7 @@ export default defineComponent({
     return { fmtValue }
   },
   render(instance: XFormViewerInstance){
-    const schema: XFormSchema = instance.schema
+    const schema: FormSchema = instance.schema
     const slots = instance.$slots
 
     return (
