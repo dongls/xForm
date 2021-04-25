@@ -1,6 +1,8 @@
 import { h, Ref } from 'vue'
 import { useRenderContext, FormField } from '@dongls/xform'
-import { DEF_COLUMN_WIDTH, DEF_INDEX_WIDTH, DEF_OPERATE_WIDTH, Row } from './common'
+import { DEF_COLUMN_WIDTH, Row } from './common'
+
+const DEF_INDEX_WIDTH = 60
 
 export function useInlineLayout(props: { field: FormField, disabled: boolean }, value: Ref<Row[]>){
   const rc = useRenderContext()
@@ -66,35 +68,29 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
         })
         return <td>{cell}</td>
       })
-      
-      const operate = disabled ? null : (
-        <td class="xform-bs-subform-operate">
-          <button type="button" class="btn btn-link text-danger" onClick={removeRow.bind(null, row)}>删除</button>
-        </td>
-      )
 
       return (
         <tr class="xform-bs-subform-row">
-          <td class="xform-bs-subform-index">{index + 1}</td>
+          <td class="xform-bs-subform-index">
+            <strong>{index + 1}</strong>
+            { disabled ? null : <button type="button" class="btn btn-link text-danger" onClick={removeRow.bind(null, row)}>删除</button> }
+          </td>
           {tds}
-          {operate}
         </tr>
       )
     })
 
-    const width = total + (disabled ? 0 : DEF_OPERATE_WIDTH)
-
+    const button = disabled ? '#' : <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>添加</button>
     return (
-      <div class="'xform-bs-subform" data-layout="inline">
+      <div class="xform-bs-subform" data-layout="inline">
         <div class="table-responsive">
-          <table class="table table-hover" style={{ width: width + 'px' }}>
+          <table class="table table-hover" style={{ width: total + 'px' }}>
             <colgroup>
               <col style={`width: ${DEF_INDEX_WIDTH}px`}/>
               {cols}
-              {disabled ? null : <col style={`width: ${DEF_OPERATE_WIDTH}px`}/>}
             </colgroup>
             <thead>
-              <th class="xform-bs-subform-operate">#</th>
+              <th class="xform-bs-subform-index">{button}</th>
               {columns.map(column => {
                 const klass = {
                   'xform-bs-subform-cell': true,
@@ -102,13 +98,11 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
                 }
                 return <th class={klass}><span>{column.title}</span></th>
               })}
-              {disabled ? null : <th class="xform-bs-subform-operate">操作</th>}
             </thead>
             <tbody>{rows}</tbody>
           </table>
-          {createTip(rows.length, disabled, width)}
+          {createTip(rows.length, disabled, total)}
         </div>
-        {disabled ? null : <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>+ 添加</button>}
       </div>
     )
   }

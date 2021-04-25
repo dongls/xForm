@@ -15,6 +15,8 @@ import {
   XFORM_SCHEMA_PROVIDE_KEY,
 } from './model'
 
+import store from './store'
+
 export {
   checkCondition,
   findElementFromPoint,
@@ -57,4 +59,8 @@ export function useValue<T>(props: { field: FormField }, defValue?: T){
 
 export function useSchema(){
   return inject(XFORM_SCHEMA_PROVIDE_KEY) as Ref<FormSchema>
+}
+
+export function useFormStore(){
+  return store
 }

@@ -6,7 +6,10 @@ import {
   useRenderContext,
 } from '@dongls/xform'
 
-import { DEF_COLUMN_WIDTH, DEF_INDEX_WIDTH, DEF_OPERATE_WIDTH, Row } from './common'
+import { DEF_COLUMN_WIDTH, Row } from './common'
+
+const DEF_OPERATE_WIDTH = 100
+const DEF_INDEX_WIDTH = 60
 
 function createModel(fields: FormField[], row: Row){
   if(row == null) return {}
@@ -160,6 +163,7 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
     })
 
     const width = total + (disabled ? 0 : DEF_OPERATE_WIDTH)
+    const button = disabled ? '#' : <button type="button" class="btn btn-sm btn-link shadow-none" onClick={showInsertModal}>添加</button>
     const table = (
       <table class="table table-hover" style={`width: ${width}px`}>
         <colgroup>
@@ -168,7 +172,7 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
           {disabled ? null : <col style={`width: ${DEF_OPERATE_WIDTH}px`}/>}
         </colgroup>
         <thead>
-          <th class="xform-bs-subform-index">#</th>
+          <th class="xform-bs-subform-index">{button}</th>
           {columns.map(column => {
             const klass = {
               'xform-bs-subform-cell': true,
@@ -188,7 +192,6 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
           {table}
           {createTip(rows.length, disabled, width)}
         </div>
-        { disabled ? null : <button type="button" class="btn btn-sm btn-link shadow-none" onClick={showInsertModal}>+ 添加</button> }
         <modal
           title={`${currentRow == null ? '添加' : '编辑'}数据`}
           class="xform-bs-subform-modal-layout"

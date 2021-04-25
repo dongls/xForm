@@ -60,8 +60,22 @@ const singleOperator = [
   LogicOperator.GTE,
   LogicOperator.EQ,
   LogicOperator.NE,
-  LogicOperator.EMPTY
+  LogicOperator.EMPTY,
+  LogicOperator.CONTAINS
 ]
+
+const allow = [
+  'text',
+  'textarea',
+  'number',
+  'select',
+  'radio',
+  'date'
+]
+
+function getAllowField(field: FormField){
+  return field.previous().filter(f => allow.indexOf(f.type) >= 0)
+}
 
 function fmtOperatorText(operator: string){
   const o = getOperator(operator)
@@ -100,7 +114,7 @@ function createContent(rule: LogicRule, field: FormField){
   const fields = (
     <select class="form-control" value={rule.name} onChange={handleFieldChange.bind(null, rule)}>
       <option value="">请选择字段</option>
-      {field.previous().map(f => <option value={f.name}>{f.title}</option>)}
+      {getAllowField(field).map(f => <option value={f.name}>{f.title}</option>)}
     </select>
   )
   const operator = (

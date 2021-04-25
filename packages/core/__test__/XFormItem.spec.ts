@@ -55,7 +55,7 @@ describe('XFormItem slots: default', () => {
     })
 
     store.reset()
-    store.registerField(conf)
+    store.register(conf)
 
     const field = FormField.create({  
       type: 'text',

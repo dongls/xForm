@@ -357,12 +357,12 @@
 }
 
 .xform-is-silence .xform-preview.xform-is-dragging{
-  border-color: #ccc !important; 
+  border-color: #6c757d !important; 
 }
 
 .xform-is-silence .xform-preview.xform-is-dragging > .xform-preview-cover{
   background-color: rgba(255, 255, 0, .075) !important;
-  background-image: repeating-linear-gradient(-45deg, transparent, transparent 40%, #ccc 40%, #ccc 50%);
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 40%, #6c757d 40%, #6c757d 50%);
   background-size: 8px 8px;
   opacity: 1;
   z-index: 9;

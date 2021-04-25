@@ -11,13 +11,14 @@ import {
 } from '@dongls/xform'
 
 import icon from '@common/svg/subform.svg'
-import { Row, DEF_COLUMN_WIDTH, BODY_CLASS, DEF_INDEX_WIDTH } from './common'
+import { Row, DEF_COLUMN_WIDTH, BODY_CLASS } from './common'
 import { useInlineLayout } from './inline'
 import { useModalLayout } from './modal'
 import setting from './setting.vue'
 import Modal from '../Modal.vue'
 
 const { CLASS, PROPS, EVENTS, EnumValidateMode } = constant
+const DEF_INDEX_WIDTH = 60
 
 const preview = defineComponent({
   name: 'xform-bs-subform-preview',
@@ -237,7 +238,7 @@ export default FieldConf.create({
     })
   },
   validator(field, value: Row[], options){
-    if(isEmpty(value)) return Promise.reject('必填')
+    if(field.required && isEmpty(value)) return Promise.reject('必填')
 
     const promise = value
       .reduce((acc, item) => acc.concat(Object.values(item)), [])

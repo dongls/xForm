@@ -111,8 +111,8 @@ export class FormSchema extends FormScope {
 
   get model() {
     return [...this.fields, ...this.external].reduce((acc, field) => {
-      const value = field.value
-      return isNull(value) ? acc : (acc[field.name] = value, acc)
+      const model = field.model
+      return isNull(model) ? acc : (acc[field.name] = model, acc)
     }, {} as any)
   }
 

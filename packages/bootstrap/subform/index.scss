@@ -46,7 +46,7 @@
     margin-bottom: 0;
     
     .xform-item-message{
-      bottom: -12px;
+      bottom: -13px;
       line-height: 14px;
     }
   }
@@ -75,8 +75,8 @@
   }
 }
 
-.xform-bs-subform [data-layout="modal"] th,
-.xform-bs-subform [data-layout="modal"] td,
+.xform-bs-subform[data-layout="modal"] th,
+.xform-bs-subform[data-layout="modal"] td,
 .xform-bs-subform-view td,
 .xform-bs-subform-view th{
   padding: 8px;
@@ -85,6 +85,24 @@
 .xform-bs-subform .table,
 .xform-bs-subform-view .table{
   margin-bottom: 0;
+}
+
+.xform-bs-subform[data-layout="inline"]{
+  td.xform-bs-subform-index button{
+    display: none;
+    text-align: center;
+  }
+
+  tbody tr:hover td.xform-bs-subform-index{
+    strong{
+      display: none;
+      
+    }
+
+    button{
+      display: block;
+    }
+  }
 }
 
 .xform-bs-subform-cell span{
@@ -113,6 +131,7 @@
   z-index: 8;
 }
 
+.xform-bs-subform-index > button,
 .xform-bs-subform-operate > button{
   font-size: 14px;
   padding: 0;
@@ -126,6 +145,7 @@
   left: 0;
   z-index: 8;
   font-weight: 700;
+  font-size: 14px;
 }
 
 .xform-bs-subform-tip{
@@ -161,6 +181,7 @@
   .modal-dialog{
     margin-top: 12vh;
     max-height: 76vh;
+    min-height: auto;
   }
 
   .modal-body{

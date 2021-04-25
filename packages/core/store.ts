@@ -33,7 +33,7 @@ export function useConfig(config: FormConfig){
 export function usePreset(preset: FormPreset){
   if(null == preset) return
   store.preset = Object.assign(store.preset || {}, preset)
-  preset.fieldConfs.forEach(registerField)
+  register(preset.fieldConfs)
   if(null != preset.config) useConfig(preset.config)
 }
 
@@ -68,19 +68,16 @@ export function reset(option?: FormOption){
   if(null != option) use(option)
 }
 
-/** 注册单个字段 */
-export function registerField(fc: FieldConf){
-  if(!(fc instanceof FieldConf) || !fc.available) return
-  
-  store.fields.set(fc.type, fc)
+/** 注册字段 */
+export function register(...fcs: Array<FieldConf | FieldConf[]>){
+  flat(fcs).forEach(fc => {
+    if(fc instanceof FieldConf && fc.available){
+      store.fields.set(fc.type, fc)
+    }
+  })
 }
 
-/** 注册任意个字段 */
-export function registerManyField(...fcs: Array<unknown>){
-  flat(fcs).forEach(f => f instanceof FieldConf && registerField(f))  
-}
-
-export function hasField(type: string){
+export function hasFieldConf(type: string){
   return store.fields.has(type)
 }
 
@@ -135,15 +132,19 @@ export function isImmediateValidate(){
   return store.config.validation.immediate !== false
 }
 
+/** 只用于测试 */
+export function getRawStore(){
+  return __IS_TEST__ ? store : null
+}
+
 export default {
   findFieldConf,
   findFieldGroups,
   getConfig,
   getPreset,
-  hasField,
+  hasFieldConf,
   isImmediateValidate,
-  registerField,
-  registerManyField,
+  register,
   reset,
   resetConfig,
   resetField,

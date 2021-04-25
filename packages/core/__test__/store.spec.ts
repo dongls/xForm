@@ -1,4 +1,4 @@
-import store from '../store'
+import store, { getRawStore } from '../store'
 import CONFIG from '../config'
 import { FieldConf, FormPreset } from '../model'
 import { mockFieldConfs } from './mock/index'
@@ -24,6 +24,50 @@ describe('store: reset', () => {
     expect(store.getPreset()).toBeNull()
     expect(fg.length).toBe(0)
   })
+})
+
+describe('store: register', () => {
+  test('register single field', () => {
+    store.reset()
+
+    const text = FieldConf.create({ type: 'text' })
+    const textarea = FieldConf.create({ type: 'textarea' })
+    store.register(text)
+    store.register(textarea)
+
+    const raw = getRawStore()
+    expect(raw.fields.size).toBe(2)
+    expect(raw.fields.has(text.type))
+    expect(raw.fields.has(textarea.type))
+  })
+
+  test('register many fields', () => {
+    store.reset()
+
+    const text = FieldConf.create({ type: 'text' })
+    const textarea = FieldConf.create({ type: 'textarea' })
+    const select = FieldConf.create({ type: 'select' })
+    const checkbox = FieldConf.create({ type: 'checkbox' })
+
+    store.register(text, textarea, [select, checkbox])
+
+    const raw = getRawStore()
+    expect(raw.fields.size).toBe(4)
+    expect(raw.fields.has(text.type))
+    expect(raw.fields.has(textarea.type))
+    expect(raw.fields.has(select.type))
+    expect(raw.fields.has(checkbox.type))
+  })
+})
+
+test('store: hasField', () => {
+  store.reset()
+
+  const text = FieldConf.create({ type: 'text' })
+  store.register(text)
+
+  expect(store.hasFieldConf('text')).toBe(true)
+  expect(store.hasFieldConf('textarea')).toBe(false)
 })
 
 describe('store: usePreset', () => {
@@ -71,7 +115,7 @@ describe('store: findFieldGroups', () => {
     const types = fields.map(i => i.type)
     store.resetConfig()
     store.useConfig({})
-    store.registerManyField(fields)
+    store.register(fields)
     const groups = store.findFieldGroups()
     expect(groups.length).toBe(1)
 
@@ -94,7 +138,7 @@ describe('store: findFieldConf', () => {
       dependencies: [subtype]
     })
 
-    store.registerField(supertype)
+    store.register(supertype)
     
     const sup = store.findFieldConf('super')
     const sub = store.findFieldConf('super.subtype')
@@ -103,3 +147,4 @@ describe('store: findFieldConf', () => {
     expect(sub).toBe(subtype)
   })
 })
+

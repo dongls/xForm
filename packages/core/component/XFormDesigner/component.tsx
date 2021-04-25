@@ -294,7 +294,7 @@ function renderFieldSetting(field: FormField, slots: Slots, instance: XFormDesig
   }
 
   // 监听字段更新
-  props['onUpdate:field'] = instance.updateField.bind(field)
+  props['onUpdate:field'] = instance.updateField.bind(null, field)
 
   return createVNode(component, props)
 }
