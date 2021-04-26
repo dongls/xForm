@@ -246,3 +246,15 @@ export function mixinRestParams(target: AnyProps, origin: AnyProps){
 export function isRaw(value: object){
   return (value as any)['__v_skip'] === true
 }
+
+export function createPrivateProps<T>(pkey: Symbol, props: T){
+  return function(key: Symbol){
+    if(key !== pkey) {
+      const ctor = this.constructor
+      console.warn(`\`${ctor.name}.props\` is a private function.`)
+      return null
+    }
+    
+    return props
+  }
+}

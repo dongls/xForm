@@ -16,3 +16,10 @@ test('validate', async () => {
   const result = r.result
   expect(result[2].fields[0].fields[0].valid).toBe(false)
 })
+
+test('FormSchema: private props', () => {
+  const schema = createSchema()
+  
+  expect((schema as any).props).toBeInstanceOf(Function)
+  expect((schema as any).props()).toBe(null)
+})

@@ -23,7 +23,7 @@ import {
   isFunction
 } from '../../util'
 
-import XFormItem from '../XFormItem/component'
+import { XFormItemInternal } from '../XFormItem/component'
 
 import Store from '../../store'
 
@@ -66,14 +66,14 @@ function renderField(instance: XFormViewerInstance, field: FormField, options: R
   if(field.hidden === true) return null
 
   const disabled = options.parentProps?.disabled === true || field.disabled
-  const value = instance.fmtValue(field, instance.$props, instance)  
+  const value = instance.fmtValue(field, instance.$props, instance)
   const props = { key: field.name, field, validation: false, disabled }
   const children = function(){
     return renderContent(instance, field, value, options) ?? <span class="xform-viewer-value">{value}</span>
   }
 
   const create = isFunction(options?.renderItem) ? options.renderItem : createVNode
-  return create(XFormItem, props, children)
+  return create(XFormItemInternal, props, children)
 }
 
 export default defineComponent({

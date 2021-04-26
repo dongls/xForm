@@ -217,7 +217,8 @@ export default FieldConf.create({
     const columns = field.fields
     return value.map((v: any) => {
       return columns.reduce((row, item: FormField) => {
-        const newField = item.clone(true, v[item.name] ?? null)
+        const newField = item.clone(true)
+        newField.setValue(v[item.name] ?? null)
         newField.setParent(field)
         row[item.name] = newField
         return row

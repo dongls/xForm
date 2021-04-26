@@ -46,3 +46,14 @@ test('FormField: clone', () => {
   expect(clone.fields[0].name).not.toBe(origin.fields[0].name)
   expect(clone.fields[0].type).toBe(origin.fields[0].type)
 })
+
+test('FormField: private props', () => {
+  const o = {
+    name: 'field_a',
+    type: 'text',
+  }
+
+  const field = new FormField(o)
+  expect((field as any).props).toBeInstanceOf(Function)
+  expect((field as any).props()).toBe(null)
+})

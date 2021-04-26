@@ -1,4 +1,4 @@
-import { getIncNum, isFunction, isNull, mixinRestParams } from '../util/lang'
+import { createPrivateProps, getIncNum, isFunction, isNull, mixinRestParams } from '../util/lang'
 import { findFieldConf, getConfig } from '../store'
 import { EnumValidateMode, EnumValidityState } from './constant'
 import { ValidateFunc, FieldConf } from './FieldConf'
@@ -8,7 +8,7 @@ import { FormScope } from './FormScope'
 import { FormSchema } from './FormSchema'
 import { Action, ValidateAction, ValidChangeAction, ValueChangeAction } from './action'
 
-interface InternalProps{
+interface PrivateProps{
   value: any;
   valid: EnumValidityState
 }
@@ -31,6 +31,8 @@ interface Option {
   color?: string;
 }
 
+const PRIVATE_PROPS_KEY = Symbol()
+
 function cleanName(o: any){
   delete o.name
   
@@ -49,6 +51,7 @@ function cleanName(o: any){
  */
 export class FormField extends FormScope{
   [prop: string]: any;
+  private props: (key: Symbol) => PrivateProps
 
   /** 创建时自动生成，全局唯一，不可修改 */
   uid: string;
@@ -100,17 +103,17 @@ export class FormField extends FormScope{
 
   static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'value', 'state']
 
-  static create(f: any, value?: any){
-    return f instanceof FormField ? f : new FormField(f, value)
+  static create(f: any){
+    return f instanceof FormField ? f : new FormField(f)
   }
 
-  constructor(o: unknown = {}, value?: any){
+  constructor(o: unknown = {}){
     super()
 
     const params = this.normalizeParams(o)
     const init = o instanceof FieldConf
     const fc = findFieldConf(params.type)
-    const props: InternalProps = { 
+    const props: PrivateProps = { 
       value: null,
       valid: EnumValidityState.NONE
     }
@@ -132,18 +135,20 @@ export class FormField extends FormScope{
     this.initialValue = params.initialValue
     this.logic = params.logic
 
-    // TODO: 确定value如何赋值
     this.createFields(params.fields, p => FormField.create(p))
     // 创建验证相关值
     createValidation(this, props)
     // 创建表单值
-    createValue(this, props, init ? this.initialValue : value)
+    createValue(this, props)
     // 混入用户自定义属性
     mixinRestParams(this, params)
+    // 生成uid
+    Object.defineProperty(this, 'uid', { value: 'field__' + getIncNum() })
+    // 创建私有属性
+    this.props = createPrivateProps<PrivateProps>(PRIVATE_PROPS_KEY, props)
+
     // 调用onCreate hook, 可在此初始化字段
     isFunction(fc?.onCreate) && fc.onCreate(this, params, init)
-
-    Object.defineProperty(this, 'uid', { value: 'field__' + getIncNum() })
   }
 
   /** 查询该字段对应的字段类型对象, 不存在返回null */
@@ -181,13 +186,12 @@ export class FormField extends FormScope{
   /**
    * 复制该对象
    * @param keepName - 值为`true`时，保留`name`属性
-   * @param value - 字段的值
    * @returns 复制的对象
    */
-  clone(keepName = false, value?: any) {
+  clone(keepName = false) {
     const data = JSON.parse(JSON.stringify(this))
     if(!keepName) cleanName(data)
-    return new FormField(data, value)
+    return new FormField(data)
   }
 
   /** 验证字段 */
@@ -238,9 +242,15 @@ export class FormField extends FormScope{
       root.dispatch(action)
     })
   }
+
+  setValue(value: any){
+    const props = this.props(PRIVATE_PROPS_KEY)
+    const fc = this.conf
+    props.value = isFunction(fc?.onValueInit) ? fc.onValueInit(this, value) : value
+  }
 }
 
-function createValidation(field: FormField, props: InternalProps){
+function createValidation(field: FormField, props: PrivateProps){
   field.validation = {
     get valid() { return props.valid },
     set valid(newValue){
@@ -258,9 +268,7 @@ function createValidation(field: FormField, props: InternalProps){
   } as Validation
 }
 
-function createValue(field: FormField, props: InternalProps, value: any){
-  props.value = isFunction(field.conf?.onValueInit) ? field.conf.onValueInit(field, value) : value
-
+function createValue(field: FormField, props: PrivateProps){
   Reflect.defineProperty(field, 'value', {
     get(){
       return props.value

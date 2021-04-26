@@ -52,9 +52,9 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
 
   function showModal(){
     const model = createModel(props.field.fields, currentRow)
-    const fields = props.field.fields.map(f => f.clone(true, model[f.name]))
+    const fields = props.field.fields.map(f => f.clone(true))
     
-    formSchema.value = rootSchema.value.genSchema({ fields })
+    formSchema.value = rootSchema.value.genSchema({ fields }, model)
     show.value = true
   }
 
@@ -76,7 +76,8 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
 
   function addRow(model: any){
     const row = props.field.fields.reduce((acc, f) => {
-      const newField = f.clone(true, model[f.name])
+      const newField = f.clone(true)
+      newField.setValue(model[f.name])
       newField.setParent(props.field)
       acc[f.name] = newField
       return acc
@@ -198,7 +199,9 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
           onConfirm={submit}
           {...{ visible: show.value, 'onUpdate:visible': updateShow }}
         >
-          <xform-builder schema={formSchema.value} ref="form"></xform-builder>
+          <xform-builder schema={formSchema.value} ref="form" onSubmit={submit}>
+            <button class="xform-is-hidden" type="submit"/>
+          </xform-builder>
         </modal>
       </div>
     )

@@ -71,12 +71,13 @@ export default FieldConf.create({
     },
     setup(props) {
       const context = useRenderContext()
+      const value = props.field.value ?? {}
 
       return function () {
         const fields = props.field.fields
         return (
           <div class="tab-pane">
-            {fields.map((f) => context.renderField(f, { parentProps: { disabled: props.disabled } }))}
+            {fields.map((f) => context.renderField(value[f.name], { parentProps: { disabled: props.disabled } }))}
           </div>
         )
       }
@@ -103,7 +104,8 @@ export default FieldConf.create({
     const value = _value ?? {}
     return field.fields.reduce((acc, f) => {
       const k = f.name
-      const newField = f.clone(true, value[k] ?? null)
+      const newField = f.clone(true)
+      newField.setValue(value[k] ?? null)
       newField.setParent(field)
       acc[k] = newField
       return acc

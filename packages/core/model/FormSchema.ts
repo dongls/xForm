@@ -1,5 +1,6 @@
 import {
   clonePlainObject,
+  createPrivateProps,
   isEmpty,
   isFunction,
   isNull,
@@ -23,7 +24,8 @@ type SchemaValidResult = {
 type Callback = (action: Action) => void
 
 type PrivateProps = {
-  callbacks: Callback[]
+  callbacks: Callback[];
+  initModel: any;
 }
 
 function createSchemaValidResult(
@@ -73,7 +75,6 @@ const PRIVATE_PROPS_KEY = Symbol()
 
 export class FormSchema extends FormScope {
   [prop: string]: any
-
   private props: (key: Symbol) => PrivateProps
 
   parent: null
@@ -86,27 +87,26 @@ export class FormSchema extends FormScope {
 
   static [Serializable.EXCLUDE_PROPS_KEY] = ['external']
 
-  constructor(o: any, _model?: any) {
+  constructor(o: any, model?: any) {
     super()
 
-    const props: PrivateProps = { callbacks: [] }
-    const model = _model ?? {}
+    const props: PrivateProps = { 
+      callbacks: [],
+      initModel: model
+    }
 
     this.labelSuffix = o.labelSuffix
     this.labelPosition = o.labelPosition
     this.viewerPlaceholder = o.viewerPlaceholder
 
-    this.createFields(o.fields, (f) => FormField.create(f, model[f.name]))
-    mixinRestParams(this, o)
+    this.createFields(o.fields, f => {
+      const field = FormField.create(f)
+      field.setValue(model?.[f.name])
+      return field
+    })
 
-    this.props =  function(key: Symbol): PrivateProps{
-      if(key !== PRIVATE_PROPS_KEY){
-        console.warn('`Formschema.props` is a private function, you should not call the function.')
-        return null
-      }
-      
-      return props
-    }
+    this.props = createPrivateProps(PRIVATE_PROPS_KEY, props)
+    mixinRestParams(this, o)
   }
 
   get model() {
@@ -123,8 +123,10 @@ export class FormSchema extends FormScope {
   registerExternalField(field: FormField) {
     const index = this.external.indexOf(field)
     if (index < 0) {
+      const props = this.props(PRIVATE_PROPS_KEY)
       this.external.push(field)
-      field.parent = this
+      field.setParent(this)
+      field.setValue(props.initModel?.[field.name])
     }
   }
 

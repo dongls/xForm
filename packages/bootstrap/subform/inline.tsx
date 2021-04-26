@@ -9,7 +9,7 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
 
   function addRow(){
     const row = props.field.fields.reduce((acc, f) => {
-      const newField = f.clone(true, null)
+      const newField = f.clone(true)
       newField.setParent(props.field)
       acc[f.name] = newField
       return acc

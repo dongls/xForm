@@ -255,7 +255,8 @@ export default FieldConf.create({
 
     return field.fields.reduce((acc, f) => {
       const k = f.name
-      const newField = f.clone(true, value[k])
+      const newField = f.clone(true)
+      newField.setValue(value[k])
       newField.setParent(field)
       acc[k] = newField
       return acc
