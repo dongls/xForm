@@ -31,13 +31,13 @@
 
     <slot/>
 
-    <field-logic v-model:field="fieldRef" v-if="logic"/>
+    <field-logic v-model:field="fieldRef" v-if="allowLogic"/>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, toRef } from 'vue'
-import { FormField } from '@dongls/xform'
+import { computed, defineComponent, toRef } from 'vue'
+import { FormField, store } from '@dongls/xform'
 
 import FieldLogic from './FieldLogic.vue'
 
@@ -67,8 +67,11 @@ export default defineComponent({
   },
   setup(props) {
     const fieldRef = toRef(props, 'field')
+    const allowLogic = computed(() => {
+      return store.getConfig().experiments?.logic === true && props.logic
+    })
 
-    return { fieldRef }
+    return { fieldRef, allowLogic }
   },
   components: {
     [FieldLogic.name]: FieldLogic

@@ -1,5 +1,8 @@
+import { ComputedRef, onBeforeUnmount, Ref, watch } from 'vue'
+
 import { 
   checkPromise,
+  ignoreError,
   isFunction, 
   isNull, 
   isObject, 
@@ -13,6 +16,7 @@ import {
   FormField,
   FormSchema,
   ValidateFunc,
+  Action,
 } from '../model'
 
 export interface ValidateOptions { mode?: EnumValidateMode }
@@ -92,10 +96,42 @@ function validate(field: FormField, vos?: ValidateOptions): ValidatePromise{
   return fallback(field)
 }
 
-export function useValidator(){
+export function useValidator(schemaRef: Ref<FormSchema>, disabledRef: ComputedRef<boolean>){
   const queue = new Set<ValidatePromise>()
+  const stopMap = new WeakMap<FormSchema, Function>()
+
+  function effect(action: Action){
+    switch (action.type) {
+      case 'value.change': {
+        ignoreError(validateField(action.field.reactive()))
+        break
+      }
+      case 'validate': {
+        const options = { mode: action.mode }
+        const callback = action.callback
+        validateField(action.field.reactive(), options)
+          .then((r: any) => isFunction(callback) && callback(true, r))
+          .catch(r => isFunction(callback) && callback(false, r))
+        break
+      }
+      case 'valid.change': {
+        const newValue = action.newValue
+        const oldValue = action.oldValue
+        if(
+          oldValue == newValue ||
+          oldValue == EnumValidityState.NONE && newValue == EnumValidityState.SUCCESS ||
+          newValue == EnumValidityState.NONE
+        ) return
+        
+        const parent = action.field.parent
+        if(parent instanceof FormField) ignoreError(validateField(parent.reactive()))
+        break
+      }
+    }
+  }
 
   function validateField(field: FormField, options?: ValidateOptions){
+    if(disabledRef.value) return Promise.resolve()
     if(field.validation.validating) return Promise.resolve()
     
     const promise = validate(field, options)
@@ -154,6 +190,30 @@ export function useValidator(){
   function destroy(){
     queue.clear()
   }
+
+  function use(schema: FormSchema = schemaRef.value){
+    const callback = schema.useEffect(effect)
+    stopMap.set(schema, callback)
+  }
+
+  function stop(schema: FormSchema = schemaRef.value){
+    const callback = stopMap.get(schema)
+    if(isFunction(callback)) {
+      callback()
+      stopMap.delete(schema)
+    }
+  }
+
+  watch(schemaRef, (newSchema, oldSchema) => {
+    stop(oldSchema)
+    use(newSchema)    
+  })
+
+  use(schemaRef.value)
+  onBeforeUnmount(() => {
+    stop()
+    destroy()
+  })
 
   return {
     resetValidate,

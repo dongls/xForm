@@ -133,4 +133,10 @@ export abstract class FormScope extends Serializable{
   setParent(parent: FormScope){
     this.parent = parent
   }
+
+  destroy(){
+    this.fields.forEach(f => f.destroy())
+    this.parent = null
+    this.fields = null
+  }
 }

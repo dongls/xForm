@@ -34,6 +34,9 @@ export interface FormConfigBase{
   };
   genName: (o: any) => string;
   formatter: (field: FormField, props: RawProps, instance: ComponentPublicInstance) => any;
+  experiments?: {
+    logic: boolean
+  }
 }
 
 export type FormConfig = DeepPartial<FormConfigBase>

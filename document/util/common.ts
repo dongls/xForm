@@ -2,12 +2,22 @@ import { ref, watch } from 'vue'
 import { createSchema, createSchemaRef } from '@dongls/xform'
 import DEFAULT_SCHEMA from './schema.data'
 
-const XFORM_SCHEMA_STORAGE_KEY = '__xform_schema_storage__'
-const XFORM_MODEL_STORAGE_KEY = '__xform_model_storage__'
-const XFORM_IS_WIDE_KEY = '__xform_is_wide__'
+const SCHEMA_KEY = 'schema'
+const MODEL_KEY = 'model'
+const IS_WIDE_KEY = 'is_wide'
+const ENABLE_LOGIC_KEY = 'enable_logic'
 
-function saveToLocalStorage(key: string, value: string){
-  localStorage.setItem(key, value)
+const isWide = ref(getLocalIsWide())
+const enableLogic = ref(getLocalEnableLogic())
+
+watch(isWide, v => saveToLocalStorage(IS_WIDE_KEY, v))
+watch(enableLogic, v => {
+  saveToLocalStorage(ENABLE_LOGIC_KEY, v)
+  window.location.reload()
+})
+
+function saveToLocalStorage(key: string, value: any){
+  localStorage.setItem(key, JSON.stringify(value))
 }
 
 function createDefaultSchema(){
@@ -15,7 +25,7 @@ function createDefaultSchema(){
 }
 
 function getLocalSchema(withModel: boolean){
-  const str = localStorage.getItem(XFORM_SCHEMA_STORAGE_KEY)
+  const str = localStorage.getItem(SCHEMA_KEY)
   try {
     const schema: any = JSON.parse(str)
     if(
@@ -36,7 +46,7 @@ function getLocalSchema(withModel: boolean){
 
 function getLocalModel(){
   try {
-    const str = localStorage.getItem(XFORM_MODEL_STORAGE_KEY)
+    const str = localStorage.getItem(MODEL_KEY)
     return JSON.parse(str) || {}
   } catch (error) {
     return {}
@@ -45,7 +55,7 @@ function getLocalModel(){
 
 function getLocalIsWide(){
   try {
-    const data = localStorage.getItem(XFORM_IS_WIDE_KEY)
+    const data = localStorage.getItem(IS_WIDE_KEY)
     return JSON.parse(data) ?? false
   } catch (error) {
     return false
@@ -53,15 +63,13 @@ function getLocalIsWide(){
 }
 
 export function saveToLocalModel(model: any){
-  saveToLocalStorage(XFORM_MODEL_STORAGE_KEY, JSON.stringify(model))
+  saveToLocalStorage(MODEL_KEY, model)
 }
 
 export function saveToLocalSchema(schema: any){
-  saveToLocalStorage(XFORM_SCHEMA_STORAGE_KEY, JSON.stringify(schema))
+  saveToLocalStorage(SCHEMA_KEY, schema)
 }
 
-const isWide = ref(getLocalIsWide())
-watch(isWide, v => saveToLocalStorage(XFORM_IS_WIDE_KEY, JSON.stringify(v)))
 export function useIsWide(){
   return isWide
 }
@@ -75,4 +83,17 @@ export function useLocalSchema(withModel = true){
     schema,
     resetSchema: () => schema.value = createSchema(createDefaultSchema())
   }
+}
+
+export function getLocalEnableLogic(){
+  try {
+    const data = localStorage.getItem(ENABLE_LOGIC_KEY)
+    return JSON.parse(data) === true
+  } catch {
+    return false
+  }
+}
+
+export function useEnableLogic(){
+  return enableLogic
 }

@@ -1,4 +1,4 @@
-import { defineComponent } from '@vue/runtime-core'
+import { defineComponent } from 'vue'
 import { isEmpty } from '../../util'
 import { FieldConf, FormField, FormOption } from '../../model'
 

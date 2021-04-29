@@ -18,7 +18,6 @@ import {
   ConcreteComponent,
   createVNode,
   Ref,
-  onBeforeUnmount,
 } from 'vue'
 
 import { 
@@ -38,7 +37,6 @@ import {
   FormSchema,
   RenderOptions,
   UpdateField,
-  FormScope,
   EVENTS
 } from '../../model'
 
@@ -375,31 +373,10 @@ export default defineComponent({
     const selectedTab = ref<string>('form')
     const groups = computed(() => Store.findFieldGroups(props.mode))
     const { dragstart } = useDragging()
-    const logic = useLogic()
 
-    function cleanLogic(scope: FormScope, field: FormField){
-      const data = logic.clean(scope, field)
-      if(data.length > 0) {
-        emit(EVENTS.MESSAGE, { type: 'logic.change', title: '字段逻辑发生变更', data, field })
-      }
+    if(Store.getConfig().experiments?.logic === true) {
+      useLogic(toRef(props, 'schema') as Ref<FormSchema>, (data: any) => emit(EVENTS.MESSAGE, data))
     }
-
-    const stop = props.schema.useEffect(action => {
-      switch(action.type){
-        case 'field.move': {
-          const field = action.field
-          const scope = action.field.parent
-          cleanLogic(scope, field)
-          break
-        }
-        case 'field.remove': {
-          const field = action.field
-          const scope = action.oldParent
-          cleanLogic(scope, field)
-          break
-        }
-      }
-    })
     
     const updateSchema = function(schema: FormSchema = props.schema){
       emit(EVENTS.UPDATE_SCHEMA, schema)
@@ -478,8 +455,6 @@ export default defineComponent({
       updateField,
       chooseField
     })
-
-    onBeforeUnmount(stop)
   
     return {
       clone,

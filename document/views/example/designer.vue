@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { FormField, LogicRule, constant, getOperator } from '@dongls/xform'
-import { useLocalSchema, useIsWide } from '@document/util/common'
+import { useLocalSchema, useIsWide, useEnableLogic } from '@document/util/common'
 import { defineComponent, ref } from 'vue'
 import { useNotification } from '@document/component'
 
@@ -39,6 +39,7 @@ export default defineComponent({
 
     return {
       designer,
+      enableLogic: useEnableLogic(),
       showMessage(event: any){
         switch(event.type){
           case 'logic.change': {
@@ -103,6 +104,10 @@ export default defineComponent({
             <input type="checkbox" class="custom-control-input" id="prop-is-wide" v-model="isWide">
             <label class="custom-control-label" for="prop-is-wide">宽屏</label>
           </div>
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="props-enable-logic" v-model="enableLogic">
+            <label class="custom-control-label" for="props-enable-logic">字段逻辑</label>
+          </div>
         </div>
         <div class="designer-tool-right">
           <strong class="is-schema-valid" v-if="isSchemaValid">验证通过</strong>
@@ -156,9 +161,15 @@ $--xform-color-primary: #409EFF !default;
   align-items: center;
 }
 
-.designer-tool-left .custom-checkbox{
-  height: 24px;
-  line-height: 24px;
+.designer-tool-left{
+  display: flex;
+  flex-flow: row nowrap;
+
+  .custom-checkbox{
+    height: 24px;
+    line-height: 24px;
+    margin-right: 10px;
+  }
 }
 
 .is-wide .xform-is-pc{

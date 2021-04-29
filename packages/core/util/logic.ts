@@ -1,9 +1,13 @@
+import { onBeforeUnmount, Ref, watch } from 'vue'
 import { 
+  Action,
   FormField,
+  FormSchema,
   FormScope,
   LogicOperator,
   LogicRule
 } from '../model'
+import { isFunction } from './lang'
 
 function toPrimitive(value: unknown){
   if(typeof value == 'string') return value.trim() == '' ? null : value
@@ -181,6 +185,54 @@ export function clean(scope: FormScope, field: FormField): string[]{
   }, [])
 }
 
-export function useLogic(){
-  return { test, clean }
+export function useLogic(schemaRef: Ref<FormSchema>, onMessage: Function){
+  const stopMap = new WeakMap<FormSchema, Function>()
+
+  function cleanLogic(scope: FormScope, field: FormField){
+    const data = clean(scope, field)
+    if(data.length > 0) {
+      onMessage({ type: 'logic.change', title: '字段逻辑发生变更', data, field })
+    }
+  }
+
+  function effect(action: Action){
+    switch(action.type){
+      case 'field.move': {
+        const field = action.field
+        const scope = action.field.parent
+        cleanLogic(scope, field)
+        break
+      }
+      case 'field.remove': {
+        const field = action.field
+        const scope = action.oldParent
+        cleanLogic(scope, field)
+        break
+      }
+    }
+  }
+
+  function use(schema: FormSchema){
+    const callback = schema.useEffect(effect)
+    stopMap.set(schema, callback)
+  }
+
+  function stop(schema: FormSchema = schemaRef.value){
+    const callback = stopMap.get(schema)
+    if(isFunction(callback)) {
+      callback()
+      stopMap.delete(schema)
+    }
+  }
+
+
+  watch(schemaRef, (newSchema, oldSchema) => {
+    stop(oldSchema)
+    use(newSchema)    
+  })
+
+  use(schemaRef.value)
+  onBeforeUnmount(stop)
+
+  return { test, clean, stop }
 }

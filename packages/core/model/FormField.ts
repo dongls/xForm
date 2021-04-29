@@ -7,6 +7,7 @@ import { LogicRule } from './common'
 import { FormScope } from './FormScope'
 import { FormSchema } from './FormSchema'
 import { Action, ValidateAction, ValidChangeAction, ValueChangeAction } from './action'
+import { isReactive, reactive } from 'vue'
 
 interface PrivateProps{
   value: any;
@@ -247,6 +248,10 @@ export class FormField extends FormScope{
     const props = this.props(PRIVATE_PROPS_KEY)
     const fc = this.conf
     props.value = isFunction(fc?.onValueInit) ? fc.onValueInit(this, value) : value
+  }
+
+  reactive() {
+    return (isReactive(this) ? this : reactive(this)) as FormField
   }
 }
 

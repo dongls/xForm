@@ -11,7 +11,8 @@ import {
   nextTick,
   ComputedOptions,
   onBeforeUnmount,
-  reactive,
+  computed,
+  Ref,
 } from 'vue'
 
 import { 
@@ -24,13 +25,11 @@ import {
   FormBuilderContext,
   FormSchema,
   EVENTS,
-  EnumValidityState,
 } from '../../model'
 
 import {
   fillComponentProps,
   getFieldComponent,
-  ignoreError,
   isFunction,
   isNull,
   isString,
@@ -38,8 +37,9 @@ import {
   test,
 } from '../../util'
 
-import { useValidator, ValidateOptions } from '../../validator'
+import { useValidator } from '../../validator'
 import { XFormItemInternal } from '../XFormItem/component'
+import store from '../../store'
 
 interface XFormBuilderProps{
   mode: string;
@@ -92,7 +92,11 @@ function renderField(instance: XFormBuilderInstance, field: FormField, options: 
   if(field.hidden === true) return null
 
   // TODO: 处理字段逻辑
-  if(!isNull(field.logic) && !test(field.logic, field.parent.model)) return null
+  if(
+    store.getConfig().experiments?.logic === true && 
+    !isNull(field.logic) && 
+    !test(field.logic, field.parent.model)
+  ) return null
 
   const disabled = instance.disabled || field.disabled || options.parentProps?.disabled === true
   const props = { 
@@ -143,44 +147,18 @@ export default defineComponent({
     const instance = getCurrentInstance()
     const pending = ref(false)
     const preventValidate = ref(false)
-    const validator = useValidator()
-
-    function validate(field: FormField, options?: ValidateOptions){
-      if(
+    const disabledValidate = computed(() => {
+      return (
         props.novalidate === true || 
         props.disabled === true ||
-        preventValidate.value === true ||
-        field.disabled
-      ) return Promise.resolve()
-      return validator.validateField(reactive(field) as FormField, options)
-    }
-
+        preventValidate.value === true
+      )
+    })
+    const validator = useValidator(toRef(props, 'schema') as Ref<FormSchema>, disabledValidate)
     const stop = props.schema.useEffect(action => {
       switch (action.type) {
         case 'value.change': {
-          ignoreError(validate(action.field))
           emit(EVENTS.VALUE_CHANGE)
-          break
-        }
-        case 'validate': {
-          const options = { mode: action.mode }
-          const callback = action.callback
-          validate(action.field, options)
-            .then((r: any) => isFunction(callback) && callback(true, r))
-            .catch(r => isFunction(callback) && callback(false, r))
-          break
-        }
-        case 'valid.change': {
-          const newValue = action.newValue
-          const oldValue = action.oldValue
-          if(
-            oldValue == newValue ||
-            oldValue == EnumValidityState.NONE && newValue == EnumValidityState.SUCCESS ||
-            newValue == EnumValidityState.NONE
-          ) return
-          
-          const parent = action.field.parent
-          if(parent instanceof FormField) ignoreError(validate(parent))
           break
         }
       }
@@ -189,7 +167,6 @@ export default defineComponent({
     function onUpdateValue(e: { field: FormField, value: any }){
       e.field.value = e.value
     }
-
 
     // 清除验证信息
     function resetValidate(){
@@ -204,10 +181,7 @@ export default defineComponent({
       renderField: renderField.bind(null, instance.proxy),
     })
 
-    onBeforeUnmount(() => {
-      stop()
-      validator.destroy()
-    })
+    onBeforeUnmount(stop)
 
     return {
       // 验证整个表单
