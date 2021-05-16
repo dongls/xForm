@@ -1,8 +1,10 @@
 import { defineComponent } from 'vue'
-import { FieldConf, FormField, useValue, isEmpty } from '@dongls/xform'
+import { FieldConf, FormField, useValue, isEmpty, constant } from '@dongls/xform'
 
 import icon from '@common/svg/number.svg'
 import setting from './setting.vue'
+
+const { LogicOperator } = constant
 
 const build = defineComponent({
   name: 'xform-bs-number',
@@ -44,5 +46,14 @@ export default FieldConf.create({
     if(field.attributes.integer && !/^[-+]?[1-9]\d*$/.test(value + '')) return Promise.reject('请输入整数')
 
     return Promise.resolve()
-  }
+  },
+  operators: [
+    LogicOperator.LT,
+    LogicOperator.LTE,
+    LogicOperator.GT,
+    LogicOperator.GTE,
+    LogicOperator.EQ,
+    LogicOperator.NE,
+    LogicOperator.EMPTY,
+  ]
 })

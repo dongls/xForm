@@ -8,7 +8,9 @@
       <div class="modal-dialog modal-dialog-centered" :style="{'width': width}" >
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" v-if="title">{{ title }}</h5>
+            <slot name="header">
+              <h5 class="modal-title" v-if="title">{{ title }}</h5>
+            </slot>
             <button type="button" class="close" @click="close"><span>&times;</span></button>
           </div>
           <div class="modal-body"><slot/></div>

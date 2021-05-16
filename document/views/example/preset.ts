@@ -1,5 +1,4 @@
-import { getLocalEnableLogic } from '@document/util/common'
-import { store } from '@dongls/xform'
+import { reset } from '@dongls/xform'
 
 enum TYPE {
   STYLE = 1,
@@ -142,11 +141,10 @@ export async function usePreset(state: { preset: string, loading: boolean }, _ta
   if(null != old) removeSource(old.source)
   await loadSource(config.source)
   
-  store.reset({
+  reset({
     preset,
     config: { 
-      modes: MODES, 
-      experiments: { logic: getLocalEnableLogic() }
+      modes: MODES
     }
   })
 

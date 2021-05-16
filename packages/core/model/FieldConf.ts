@@ -75,6 +75,7 @@ export class FieldConf extends Hook{
   icon?: string | Function;
   alias: FieldConf;
 
+  /** 可接受的子字段类型，为空则接受所有字段 */
   accept?: string[];
   scoped?: boolean;
   custom?: boolean;
@@ -88,6 +89,8 @@ export class FieldConf extends Hook{
 
   /** 依赖的子组件 */
   dependencies: FieldConf[];
+  // TODO: 指定类型
+  operators: false | any[];
 
   constructor(options: any = {}, from?: Symbol){
     if(from != CALL_FROM_CREATE) console.warn('use `XFieldConf.create` instead of `new XFieldConf`')
@@ -110,6 +113,7 @@ export class FieldConf extends Hook{
     this.view = isNull(options.view) ? null : markRaw(options.view)
     
     this.dependencies = toArray(options.dependencies)
+    this.operators = options.operators
   }
 
   /** 
@@ -129,7 +133,7 @@ export class FieldConf extends Hook{
   }
 
   /** 
-   * 建议统一使用该方法创建XFieldConf实例, 
+   * 建议统一使用该方法创建`FieldConf`实例, 
    * 
    * 通过该方法创建的实例会使用Proxy代理属性访问
    * 例如用于配置alias，可直接访问目标的属性

@@ -21,5 +21,5 @@ test('FormSchema: private props', () => {
   const schema = createSchema()
   
   expect((schema as any).props).toBeInstanceOf(Function)
-  expect((schema as any).props()).toBe(null)
+  expect(() => (schema as any).props()).toThrow()
 })

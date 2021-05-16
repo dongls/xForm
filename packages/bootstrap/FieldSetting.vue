@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, toRef } from 'vue'
-import { FormField, store } from '@dongls/xform'
+import { FormField, getConfig } from '@dongls/xform'
 
 import FieldLogic from './FieldLogic.vue'
 
@@ -67,9 +67,7 @@ export default defineComponent({
   },
   setup(props) {
     const fieldRef = toRef(props, 'field')
-    const allowLogic = computed(() => {
-      return store.getConfig().experiments?.logic === true && props.logic
-    })
+    const allowLogic = computed(() => getConfig().logic === true)
 
     return { fieldRef, allowLogic }
   },

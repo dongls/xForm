@@ -3,6 +3,7 @@ import { isEmpty, isNull, genRandomStr } from './util'
 
 const config: FormConfigBase = {
   modes: null,
+  logic: true,
   validation: {
     immediate: true
   },

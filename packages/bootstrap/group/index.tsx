@@ -225,5 +225,6 @@ export default FieldConf.create({
     return Promise.allSettled(promise).then(r => {
       return r.some(i => i.status === 'rejected') ? Promise.reject('请补全必填内容') : Promise.resolve()
     }) 
-  }
+  },
+  operators: false
 })

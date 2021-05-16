@@ -1,9 +1,10 @@
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { mockOption } from './mock'
-import { XFormItem, store, FormField, FieldConf } from '../index'
+import { XFormItem, FormField, FieldConf } from '../index'
 import { LabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
 import { createSchemaRef } from '../api'
+import store from '../store'
 
 describe('XFormItem slots: default', () => {
   test('slot is not empty', () => {

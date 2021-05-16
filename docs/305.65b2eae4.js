@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkxform=self.webpackChunkxform||[]).push([[305],{8305:(s,e,f)=>{f.r(e),f.d(e,{default:()=>n});const n={name:"antdv",version:"0.6.0",slots:{},fieldConfs:[]}}}]);

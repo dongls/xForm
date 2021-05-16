@@ -8,6 +8,7 @@ import type {
 
 import { FieldConf } from './FieldConf'
 import { FormField } from './FormField'
+import FormStore from '../store'
 
 export type DeepPartial<T, P = string | number | boolean | Function | Array<any>> = {
   [K in keyof T]?: T[K] extends P ? T[K] : DeepPartial<T[K]> ;
@@ -34,9 +35,8 @@ export interface FormConfigBase{
   };
   genName: (o: any) => string;
   formatter: (field: FormField, props: RawProps, instance: ComponentPublicInstance) => any;
-  experiments?: {
-    logic: boolean
-  }
+  logic?: boolean;
+  experiments?: {}
 }
 
 export type FormConfig = DeepPartial<FormConfigBase>
@@ -50,6 +50,7 @@ export interface FormPreset {
   };
   fieldConfs: FieldConf[];
   config?: FormConfig;
+  install?: (store: typeof FormStore) => void
 }
 
 export type RenderOptions = {
@@ -78,6 +79,7 @@ export interface FormDesignerContext{
   updateField: UpdateField;
   /** 选中字段 */
   chooseField: (field: FormField) => void;
+  emit: (event: string, args: any) => void;
 }
 
 export interface FormViewerContext{
@@ -97,8 +99,14 @@ export interface FormOption {
 }
 
 export type LogicRule = {
+  /** 操作符 */
   operator: string;
+  /** 字段`name` */
   name?: string;
+  /** 目标值 */
   value?: any;
+  /* TODO: 比较的对象，例如字段的值、长度等 */
+  target?: any;
+  /** 子条件 */
   condition?: LogicRule[]
 }

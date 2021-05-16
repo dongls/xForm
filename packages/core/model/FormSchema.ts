@@ -77,15 +77,15 @@ export class FormSchema extends FormScope {
   [prop: string]: any
   private props: (key: Symbol) => PrivateProps
 
-  parent: null
-  fields: FormField[]
+  parent: FormScope = null
+  fields: FormField[] = []
   external: FormField[] = []
 
   labelSuffix?: string
   labelPosition?: string
   viewerPlaceholder?: string
 
-  static [Serializable.EXCLUDE_PROPS_KEY] = ['external']
+  static [Serializable.EXCLUDE_PROPS_KEY] = ['external', 'parent', 'props']
 
   constructor(o: any, model?: any) {
     super()
@@ -109,7 +109,7 @@ export class FormSchema extends FormScope {
     mixinRestParams(this, o)
   }
 
-  get model() {
+  get model(): any {
     return [...this.fields, ...this.external].reduce((acc, field) => {
       const model = field.model
       return isNull(model) ? acc : (acc[field.name] = model, acc)
@@ -155,8 +155,7 @@ export class FormSchema extends FormScope {
 
   /** 验证schema的完整性 */
   validate(): Promise<{ valid: boolean; result: SchemaValidResult[] }> {
-    if (this.fields.length == 0)
-      return Promise.resolve({ valid: true, result: [] })
+    if (this.fields.length == 0) return Promise.resolve({ valid: true, result: [] })
 
     return validateFields(this.fields).then((r) => {
       return {

@@ -204,7 +204,7 @@ export function useValidator(schemaRef: Ref<FormSchema>, disabledRef: ComputedRe
     }
   }
 
-  watch(schemaRef, (newSchema, oldSchema) => {
+  const watchStop = watch(schemaRef, (newSchema, oldSchema) => {
     stop(oldSchema)
     use(newSchema)    
   })
@@ -213,12 +213,12 @@ export function useValidator(schemaRef: Ref<FormSchema>, disabledRef: ComputedRe
   onBeforeUnmount(() => {
     stop()
     destroy()
+    watchStop()
   })
 
   return {
     resetValidate,
     validateField,
     validateSchema,
-    destroy
   }
 }

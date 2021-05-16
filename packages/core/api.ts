@@ -18,19 +18,20 @@ import {
 import store from './store'
 
 export {
-  checkCondition,
   findElementFromPoint,
   findElementsFromPoint,
   genRandomStr,
   getField,
   getHtmlElement,
-  getOperator,
   getProperty,
   getRef,
   isEmpty,
   normalizeClass,
   normalizeWheel,
 } from './util'
+
+export { getOperator, getOperators } from './logic'
+export { getConfig, reset } from './store'
 
 export function useRenderContext<T = FormRenderContext>(){
   return inject<T>(XFORM_CONTEXT_PROVIDE_KEY)
@@ -45,7 +46,7 @@ export function createSchemaRef(origin?: any, model?: any){
   return ref(createSchema(origin, model)) as Ref<FormSchema>
 }
 
-/** @deprecated */
+/** @deprecated use `field.value` instead */
 export function useValue<T>(props: { field: FormField }, defValue?: T){
   return computed<T>({
     get(){
@@ -64,3 +65,5 @@ export function useSchema(){
 export function useFormStore(){
   return store
 }
+
+// TODO: useApi

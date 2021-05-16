@@ -155,7 +155,7 @@ function createComponent(name: EnumComponentName){
       // 组件为外部组件或者为外部组件的子组件
       const isExternal = name == EnumComponentName.EXTERNAL || inject(XFORM_ITEM_EXTERNAL_PROVIDE_KEY, false)
       if(name === EnumComponentName.EXTERNAL) provide(XFORM_ITEM_EXTERNAL_PROVIDE_KEY, true)
-      if(isExternal) schema.value.registerExternalField(fieldRef.value)
+      if(isExternal && schema != null) schema.value.registerExternalField(fieldRef.value)
       if(isBuilderContext(context)) fieldRef.value.validation.external = () => props.validation
       
       onMounted(() => {

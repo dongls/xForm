@@ -257,5 +257,6 @@ export default FieldConf.create({
   onValidate(field: FormField){
     if(isEmpty(field.title)) return Promise.reject('标题为空')
     return field.fields.length == 0 ? Promise.reject('至少需要一个字段') : Promise.resolve()
-  }
+  },
+  operators: false
 })

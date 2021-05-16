@@ -1,6 +1,6 @@
 .notification-layout{
   position: absolute;
-  z-index: 100;
+  z-index: 10000;
 }
 
 .notification-layout[data-placement="top-right"]{
@@ -31,6 +31,7 @@
   word-break: break-all;
   max-height: 240px;
   overflow: auto;
+  white-space: pre-line;
 }
 
 .notification-close{
@@ -52,5 +53,11 @@
 
   &:hover{
     color: red;
+  }
+}
+
+.notification-error{
+  .notification-title{
+    color: #dc3545;
   }
 }

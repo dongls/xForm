@@ -34,12 +34,12 @@ import {
   isNull,
   isString,
   normalizeClass,
-  test,
 } from '../../util'
 
 import { useValidator } from '../../validator'
 import { XFormItemInternal } from '../XFormItem/component'
-import store from '../../store'
+import { test } from '../../logic'
+import { getConfig } from '../../store'
 
 interface XFormBuilderProps{
   mode: string;
@@ -91,11 +91,10 @@ function renderContent(instance: XFormBuilderInstance, field: FormField, options
 function renderField(instance: XFormBuilderInstance, field: FormField, options: RenderOptions = {}){
   if(field.hidden === true) return null
 
-  // TODO: 处理字段逻辑
   if(
-    store.getConfig().experiments?.logic === true && 
+    getConfig().logic === true && 
     !isNull(field.logic) && 
-    !test(field.logic, field.parent.model)
+    !test(field.logic, field.parent.model, field)
   ) return null
 
   const disabled = instance.disabled || field.disabled || options.parentProps?.disabled === true

@@ -22,7 +22,7 @@ const DELIMITER = '.'
 const store = {
   preset: null as FormPreset,
   config: clonePlainObject(CONFIG) as FormConfigBase,
-  fields: new Map<string, FieldConf>()
+  fields: new Map<string, FieldConf>(),
 }
 
 export function useConfig(config: FormConfig){
@@ -40,6 +40,7 @@ export function usePreset(preset: FormPreset){
 export function use(option: FormOption){
   if(option.preset) usePreset(option.preset)
   if(option.config) useConfig(option.config)
+  // TODO: support install ?
 }
 
 export function resetPreset(){
@@ -62,6 +63,7 @@ export function resetField(){
 }
 
 export function reset(option?: FormOption){
+  // TODO: 重置操作符
   resetPreset()
   resetConfig()
   if(store.fields.size > 0) resetField()
@@ -69,6 +71,7 @@ export function reset(option?: FormOption){
 }
 
 /** 注册字段 */
+// TODO: registerField
 export function register(...fcs: Array<FieldConf | FieldConf[]>){
   flat(fcs).forEach(fc => {
     if(fc instanceof FieldConf && fc.available){

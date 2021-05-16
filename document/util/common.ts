@@ -5,16 +5,10 @@ import DEFAULT_SCHEMA from './schema.data'
 const SCHEMA_KEY = 'schema'
 const MODEL_KEY = 'model'
 const IS_WIDE_KEY = 'is_wide'
-const ENABLE_LOGIC_KEY = 'enable_logic'
 
 const isWide = ref(getLocalIsWide())
-const enableLogic = ref(getLocalEnableLogic())
 
 watch(isWide, v => saveToLocalStorage(IS_WIDE_KEY, v))
-watch(enableLogic, v => {
-  saveToLocalStorage(ENABLE_LOGIC_KEY, v)
-  window.location.reload()
-})
 
 function saveToLocalStorage(key: string, value: any){
   localStorage.setItem(key, JSON.stringify(value))
@@ -85,15 +79,3 @@ export function useLocalSchema(withModel = true){
   }
 }
 
-export function getLocalEnableLogic(){
-  try {
-    const data = localStorage.getItem(ENABLE_LOGIC_KEY)
-    return JSON.parse(data) === true
-  } catch {
-    return false
-  }
-}
-
-export function useEnableLogic(){
-  return enableLogic
-}

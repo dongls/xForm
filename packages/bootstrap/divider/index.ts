@@ -18,5 +18,6 @@ export default FieldConf.create({
       field.attributes.top = 0
       field.attributes.bottom = 0
     }
-  }
+  },
+  operators: false
 })

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { getCurrentInstance, ref, defineComponent } from 'vue'
+import { getCurrentInstance, ref, defineComponent, nextTick } from 'vue'
 import { FormField } from '@dongls/xform'
 import { useLocalSchema, saveToLocalModel } from '@document/util/common'
 
@@ -31,7 +31,7 @@ export default defineComponent({
       pending,
       change(/* e: any */){
         // console.log(`${e.field.name}[${e.field.title}] value change:`, e.field.value,)
-        saveToLocalModel(schema.value.model)
+        nextTick(() => saveToLocalModel(schema.value.model))
       },
       reset,
       viewJSON,

@@ -5,7 +5,6 @@ const MarkdownIt = require('markdown-it')
 const highlight = require('./highlight')
 
 const mdAttrs = require('markdown-it-attrs')
-const mdAnchor = require('markdown-it-anchor')
 const mdContainer = require('./md-container')
 const mdSection = require('./md-section')
 
@@ -13,13 +12,6 @@ const md = new MarkdownIt({ html: true, highlight })
 const genId = content => content.replace(/\s+/g, '').replace(EMOJI_REG, '')
 
 md.use(mdAttrs)
-md.use(mdAnchor, {
-  slugify: genId,
-  level: [2],
-  permalink: true, 
-  permalinkClass: 'article-anchor',
-  permalinkBefore: true
-})
 md.use(mdContainer)
 md.use(mdSection)
   

@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { FormField, LogicRule, constant, getOperator } from '@dongls/xform'
-import { useLocalSchema, useIsWide, useEnableLogic } from '@document/util/common'
+import { useLocalSchema, useIsWide } from '@document/util/common'
 import { defineComponent, ref } from 'vue'
 import { useNotification } from '@document/component'
 
@@ -9,7 +9,7 @@ let timer: any = null
 
 function fmtOperatorText(operator: string){
   const o = getOperator(operator)
-  return o == null ? 'N/A' : o.description ?? o.text
+  return o == null ? 'N/A' : o.description ?? o.label
 }
 
 export default defineComponent({
@@ -28,18 +28,17 @@ export default defineComponent({
     function fmtRule(rule: LogicRule & { label: string }){
       return (
         <div class="example-logic-message">
-          <span>如果字段</span>
+          <span>如果</span>
           <strong>{rule.label}</strong>
           <span>的值</span>
           <strong>{fmtOperatorText(rule.operator)}</strong>
-          {rule.operator == LogicOperator.EMPTY.value ? null : <strong>{rule.value ?? 'N/A'}</strong>}
+          {rule.operator == LogicOperator.EMPTY ? null : <strong>{rule.value ?? 'N/A'}</strong>}
         </div>
       )
     }
 
     return {
       designer,
-      enableLogic: useEnableLogic(),
       showMessage(event: any){
         switch(event.type){
           case 'logic.change': {
@@ -54,6 +53,16 @@ export default defineComponent({
             )
         
             notify({ title: event.title, content, delay: 0 })
+            break
+          }
+          case 'logic.validate': {
+            event.preventDefault()
+            notify({
+              title: event.title,
+              content: event.content,
+              type: 'error',
+              delay: 0
+            })
             break
           }
         }
@@ -72,9 +81,10 @@ export default defineComponent({
       viewJson(){
         this.$emit('view', { title: 'Schema JSON', json: JSON.stringify(schema.value, null, '  ') })
       },
-      remove(e: { field: FormField, defaultAction: Function }){
-        window.confirm(`确定要删除字段[${e.field.title}]?`) && e.defaultAction()
+      remove(e: { field: FormField, useDefault: Function }){
+        window.confirm(`确定要删除字段[${e.field.title}]?`) && e.useDefault()
       },
+      // TODO: 确认是删除
       validateSchema(){
         return schema.value.validate().then(r => {
           if(!r.valid){
@@ -104,14 +114,10 @@ export default defineComponent({
             <input type="checkbox" class="custom-control-input" id="prop-is-wide" v-model="isWide">
             <label class="custom-control-label" for="prop-is-wide">宽屏</label>
           </div>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="props-enable-logic" v-model="enableLogic">
-            <label class="custom-control-label" for="props-enable-logic">字段逻辑</label>
-          </div>
         </div>
         <div class="designer-tool-right">
           <strong class="is-schema-valid" v-if="isSchemaValid">验证通过</strong>
-          <button type="button" class="btn btn-link btn-text btn-sm" @click="validateSchema">验证</button>
+          <button type="button" class="btn btn-link btn-text btn-sm" @click="validateSchema" v-show="false">验证</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="reset">重置</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="clear">清空</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="viewJson">查看JSON</button>

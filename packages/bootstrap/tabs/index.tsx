@@ -279,4 +279,5 @@ export default FieldConf.create({
       return reason.length > 0 ? Promise.reject(reason.join('\n')) : Promise.resolve()
     })
   },
+  operators: false
 })

@@ -1,8 +1,10 @@
-import { FieldConf, isEmpty } from '@dongls/xform'
+import { FieldConf, isEmpty, constant } from '@dongls/xform'
 import icon from '@common/svg/checkbox.svg'
 
 import checkbox from './checkbox.vue'
 import setting from './setting.vue'
+
+const { LogicOperator } = constant
 
 export default FieldConf.create({
   icon: icon,
@@ -22,5 +24,11 @@ export default FieldConf.create({
     }
 
     field.options = options
-  }
+  },
+  operators: [
+    LogicOperator.EQ,
+    LogicOperator.NE,
+    LogicOperator.EMPTY,
+    LogicOperator.CONTAINS
+  ]
 })

@@ -21,7 +21,6 @@ const install = function(app: App, options: FormOption){
 
 const XForm = {
   install,
-  store,
   version,
 }
 
@@ -31,7 +30,6 @@ export {
   XFormItem,
   XFormViewer,
   install,
-  store,
   version,
 }
 

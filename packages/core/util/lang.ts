@@ -251,8 +251,7 @@ export function createPrivateProps<T>(pkey: Symbol, props: T){
   return function(key: Symbol){
     if(key !== pkey) {
       const ctor = this.constructor
-      console.warn(`\`${ctor.name}.props\` is a private function.`)
-      return null
+      throw new Error(`\`${ctor.name}.props\` is a private function.`)
     }
     
     return props

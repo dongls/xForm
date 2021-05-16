@@ -55,5 +55,5 @@ test('FormField: private props', () => {
 
   const field = new FormField(o)
   expect((field as any).props).toBeInstanceOf(Function)
-  expect((field as any).props()).toBe(null)
+  expect(() => (field as any).props()).toThrow()
 })

@@ -55,64 +55,17 @@ export const LabelPosition = Object.freeze({
 })
 
 export const LogicOperator = Object.freeze({
-  LT: Object.freeze({
-    value: 'lt',
-    text: '小于',
-    code: '<'
-  }),
-  LTE: Object.freeze({
-    value: 'lte',
-    text: '小于或等于',
-    code: '<='
-  }),
-  GT: Object.freeze({
-    value: 'gt',
-    text: '大于',
-    code: '>'
-  }),
-  GTE: Object.freeze({
-    value: 'gte',
-    text: '大于或等于',
-    code: '>='
-  }),
-  EQ: Object.freeze({
-    value: 'eq',
-    text: '等于',
-    code: '=='
-  }),
-  NE: Object.freeze({
-    value: 'ne',
-    text: '不等于',
-    code: '!='
-  }),
-  EMPTY: Object.freeze({
-    value: 'empty',
-    text: '为空',
-    code: 'empty'
-  }),
-  CONTAINS: Object.freeze({
-    value: 'contains',
-    text: '包含',
-    code: 'contains'
-  }),
-  AND: Object.freeze({
-    value: 'and',
-    text: '逻辑与',
-    code: '&&',
-    description: '所有'
-  }),
-  OR: Object.freeze({
-    value: 'or',
-    text: '逻辑或',
-    code: '||',
-    description: '任一'
-  }),
-  NOT: Object.freeze({
-    value: 'not',
-    text: '逻辑非',
-    code: '!',
-    description: '没有'
-  })
+  AND: 'and',
+  OR: 'or',
+  NOT: 'not',
+  LT: 'lt',
+  LTE: 'lte',
+  GT: 'gt',
+  GTE: 'gte',
+  EQ: 'eq',
+  NE: 'ne',
+  EMPTY: 'empty',
+  CONTAINS: 'contains',
 })
 
 export enum EnumDragMode {

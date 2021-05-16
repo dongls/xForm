@@ -4,6 +4,7 @@ import { genRandomStr } from '@dongls/xform'
 import { App, createApp, defineComponent, VNode } from 'vue'
 
 type Options = {
+  type?: string;
   delay?: number;
   title?: string;
   content?: VNode;
@@ -48,6 +49,10 @@ const Notification = defineComponent({
     message: {
       type: String,
       default: null
+    },
+    type: {
+      type: String,
+      default: 'info'
     }
   },
   emits: ['close'],
@@ -58,9 +63,8 @@ const Notification = defineComponent({
 
     return function(){
       const content = typeof slots.default == 'function' ? slots.default() : props.message
-    
       return (
-        <div class="notification">
+        <div class={`notification notification-${props.type}`}>
           <h3 class="notification-title">{props.title ?? '提示'}</h3>
           <div class="notification-content">{content}</div>
           <button class="notification-close" type="button" onClick={close}>×</button>
@@ -81,9 +85,10 @@ export function useNotification(){
           if(options.content) slots.default = () => options.content
 
           const props = {
+            type: options.type,
             title: options.title,
             message: options.message,
-            'onClose': () => instance.close()
+            'onClose': () => instance.close(),
           }
 
           return <Notification {...props} v-slots={slots}/>

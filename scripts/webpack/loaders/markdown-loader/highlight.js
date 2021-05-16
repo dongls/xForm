@@ -10,7 +10,7 @@ function genHtml(str, lang){
   if(!lang || null == hljs.getLanguage(lang)) return escapeHtml(str)
 
   try {
-    return hljs.highlight(lang, str, true).value
+    return hljs.highlight(str, { language: lang, ignoreIllegals: true }).value
   } catch (e) {
     return ''
   }

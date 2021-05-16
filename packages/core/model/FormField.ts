@@ -84,9 +84,9 @@ export class FormField extends FormScope{
   allowRemove?: boolean;
   /** 是否允许复制字段 */
   allowClone?: boolean;
-  parent?: FormField | FormSchema;
+  parent?: FormField | FormSchema = null;
   /** 子类型, 避免直接修改 */
-  fields: FormField[]
+  fields: FormField[] = []
   /** 表单项的值 */
   value: any;
   /** 初始值，只在字段首次添加时生效 */
@@ -102,7 +102,7 @@ export class FormField extends FormScope{
     mounted: false
   }
 
-  static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'value', 'state']
+  static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'value', 'state', 'parent', 'props']
 
   static create(f: any){
     return f instanceof FormField ? f : new FormField(f)
@@ -174,6 +174,8 @@ export class FormField extends FormScope{
   }
 
   get model(){
+    if(this.state.mounted === false) return undefined
+
     const fc = this.conf
     return isFunction(fc?.onValueSubmit) ? fc.onValueSubmit(this) : this.value
   }

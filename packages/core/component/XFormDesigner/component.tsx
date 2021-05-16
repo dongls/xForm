@@ -51,7 +51,7 @@ import {
   toArray,
 } from '../../util'
 
-import { useLogic } from '../../util/logic'
+import { useLogic } from '../../logic'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
@@ -374,7 +374,7 @@ export default defineComponent({
     const groups = computed(() => Store.findFieldGroups(props.mode))
     const { dragstart } = useDragging()
 
-    if(Store.getConfig().experiments?.logic === true) {
+    if(Store.getConfig().logic === true) {
       useLogic(toRef(props, 'schema') as Ref<FormSchema>, (data: any) => emit(EVENTS.MESSAGE, data))
     }
     
@@ -420,7 +420,7 @@ export default defineComponent({
 
       const name = genEventName(EVENTS.REMOVE)
       const listener = instance.vnode?.props?.[name]
-      const defaultAction = function(){
+      const useDefault = function(){
         const scope = field.parent
         scope.remove(field)
         chooseField(null)
@@ -432,7 +432,7 @@ export default defineComponent({
         })
       }
       
-      isFunction(listener) ? emit(EVENTS.REMOVE, { field, defaultAction }): defaultAction()
+      isFunction(listener) ? emit(EVENTS.REMOVE, { field, useDefault }): useDefault()
     }
 
     const updateField: UpdateField = function(field, event){
@@ -453,7 +453,8 @@ export default defineComponent({
       type: 'designer',
       renderField: renderFieldPreview.bind(null, instance.proxy),
       updateField,
-      chooseField
+      chooseField,
+      emit
     })
   
     return {

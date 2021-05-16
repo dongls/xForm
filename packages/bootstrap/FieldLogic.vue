@@ -5,81 +5,96 @@
       <button type="button" class="btn btn-link is-logic-btn" @click="showModal">配置</button>
     </header>
     <logic-rule-preview :rule="field.logic" :field="field"/>
-    <modal title="配置逻辑" width="740px" class="xform-bs-logic-modal" v-model:visible="visible" @confirm="save">
-      <logic-rule :rule="logic" :field="field" @select="select" @remove="remove" :selected="selected"/>
-      <template #footer-left>
-        <div class="dropdown xform-bs-logic-dropdown">
-          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" :disabled="disabled">添加规则 </button>
-          <div class="dropdown-menu" @click="add">
-            <button 
-              v-for="operator in comboOperator" :key="operator.value" 
-              type="button" class="dropdown-item" :data-operator="operator.value"
-            >
-              <span>{{ operator.text }}</span>
-              <strong>{{ operator.code }}</strong>
-            </button>
-            <div class="dropdown-divider"/>
-            <button 
-              v-for="operator in singleOperator" :key="operator.value" 
-              type="button" class="dropdown-item" :data-operator="operator.value"
-            >
-              <span>{{ operator.text }}</span>
-              <strong>{{ operator.code }}</strong>
-            </button>
+    <modal title="配置逻辑" width="840px" class="xform-bs-logic-modal" v-model:visible="visible" @confirm="save">
+      <div class="xform-bs-logic-main">
+        <div class="xform-bs-logic-panel xform-is-scroll">
+          <div class="xform-bs-logic-common-rule">
+            <h5>通用规则</h5>
+            <div>
+              <div 
+                v-for="operator in commonOperators" :key="operator.value"
+                class="xform-bs-logic-operator" :class="{'xform-is-disabled': disabled}"
+              >
+                <strong>{{ operator.label }}</strong>
+                <small class="text-secondary" v-if="operator.code">{{ operator.code }}</small>
+                <button type="button" class="btn btn-link btn-sm" @click="add(operator.value)">添加</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="xform-bs-logic-field-rule">
+            <h5>
+              <strong>字段规则</strong>
+              <button type="button" class="btn btn-link" @click="selectedField = null" v-if="selectedField != null">返回</button>
+            </h5>
+            <div v-if="selectedField == null">
+              <div 
+                v-for="f in previousFields" :key="f.name" 
+                class="xform-bs-logic-field" 
+                :class="{'xform-is-selected': f == selectedField, 'xform-is-disabled': disabled}"
+                @click="selectField(f)"
+              ><strong>{{ f.title }}</strong></div>
+              <div class="xform-bs-logic-field-rule-tip" v-if="previousFields.length == 0">暂无可用的字段规则</div>
+            </div>
+            <div v-if="fieldOperators.length > 0">
+              <div 
+                v-for="operator in fieldOperators" :key="operator.value"
+                class="xform-bs-logic-operator" :class="{'xform-is-disabled': disabled}"
+              >
+                <strong>{{ operator.label }}</strong>
+                <small class="text-secondary" v-if="operator.code">{{ operator.code }}</small>
+                <button type="button" class="btn btn-link btn-sm" @click="add(operator.value)">添加</button>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="xform-bs-logic-graph xform-is-scroll">
+          <logic-rule 
+            :rule="logic"
+            :field="field" 
+            :selected="selectedRule"
+            @select="selectRule" 
+            @remove="remove" 
+          />
+        </div>
+
+      </div>
+      <template #footer-left>
+        <div class="bg-danger text-white xform-bs-logic-errors" v-if="showErrorMessage">{{ errorMessage }}</div>
       </template>
     </modal>
   </section>
 </template>
 
 <script lang="tsx">
+// TODO: 目标值支持读取字段值
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { 
   FormDesignerContext,
   FormField,
   LogicRule,
-  checkCondition,
   constant,
   getOperator,
+  getOperators,
   useRenderContext,
 } from '@dongls/xform'
 import Modal from './Modal.vue'
 
 const { LogicOperator } = constant
-
-const comboOperator = [
+const COMMON_OPERATORS = [
   LogicOperator.AND,
   LogicOperator.OR,
   LogicOperator.NOT
 ]
-const singleOperator = [
-  LogicOperator.LT,
-  LogicOperator.LTE,
-  LogicOperator.GT,
-  LogicOperator.GTE,
-  LogicOperator.EQ,
-  LogicOperator.NE,
-  LogicOperator.EMPTY,
-  LogicOperator.CONTAINS
-]
 
-const allow = [
-  'text',
-  'textarea',
-  'number',
-  'select',
-  'radio',
-  'date'
-]
-
-function getAllowField(field: FormField){
-  return field.previous().filter(f => allow.indexOf(f.type) >= 0)
+function checkCondition(operator: string){
+  const conf = getOperator(operator)
+  return conf != null && conf.hasCondition === true
 }
 
 function fmtOperatorText(operator: string){
   const o = getOperator(operator)
-  return o == null ? 'N/A' : o.description ?? o.text
+  return o == null ? 'N/A' : o.description ?? o.label
 }
 
 function createDescription(operator: string){
@@ -87,44 +102,25 @@ function createDescription(operator: string){
   return null
 }
 
-function handleFieldChange(rule: LogicRule, event: Event){
-  const target = event.target as HTMLSelectElement
-  const option = target.options[target.selectedIndex]
-
-  rule.name = option.value == '' ? null : option.value
-}
-
-function handleOperatorChange(rule: LogicRule, event: Event){
-  const target = event.target as HTMLSelectElement
-  const option = target.options[target.selectedIndex]
-
-  rule.operator = option.value
-  if(option.value == LogicOperator.EMPTY.value) delete rule.value
-}
-
 function createContent(rule: LogicRule, field: FormField){
   if(checkCondition(rule.operator)) return null
 
   const value = (
-    rule.operator == LogicOperator.EMPTY.value
+    rule.operator == LogicOperator.EMPTY
       ? null
-      : <input type="text" class="form-control" placeholder="请输入目标值" v-model={rule.value}/>
+      : <input type="text" class="form-control" placeholder="目标值" v-model={rule.value}/>
   )
 
-  const fields = (
-    <select class="form-control" value={rule.name} onChange={handleFieldChange.bind(null, rule)}>
-      <option value="">请选择字段</option>
-      {getAllowField(field).map(f => <option value={f.name}>{f.title}</option>)}
-    </select>
-  )
-  const operator = (
-    <select class="form-control" value={rule.operator} onChange={handleOperatorChange.bind(null, rule)}>
-      {singleOperator.map(o => <option value={o.value}>{o.text}</option>)}
-    </select>
-  )
+  const targetField = field.previous().find(f => f.name == rule.name)
+  const operator = getOperator(rule.operator)
+
   return (
     <div class="xform-bs-logic-rule-content">
-      <span>如果字段</span>{fields}<span>的值</span>{operator}{value}    
+      <span>如果</span>
+      <strong>{targetField ? targetField.title : 'N/A'}</strong>
+      <span>的值</span>
+      <strong>{operator.label}</strong>
+      {value}    
     </div>
   )
 }
@@ -142,8 +138,27 @@ function findParent(v: LogicRule, target: LogicRule): LogicRule{
   return null
 }
 
-function createRule(operator: string): LogicRule{
-  return checkCondition(operator) ? { operator, condition: [] } : { operator, name: null, value: null }
+function createRule(operator: string, field: FormField): LogicRule{
+  return checkCondition(operator) ? { operator, condition: [] } : { operator, name: field.name, value: null }
+}
+
+function checkLogic(logic: LogicRule): any{
+  if(logic == null) return null
+
+  const condition = logic.condition
+  if(Array.isArray(condition)){
+    if(condition.length == 0) return false
+
+    for(const c of condition){
+      const r = checkLogic(c)
+      if(r) return r
+    }
+  }
+
+  if(!logic.name) return false
+  if(logic.operator != LogicOperator.EMPTY && !logic.value) return false
+
+  return true
 }
 
 const Preivew = defineComponent({
@@ -177,11 +192,11 @@ const Preivew = defineComponent({
       )
       return (
         <div class="xform-bs-logic-preview-content">
-          <span>如果字段</span>
+          <span>如果</span>
           {name}
           <span>的值</span>
           <strong>{fmtOperatorText(rule.operator)}</strong>
-          {rule.operator == LogicOperator.EMPTY.value ? null : <strong>{rule.value ?? 'N/A'}</strong>}
+          {rule.operator == LogicOperator.EMPTY ? null : <strong>{rule.value ?? 'N/A'}</strong>}
         </div>
       )
     }
@@ -189,7 +204,7 @@ const Preivew = defineComponent({
     return function(){
       const rule = props.rule
       if(rule == null){
-        return <span class="xform-bs-logic-rule-preview text-secondary">请先添加一条规则</span>
+        return <span class="xform-bs-logic-rule-preview text-secondary">该字段尚未配置逻辑，请先添加一条规则</span>
       }
 
       const hasCondition = checkCondition(rule.operator)
@@ -201,7 +216,7 @@ const Preivew = defineComponent({
         hasCondition
           ? Array.isArray(rule.condition) && rule.condition.length > 0 
             ? rule.condition.map(r => <logic-rule-preview rule={r} field={props.field}/>)
-            : <div class="xform-bs-logic-rule-preview text-secondary">请先添加一条规则</div>
+            : <div class="xform-bs-logic-rule-preview text-secondary">请先添加一条子规则</div>
           : null
       )
 
@@ -290,7 +305,7 @@ const Rule = defineComponent({
       condition.splice(index, 0, item)
     }
 
-    function createButtions(isSelected: boolean){
+    function createButtons(isSelected: boolean){
       if(!isSelected) return null
 
       return (
@@ -305,7 +320,7 @@ const Rule = defineComponent({
     return function(){
       const rule = props.rule
       if(rule == null){
-        return <span class="text-secondary">请点击下方按钮添加一条规则</span>
+        return <div class="xform-bs-logic-empty">请先添加一条规则</div>
       }
 
       const isSelected = props.selected == props.rule
@@ -333,7 +348,7 @@ const Rule = defineComponent({
                 />
               )
             }) 
-            : <span class="text-secondary">请点击下方按钮添加一条规则</span>
+            : <div class="xform-bs-logic-tips">请先添加一条子规则</div>
           : null
       )
 
@@ -344,7 +359,7 @@ const Rule = defineComponent({
         <div class={klass} onClick={select}>
           {description}
           {content}
-          {createButtions(isSelected)}
+          {createButtons(isSelected)}
           {condition}
         </div>
       )
@@ -364,42 +379,82 @@ export default defineComponent({
     const rc = useRenderContext<FormDesignerContext>()
     const visible = ref(false)
     const logic = ref<LogicRule>(null)
-    const selected = ref<LogicRule>(null)
+    const selectedRule = ref<LogicRule>(null)
+    const selectedField = ref<FormField>(null)
+    const errorMessage = ref<string>(null)
+    const showErrorMessage = ref(false)
+    const disabled = computed(() => 
+      (selectedRule.value == null && logic.value != null) || 
+      (selectedRule.value != null && !checkCondition(selectedRule.value.operator))
+    )
 
     function showModal(){
       const clone = JSON.parse(JSON.stringify(props.field.logic ?? null))
       logic.value = clone
-      selected.value = clone
+      selectedRule.value = clone
+      selectedField.value = null
       visible.value = true
     }
 
     function save(){
-      // TODO: 验证
+      if(!checkLogic(logic.value)) {
+        let prevented = false
+
+        rc.emit('message', {
+          type: 'logic.validate',
+          valid: false,
+          title: '字段逻辑验证失败',
+          content: (
+            <div class="xform-bs-logic-error-content">
+              <h5>如果存在以下未填写字段，请先补全：</h5>
+              <p>-<strong>目标字段</strong></p>
+              <p>-<strong>目标值</strong></p>
+              <p>-<strong>子规则</strong></p>
+            </div>
+          ),
+          message: '如果存在以下未填写字段，请先补全：\n - 目标字段\n - 目标值\n - 子规则',
+          preventDefault: () => prevented = true
+        })
+
+        if(prevented) return
+
+        errorMessage.value = '字段逻辑验证失败，请补全以下内容：目标字段、目标值、子规则'
+        showErrorMessage.value = true
+        return setTimeout(() => {
+          showErrorMessage.value = false
+        }, 3500)
+      }
+      
       rc.updateField(props.field, { prop: 'logic', value: logic.value })
       visible.value = false
     }
 
-    function add(event: Event){
-      const target = (event.target as Element).closest('button.dropdown-item')
-      if(null == target) return
+    function add(operator: string){
+      const field = selectedField.value as FormField
+      selectedField.value = null
 
-      const operator = (target as HTMLElement).dataset.operator
-      const rule = createRule(operator)
+      const rule = createRule(operator, field)
       if(logic.value == null) {
         logic.value = rule
-        selected.value = rule
-        return 
+        selectedRule.value = rule  
+        return
       }
 
-      checkCondition(selected.value.operator) ? selected.value.condition.push(rule) : selected.value = rule
+      checkCondition(selectedRule.value.operator) ? selectedRule.value.condition.push(rule) : selectedRule.value = rule
     }
 
-    function select(event: any){
-      selected.value = event
+    function selectRule(event: any){
+      selectedRule.value = event
+      selectedField.value = null
+    }
+
+    function selectField(event: any){
+      if(disabled.value) return
+      selectedField.value = event
     }
 
     function remove(){
-      const target = selected.value
+      const target = selectedRule.value
 
       if(logic.value == target){
         logic.value = null
@@ -409,22 +464,43 @@ export default defineComponent({
         if(index >= 0) parent.condition.splice(index, 1)
       }
 
-      selected.value = null
+      selectedRule.value = null
     }
 
+    const previousFields = computed(() => {
+      return props.field.previous().filter(f => {
+        const o = f.conf?.operators
+        if(o === false || Array.isArray(o) && o.length == 0) return false
+        return true
+      })
+    })
+
+    const fieldOperators = computed(() => {
+      if(selectedField.value == null) return []
+
+      const o = selectedField.value.conf?.operators
+      return getOperators(Array.isArray(o) ? o : null).filter(o => {
+        return COMMON_OPERATORS.indexOf(o.value) < 0
+      })
+    })
+
     return {
-      LogicOperator,
-      add,
-      disabled: computed(() => (selected.value == null && logic.value != null) || (selected.value != null && !checkCondition(selected.value.operator))),
+      commonOperators: computed(() => getOperators(COMMON_OPERATORS)),
+      disabled,
+      errorMessage,
       logic,
+      fieldOperators,
+      previousFields,
+      selectedField,
+      selectedRule,
+      showErrorMessage,
+      visible,
+      add,
       remove,
       save,
-      select,
-      selected,
+      selectField,
+      selectRule,
       showModal,
-      visible,
-      comboOperator,
-      singleOperator
     }
   },
   components: {
@@ -434,7 +510,6 @@ export default defineComponent({
   }
 })
 </script>
-
 
 <style lang="scss">
 .is-logic-btn{
@@ -450,25 +525,8 @@ export default defineComponent({
   .modal-body{
     max-height: calc(100vh - 200px);
     overflow: auto;
-    padding: 20px;
+    padding: 0;
     min-height: 240px;
-  }
-}
-
-.xform-bs-logic-dropdown{
-  .dropdown-menu{
-    padding: 0.25rem 0;
-  }
-
-  .dropdown-item{
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.45;
-
-    strong{
-      float: right;
-      color: #9aa5af;
-    }
   }
 }
 
@@ -597,5 +655,136 @@ export default defineComponent({
       bottom: 12px;
     }
   }
+}
+
+.xform-bs-logic-main{
+  display: flex;
+  flex-flow: row nowrap;
+  height: 500px;
+}
+
+.xform-bs-logic-panel{
+  width: 200px;
+  border-right: 1px solid #dee2e6;
+
+  h5{
+    margin: 0;
+    font-size: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f0f0f0;
+    line-height: 20px;
+  }
+
+  .btn-link{
+    float: right;
+    padding: 0;
+    font-size: 14px;
+    border: none;
+    height: 20px;
+  }
+}
+
+.xform-bs-logic-graph{
+  width: 0;
+  flex: 1;
+  padding: 15px 10px;
+}
+
+.xform-bs-logic-field{
+  padding: 4px 10px;
+  line-height: 20px;
+
+  &.xform-is-selected,
+  &:hover{
+    background-color: #f0f0f0;
+  }
+
+  &.xform-is-disabled{
+    cursor: not-allowed;
+    color: #6c757d;
+  }
+}
+
+.xform-bs-logic-operator{
+  position: relative;
+  padding: 4px 10px;
+  line-height: 20px;
+
+  &.xform-is-disabled{
+    cursor: not-allowed;
+    color: #6c757d;
+
+    button{
+      display: none;
+    }
+  }
+
+  small{
+    margin-left: 4px;
+  }
+
+  button{
+    padding: 0;
+    position: absolute;
+    right: 10px;
+    visibility: hidden;
+  }
+
+  &:hover{
+    background-color: #f0f0f0;
+
+    button{
+      visibility: visible;
+    }
+  }
+}
+
+.xform-bs-logic-tips{
+  color: #6c757d;
+}
+
+.xform-bs-logic-empty{
+  color: #6c757d;
+  text-align: center;
+  padding-top: 120px;
+}
+
+.xform-bs-logic-errors{
+  padding: 0 15px;
+  margin-left: 10px;
+  line-height: 31px;
+  border-radius: 2px;
+}
+
+.xform-bs-logic-error-content{
+  h5{
+    margin: 0;
+    font-weight: 400;
+    font-size: 14px;
+  }
+
+  p{
+    padding-left: 5px;
+    margin: 0;
+  }
+
+  strong{
+    margin-left: 4px;
+  }
+}
+
+.xform-bs-logic-common-rule{
+  h5{
+    border-top: none;
+  }
+}
+
+.xform-bs-logic-field-rule-tip{
+  padding-left: 10px;
+  color: #6c757d;
+  padding-top: 4px;
 }
 </style>

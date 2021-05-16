@@ -1,8 +1,10 @@
-import { FieldConf, isEmpty } from '@dongls/xform'
+import { FieldConf, isEmpty, constant } from '@dongls/xform'
 import icon from '@common/svg/select.svg'
 
 import select from './select.vue'
 import setting from './setting.vue'
+
+const { LogicOperator } = constant
 
 export default FieldConf.create({
   icon: icon,
@@ -19,5 +21,11 @@ export default FieldConf.create({
     if(init) options.push({ value: '选项1' })
     
     field.options = options
-  }
+  },
+  operators: [
+    LogicOperator.EQ,
+    LogicOperator.NE,
+    LogicOperator.EMPTY,
+    LogicOperator.CONTAINS
+  ]
 })

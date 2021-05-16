@@ -1,8 +1,9 @@
 import { mount } from '@vue/test-utils'
 import { mockOption, mockSchema } from './mock/index'
-import { store, XFormDesigner, XFormItem, createSchemaRef } from '../index'
+import { XFormDesigner, XFormItem, createSchemaRef } from '../index'
 import { ModeGroup, PROPS } from '../model'
 import { h } from 'vue'
+import store from '../store'
 
 describe('XFormDesigner props: mode', () => {
   test('mode is null', () => {
