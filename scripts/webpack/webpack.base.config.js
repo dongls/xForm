@@ -40,11 +40,27 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: util.genCssLoader(IS_PRODUCTION)
+        oneOf: [
+          {
+            resourceQuery: /module/,
+            use: util.genCssLoader(IS_PRODUCTION, true)
+          },
+          {
+            use: util.genCssLoader(IS_PRODUCTION, false)
+          }
+        ]
       },
       {
         test: /\.scss$/,
-        use: util.genScssLoader(IS_PRODUCTION)
+        oneOf: [
+          {
+            resourceQuery: /module/,
+            use: util.genScssLoader(IS_PRODUCTION, true)
+          },
+          {
+            use: util.genScssLoader(IS_PRODUCTION, false)
+          }
+        ]
       },
       {
         test: /\.less$/,

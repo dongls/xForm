@@ -1,5 +1,5 @@
 import { isReactive, isRef, toRaw } from 'vue'
-import { AnyProps } from '../model'
+import { AnyProps } from '../model/common'
 
 const OBJECT_TO_STRING = Object.prototype.toString
 const OBJECT_TO_STRING_TAG = {

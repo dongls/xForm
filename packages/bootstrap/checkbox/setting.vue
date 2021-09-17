@@ -11,7 +11,7 @@
     <section class="xform-bs-field-setting-prop">
       <header>选项：</header>
       <div 
-        v-for="(option, i) in field.options" :key="i"
+        v-for="(option, i) in options" :key="i"
         class="xform-bs-setting-option"
       >
         <input :value="option.value" class="form-control form-control-sm" placeholder="请输入选项内容" @input="updateOption($event, option)">
@@ -19,55 +19,79 @@
       </div>
       <button type="text" class="btn btn-link btn-sm bs-btn-text" @click="addOption">添加选项</button>
     </section>
+
+    <section class="xform-bs-field-setting-prop">
+      <header>默认值：</header>
+      <div :class="classes.defaultValue">
+        <select 
+          class="form-control form-control-sm"
+          v-model="compatType"
+        >
+          <option 
+            v-for="(type, index) in defTypes" :key="index" 
+            :value="type.value"
+          >{{ type.label || type.value }}</option>
+        </select>
+        <select 
+          v-if="isManual"
+          v-model="compatValue"
+          class="form-control form-control-sm"
+          multiple 
+        >
+          <option 
+            v-for="(option, index) in options" :key="index" 
+            :value="option.value"
+          >{{ option.label || option.value }}</option>
+        </select>
+      </div>
+    </section>
   </field-setting>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FormField } from '@dongls/xform'
+import { FormField, useConstant } from '@dongls/xform'
+import { useDefaultValueApi, useOptions } from '../util'
+
 import FieldSetting from '../FieldSetting.vue'
+
+const { BuiltInDefaultValueType, EVENTS } = useConstant()
 
 export default defineComponent({
   name: 'xform-bs-checkbox-setting',
   props: {
     field: FormField
   },
-  emits: ['update:field'],
-  setup(props, { emit }){
-    function update(prop: string, value: any, scope?: string){
-      emit('update:field', { prop, value, scope })
+  emits: [EVENTS.UPDATE_FIELD],
+  setup(){
+    const defTypes = [
+      { value: BuiltInDefaultValueType.MANUAL, label: '手动指定' },
+      { value: BuiltInDefaultValueType.OPTION_ALL, label: '全部选项' },
+    ]
+
+    const optionState = useOptions(cleanDefaultValue)
+    const dvApi = useDefaultValueApi(defTypes)
+    const isManual = dvApi.useIsManual()
+    const compatType = dvApi.useCompatType()
+    const compatValue = dvApi.useCompatValue(function(raw: any){
+      const value = raw.value
+      return Array.isArray(value) ? value : []
+    })
+
+    function cleanDefaultValue(){
+      if(!isManual.value) return
+
+      const opts = optionState.options.value
+      const value = compatValue.value as any[]
+      compatValue.value = value.filter(v => opts.some(o => o.value == v))
     }
 
     return {
-      update,
-      updateField(event: Event, prop: string, scope?: string){
-        const target = event.target as HTMLInputElement
-        let value: any = target.value
-        if(target.type == 'checkbox') value = target.checked
-
-        update(prop, value, scope)
-      },
-      addOption(){
-        const options = props.field.options
-        options.push({ value: `选项${options.length + 1}` })
-        update('options', options)
-      },
-      updateOption(event: Event, option: any){
-        const target = event.target as HTMLInputElement
-        const value: any = target.value
-
-        option.value = value
-        update('options', props.field.options)
-      },
-      removeOption(option: any){
-        if(props.field.options.length <= 1) return
-
-        const options = props.field.options
-        const index = options.indexOf(option)
-        if(index >= 0) options.splice(index, 1)
-
-        update('options', options)
-      }
+      compatType,
+      compatValue,
+      defTypes,
+      isManual,
+      ...optionState
     }
   },
   components: {
@@ -75,3 +99,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style module="classes">
+.defaultValue select + select{
+  margin-top: 5px;
+}
+</style>

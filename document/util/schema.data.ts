@@ -54,7 +54,6 @@ export default {
       name: 'field_ee39cd',
       title: '故障描述',
       placeholder: '详细描述问题',
-      defaultValue: '111',
       required: true,
       attributes: {}
     },

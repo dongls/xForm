@@ -4,27 +4,27 @@
 
     <section class="xform-bs-field-setting-prop">
       <header>标题：</header>
-      <input type="text" class="form-control form-control-sm" placeholder="请输入标题..." v-model="fieldRef.title">
+      <input type="text" class="form-control form-control-sm" placeholder="[必填] 请输入标题..." v-model="fieldRef.title">
     </section>
 
     <section class="xform-bs-field-setting-prop" v-if="placeholder">
       <header>提示：</header>
-      <textarea class="form-control form-control-sm" placeholder="请输入提示信息..." rows="3" v-model="fieldRef.placeholder"/>
+      <textarea class="form-control form-control-sm" placeholder="[可选] 请输入提示信息..." rows="3" v-model="fieldRef.placeholder"/>
     </section>
 
     <section class="xform-bs-field-setting-prop" v-if="attributes">
       <header>属性：</header>
-      <div v-if="required" class="custom-control custom-checkbox custom-control-inline" title="勾选则该字段在表单提交时必须填写">
+      <div v-if="required" class="custom-control custom-checkbox custom-control-inline">
         <input :id="`${field.name}-required`" :name="`${field.name}-required`" type="checkbox" class="custom-control-input" v-model="fieldRef.required">
-        <label class="custom-control-label" :for="`${field.name}-required`">必填</label>
+        <label class="custom-control-label" :for="`${field.name}-required`" title="勾选则该字段在表单提交时必须填写">必填</label>
       </div>
-      <div class="custom-control custom-checkbox custom-control-inline" title="勾选则该字段在表单中无法编辑, 也不参与表单验证">
+      <div class="custom-control custom-checkbox custom-control-inline">
         <input :id="`${field.name}-disabled`" :name="`${field.name}-disabled`" type="checkbox" class="custom-control-input" v-model="fieldRef.disabled">
-        <label class="custom-control-label" :for="`${field.name}-disabled`">禁用</label>
+        <label class="custom-control-label" :for="`${field.name}-disabled`" title="勾选则该字段在表单中无法编辑, 也不参与表单验证">禁用</label>
       </div>
-      <div class="custom-control custom-checkbox custom-control-inline" title="勾选则该字段将不会再表单中显示">
+      <div class="custom-control custom-checkbox custom-control-inline">
         <input :id="`${field.name}-hidden`" name="`${field.name}-hidden`" type="checkbox" class="custom-control-input" v-model="fieldRef.hidden">
-        <label class="custom-control-label" :for="`${field.name}-hidden`">隐藏</label>
+        <label class="custom-control-label" :for="`${field.name}-hidden`" title="勾选则该字段将不会再表单中显示">隐藏</label>
       </div>
       <slot name="attributes"/>
     </section>

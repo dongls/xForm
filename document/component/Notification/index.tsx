@@ -4,10 +4,10 @@ import { genRandomStr } from '@dongls/xform'
 import { App, createApp, defineComponent, VNode } from 'vue'
 
 type Options = {
-  type?: string;
+  type?: 'error' | 'warning' | 'info' | 'success';
   delay?: number;
   title?: string;
-  content?: VNode;
+  content?: VNode | VNode[];
   message?: string;
 }
 

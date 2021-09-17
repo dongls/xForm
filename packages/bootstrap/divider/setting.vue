@@ -31,7 +31,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FormField } from '@dongls/xform'
+import { FormField, constant } from '@dongls/xform'
+
 import divider from '../../common/components/divider.vue'
 import FieldSetting from '../FieldSetting.vue'
 
@@ -40,10 +41,10 @@ export default defineComponent({
   props: {
     field: FormField
   },
-  emits: ['update:field'],
+  emits: [constant.EVENTS.UPDATE_FIELD],
   setup(props, { emit }){
     function update(prop: string, value: any, scope?: string){
-      emit('update:field', { prop, value, scope })
+      emit(constant.EVENTS.UPDATE_FIELD, { prop, value, scope })
     }
 
     return {
@@ -51,14 +52,8 @@ export default defineComponent({
       update,
       updateField(event: Event, prop: string, scope?: string){
         const target = event.target as HTMLInputElement
-        let value: any = target.value
-        if(target.type == 'checkbox') value = target.checked
-        if(target.type == 'range') {
-          const n = parseFloat(value)
-          value = isNaN(n) ? value : n
-        }
-      
-        emit('update:field', { prop, value, scope })
+        const value = target.value
+        update(prop, value, scope)
       }
     }
   },

@@ -1,13 +1,32 @@
-import { createPrivateProps, getIncNum, isFunction, isNull, mixinRestParams } from '../util/lang'
+import { isReactive, reactive } from 'vue'
 import { findFieldConf, getConfig } from '../store'
-import { EnumValidateMode, EnumValidityState } from './constant'
 import { ValidateFunc, FieldConf } from './FieldConf'
 import { Serializable } from './Serializable'
 import { LogicRule } from './common'
 import { FormScope } from './FormScope'
 import { FormSchema } from './FormSchema'
-import { Action, ValidateAction, ValidChangeAction, ValueChangeAction } from './action'
-import { isReactive, reactive } from 'vue'
+import { 
+  createPrivateProps, 
+  getIncNum, 
+  isFunction, 
+  isNull, 
+  mixinRestParams 
+} from '../util/lang'
+
+import { 
+  Action, 
+  ValidateAction, 
+  ValidChangeAction, 
+  ValueChangeAction 
+} from './action'
+
+import { 
+  EnumValidateMode, 
+  EnumValidityState,
+  BuiltInDefaultValueType 
+} from './constant'
+
+import { genDefaultValue } from '../api/index'
 
 interface PrivateProps{
   value: any;
@@ -33,16 +52,6 @@ interface Option {
 }
 
 const PRIVATE_PROPS_KEY = Symbol()
-
-function cleanName(o: any){
-  delete o.name
-  
-  if(Array.isArray(o.fields)){
-    const fields = o.fields.filter((i: any) => i.allowClone !== false)
-    fields.forEach(cleanName)
-    o.fields = fields
-  }
-}
 
 /** 
  * 描述字段数据的类，XForm就是用它与后端进行数据交换。
@@ -89,8 +98,11 @@ export class FormField extends FormScope{
   fields: FormField[] = []
   /** 表单项的值 */
   value: any;
-  /** 初始值，只在字段首次添加时生效 */
-  initialValue: any;
+  /** 默认值，字段没有填写时生效 */
+  defaultValue: {
+    type: string,
+    value?: any
+  };
   /** 逻辑 */
   logic: LogicRule
   /** 表单验证相关属性 */
@@ -115,7 +127,7 @@ export class FormField extends FormScope{
     const init = o instanceof FieldConf
     const fc = findFieldConf(params.type)
     const props: PrivateProps = { 
-      value: null,
+      value: undefined,
       valid: EnumValidityState.NONE
     }
 
@@ -133,7 +145,7 @@ export class FormField extends FormScope{
     this.allowRemove = params.allowRemove
     this.allowClone = params.allowClone
     
-    this.initialValue = params.initialValue
+    this.defaultValue = createDefaultValue(params.defaultValue)
     this.logic = params.logic
 
     this.createFields(params.fields, p => FormField.create(p))
@@ -246,14 +258,25 @@ export class FormField extends FormScope{
     })
   }
 
-  setValue(value: any){
-    const props = this.props(PRIVATE_PROPS_KEY)
+  setValue(value: any, useDefault?: boolean){
     const fc = this.conf
-    props.value = isFunction(fc?.onValueInit) ? fc.onValueInit(this, value) : value
+    const v = (
+      useDefault === true  
+        ? value === undefined ? genDefaultValue(this) : value
+        : value
+    )
+    this.value = isFunction(fc?.onValueInit) ? fc.onValueInit(this, v) : v
   }
 
   reactive() {
     return (isReactive(this) ? this : reactive(this)) as FormField
+  }
+}
+
+function createDefaultValue(raw: any){
+  return {
+    type: raw?.type ?? BuiltInDefaultValueType.MANUAL,
+    value: raw?.value
   }
 }
 
@@ -283,8 +306,20 @@ function createValue(field: FormField, props: PrivateProps){
     set(v){
       props.value = v
       
+      if(!field.state.mounted) return
+
       const action: ValueChangeAction = { type: 'value.change', field }
       field.dispatch(action)
     }
   })
+}
+
+function cleanName(o: any){
+  delete o.name
+  
+  if(Array.isArray(o.fields)){
+    const fields = o.fields.filter((i: any) => i.allowClone !== false)
+    fields.forEach(cleanName)
+    o.fields = fields
+  }
 }

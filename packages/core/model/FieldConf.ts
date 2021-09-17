@@ -14,7 +14,7 @@ export type ValidateObj = { mode: EnumValidateMode, validator: ValidateFunc }
 type Validator = ValidateFunc | ValidateObj | Rule | Rule[] | false
 type DragHookFn = (e: PublicDragEvent) => void | boolean;
 
-const CALL_FROM_CREATE = Symbol()
+const CONSTRUCTOR_SIGN = Symbol()
 
 class Hook{
   /** 字段值初始化时触发 */
@@ -93,7 +93,7 @@ export class FieldConf extends Hook{
   operators: false | any[];
 
   constructor(options: any = {}, from?: Symbol){
-    if(from != CALL_FROM_CREATE) console.warn('use `XFieldConf.create` instead of `new XFieldConf`')
+    if(from != CONSTRUCTOR_SIGN) console.warn('use `FieldConf.create` instead of `new FieldConf`')
 
     super(options)
 
@@ -139,7 +139,7 @@ export class FieldConf extends Hook{
    * 例如用于配置alias，可直接访问目标的属性
    */
   static create(options: Partial<FieldConf>){
-    return new Proxy(new FieldConf(options, CALL_FROM_CREATE), {
+    return new Proxy(new FieldConf(options, CONSTRUCTOR_SIGN), {
       get(target, prop, receiver){
         const r = Reflect.get(target, prop, receiver)
 

@@ -1,11 +1,12 @@
+import { isObject } from './util'
+import { constant } from './model/exports'
+
 import { 
   computed,
   inject,
   ref,
   Ref,
 } from 'vue'
-
-import { isObject } from './util'
 
 import {  
   FormField,
@@ -39,7 +40,7 @@ export function useRenderContext<T = FormRenderContext>(){
 
 export function createSchema(origin?: any, model?: any){
   const o = isObject(origin) ? origin : {}
-  return new FormSchema(o, model)
+  return FormSchema.create(o, model)
 }
 
 export function createSchemaRef(origin?: any, model?: any){
@@ -64,6 +65,10 @@ export function useSchema(){
 
 export function useFormStore(){
   return store
+}
+
+export function useConstant(){
+  return constant
 }
 
 // TODO: useApi

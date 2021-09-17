@@ -1,9 +1,13 @@
 <template>
   <field-setting :field="field">
+    <section class="xform-bs-field-setting-prop">
+      <header>默认值：</header>
+      <input type="text" class="form-control form-control-sm" v-model.number="compatValue" placeholder="[可选] 如果字段没有填写，默认为设定的值">
+    </section>
     <template #attributes>
-      <div class="custom-control custom-checkbox custom-control-inline" title="勾选则只允许输入整数">
-        <input :id="`${field.name}-integer`" :name="`${field.name}-integer`" :checked="field.attributes.integer" type="checkbox" class="custom-control-input" @change="updateField($event, 'integer', 'attributes')">
-        <label class="custom-control-label" :for="`${field.name}-integer`">整数</label>
+      <div class="custom-control custom-checkbox custom-control-inline">
+        <input :id="`${field.name}-integer`" :name="`${field.name}-integer`" type="checkbox" class="custom-control-input" v-model="integer">
+        <label class="custom-control-label" :for="`${field.name}-integer`" title="勾选则只允许输入整数">整数</label>
       </div>
     </template>
   </field-setting>
@@ -11,18 +15,26 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FormField } from '@dongls/xform'
-import { updateField } from '../util'
+import { FormField, useConstant } from '@dongls/xform'
+import { useDefaultValueApi, useFieldProp } from '../util'
+
 import FieldSetting from '../FieldSetting.vue'
+
+const { EVENTS } = useConstant()
 
 export default defineComponent({
   name: 'xform-bs-number-setting',
   props: {
     field: FormField
   },
-  emits: ['update:field'],
-  setup(props, { emit }){
-    return { updateField: updateField.bind(null, emit) }
+  emits: [EVENTS.UPDATE_FIELD],
+  setup(){
+    const dvApi = useDefaultValueApi([])
+
+    return { 
+      integer: useFieldProp('integer', 'attributes'),
+      compatValue: dvApi.useCompatValue()
+    }
   },
   components: {
     [FieldSetting.name]: FieldSetting

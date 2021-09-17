@@ -1,15 +1,29 @@
 <script lang="tsx">
+import { defineComponent, ref } from 'vue'
 import { FormField, LogicRule, constant, getOperator } from '@dongls/xform'
 import { useLocalSchema, useIsWide } from '@document/util/common'
-import { defineComponent, ref } from 'vue'
 import { useNotification } from '@document/component'
 
 const { LogicOperator } = constant
-let timer: any = null
 
 function fmtOperatorText(operator: string){
   const o = getOperator(operator)
   return o == null ? 'N/A' : o.description ?? o.label
+}
+
+function createSchemaErrorContent(arr: any[]): any{
+  if(!Array.isArray(arr) || arr.length == 0) return null
+  return arr.map(item => {
+    const sub = createSchemaErrorContent(item.fields)
+
+    return (
+      <div class="example-schema-error">
+        <p>第<strong>{item.index + 1}</strong>个字段{item.title ? <strong>[{item.title}]</strong> : null}存在以下错误：</p>
+        { item.message ? <p class="example-schema-error-message">- {item.message}</p> : null }
+        {sub}
+      </div>
+    )
+  })
 }
 
 export default defineComponent({
@@ -84,20 +98,20 @@ export default defineComponent({
       remove(e: { field: FormField, useDefault: Function }){
         window.confirm(`确定要删除字段[${e.field.title}]?`) && e.useDefault()
       },
-      // TODO: 确认是删除
       validateSchema(){
         return schema.value.validate().then(r => {
-          if(!r.valid){
-            return this.$emit('view', { title: '错误信息', json: JSON.stringify(r.result, null, '  ') })
-          }
+          if(r.valid) return notify({
+            type: 'success',
+            title: '验证通过',
+            message: '已通过完备性验证'
+          })
 
-          isSchemaValid.value = true
-          if(timer) clearTimeout(timer)
-
-          timer = setTimeout(() => {
-            isSchemaValid.value = false
-            timer = null
-          }, 2000)
+          notify({
+            type: 'error',
+            delay: 0,
+            title: '验证失败',
+            content: createSchemaErrorContent(r.result)
+          })
         })
       }
     }
@@ -116,8 +130,7 @@ export default defineComponent({
           </div>
         </div>
         <div class="designer-tool-right">
-          <strong class="is-schema-valid" v-if="isSchemaValid">验证通过</strong>
-          <button type="button" class="btn btn-link btn-text btn-sm" @click="validateSchema" v-show="false">验证</button>
+          <button type="button" class="btn btn-link btn-text btn-sm" @click="validateSchema">验证</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="reset">重置</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="clear">清空</button>
           <button type="button" class="btn btn-link btn-text btn-sm" @click="viewJson">查看JSON</button>
@@ -183,11 +196,6 @@ $--xform-color-primary: #409EFF !default;
   max-width: none;
 }
 
-.is-schema-valid{
-  color: #28a745;
-  margin-right: 5px;
-}
-
 .example-logic-tip{
   a{
     font-weight: 700;
@@ -223,6 +231,22 @@ $--xform-color-primary: #409EFF !default;
     line-height: 20px;
     width: 20px;
     text-align: center;
+  }
+}
+
+.example-schema-error{
+  padding-left: 10px;
+
+  p{
+    margin-bottom: 0;
+  }
+
+  & + .example-schema-error{
+    margin-top: 4px;
+  }
+
+  .example-schema-error-message{
+    padding-left: 10px;
   }
 }
 </style>

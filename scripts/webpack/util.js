@@ -15,33 +15,37 @@ const FMT_OPTIONS = {
   hourCycle: 'h23'
 }
 
-const CSS_LOADER = {
-  loader: 'css-loader',
-  options: {
-    esModule: false
+function createCssLoader(IS_PRODUCTION, IS_MODULE){
+  return {
+    loader: 'css-loader',
+    options: {
+      modules: IS_MODULE 
+        ? { localIdentName: IS_PRODUCTION ? '[hash:base64]' : '[path][name]__[local]' } 
+        : false
+    }
   }
 }
 
 module.exports = {
-  genCssLoader(IS_PRODUCTION){
+  genCssLoader(IS_PRODUCTION, IS_MODULE = false){
     return [
       IS_PRODUCTION ? MiniCssExtractPlugin.loader : 'vue-style-loader',
-      CSS_LOADER,
+      createCssLoader(IS_PRODUCTION, IS_MODULE),
       'postcss-loader'
     ]
   },
-  genScssLoader(IS_PRODUCTION){
+  genScssLoader(IS_PRODUCTION, IS_MODULE = false){
     return [
       IS_PRODUCTION ? MiniCssExtractPlugin.loader : 'vue-style-loader',
-      CSS_LOADER,
+      createCssLoader(IS_PRODUCTION, IS_MODULE),
       'postcss-loader',
       'sass-loader'
     ]
   },
-  genLessLoader(IS_PRODUCTION){
+  genLessLoader(IS_PRODUCTION, IS_MODULE = false){
     return [
       IS_PRODUCTION ? MiniCssExtractPlugin.loader : 'vue-style-loader',
-      CSS_LOADER,
+      createCssLoader(IS_PRODUCTION, IS_MODULE),
       'postcss-loader',
       'less-loader'
     ]

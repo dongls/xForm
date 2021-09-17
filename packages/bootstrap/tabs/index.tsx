@@ -137,6 +137,7 @@ function calcOffset(event: WheelEvent, list: HTMLElement, scroll: HTMLElement){
   return offset
 }
 
+// TODO: 支持设置默认显示tab
 const build = defineComponent({
   name: 'tabs',
   props: {

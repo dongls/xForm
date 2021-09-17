@@ -18,8 +18,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FormField } from '@dongls/xform'
+import { FormField, constant } from '@dongls/xform'
 import { updateField } from '../util'
+
 import FieldSetting from '../FieldSetting.vue'
 
 export default defineComponent({
@@ -27,7 +28,7 @@ export default defineComponent({
   props: {
     field: FormField
   },
-  emits: ['update:field'],
+  emits: [constant.EVENTS.UPDATE_FIELD],
   setup(props, { emit }){
     return { 
       updateField: updateField.bind(null, emit) 

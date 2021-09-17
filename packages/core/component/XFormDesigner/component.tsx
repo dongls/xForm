@@ -223,7 +223,7 @@ function renderFieldPreview(instance: XFormDesignerInstance, field: FormField, o
       ['xform-preview-' + field.type]: true,
       'xform-is-selected': field == instance.selectedField,
       [CLASS.SCOPE]: field.conf?.scoped,
-      'xform-is-hidden': field.hidden
+      'xform-is-preview-hidden': field.hidden
     },
     'key': field.uid,
     [PROPS.FIELD]: field,

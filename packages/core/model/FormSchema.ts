@@ -4,6 +4,7 @@ import {
   isEmpty,
   isFunction,
   isNull,
+  isObject,
   mixinRestParams,
   parseMessage,
 } from '../util/lang'
@@ -27,6 +28,9 @@ type PrivateProps = {
   callbacks: Callback[];
   initModel: any;
 }
+
+const PRIVATE_PROPS_KEY = Symbol()
+const CONSTRUCTOR_SIGN = Symbol()
 
 function createSchemaValidResult(
   error: unknown,
@@ -53,12 +57,12 @@ function defaultValidate(field: FormField) {
 }
 
 function validateFields(fields: FormField[]): Promise<SchemaValidResult[]> {
-  if (fields.length == 0) return Promise.resolve(null)
+  if (fields.length == 0) return Promise.resolve([])
 
   const promises = fields.map((field, index) => {
     const onValidate = field.conf?.onValidate
     const hook = isFunction(onValidate) ? onValidate : defaultValidate
-
+    
     return validateFields(field.fields).then((r: any) => {
       return hook(field)
         .then(() => createSchemaValidResult(null, field, index, r))
@@ -70,8 +74,6 @@ function validateFields(fields: FormField[]): Promise<SchemaValidResult[]> {
     return r.filter(i => !i.valid || (i.valid && i.fields != null))
   })
 }
-
-const PRIVATE_PROPS_KEY = Symbol()
 
 export class FormSchema extends FormScope {
   [prop: string]: any
@@ -87,9 +89,16 @@ export class FormSchema extends FormScope {
 
   static [Serializable.EXCLUDE_PROPS_KEY] = ['external', 'parent', 'props']
 
-  constructor(o: any, model?: any) {
-    super()
+  static create(data?: any, model?: any){
+    return new FormSchema(isObject(data) ? data : {}, model, CONSTRUCTOR_SIGN)
+  }
 
+  constructor(o: any, model?: any, sign?: Symbol) {
+    if(sign != CONSTRUCTOR_SIGN) console.warn('use `FormSchema.create` instead of `new FormSchema`')
+    
+    super()
+    
+    const withModel = model != null
     const props: PrivateProps = { 
       callbacks: [],
       initModel: model
@@ -101,7 +110,7 @@ export class FormSchema extends FormScope {
 
     this.createFields(o.fields, f => {
       const field = FormField.create(f)
-      field.setValue(model?.[f.name])
+      withModel && field.setValue(model[f.name], true)
       return field
     })
 
@@ -153,11 +162,11 @@ export class FormSchema extends FormScope {
     return new FormSchema(raw, model)
   }
 
-  /** 验证schema的完整性 */
+  /** 验证schema的完整性，默认值验证是否填写标题 */
   validate(): Promise<{ valid: boolean; result: SchemaValidResult[] }> {
     if (this.fields.length == 0) return Promise.resolve({ valid: true, result: [] })
 
-    return validateFields(this.fields).then((r) => {
+    return validateFields(this.fields).then(r => {
       return {
         valid: r.length == 0,
         result: r,

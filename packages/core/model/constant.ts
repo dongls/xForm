@@ -123,3 +123,10 @@ export enum EnumBehavior{
   DESIGNER = 'designer',
   BUILDER = 'builder'
 }
+
+export const BuiltInDefaultValueType = Object.freeze({
+  MANUAL: 'manual',
+  OPTION_FIRST: 'option_first',
+  OPTION_ALL: 'option_all',
+  DATE_NOW: 'date_now'
+})

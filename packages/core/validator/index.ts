@@ -175,7 +175,7 @@ export function useValidator(schemaRef: Ref<FormSchema>, disabledRef: ComputedRe
   }
 
   function resetCallback(field: FormField){
-    if(!isObject(field.value)) field.value = undefined
+    if(!isObject(field.value)) field.setValue(undefined, true)
 
     queue.forEach(p => p.uid === field.uid && queue.delete(p))
     field.resetValidate()
