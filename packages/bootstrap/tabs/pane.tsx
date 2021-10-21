@@ -3,11 +3,11 @@ import { defineComponent } from 'vue'
 import {
   FormField,
   FieldConf,
-  constant,
   useRenderContext,
+  useConstant,
 } from '@dongls/xform'
 
-const { SELECTOR, CLASS, PROPS, EnumValidateMode } = constant
+const { SELECTOR, CLASS, PROPS, EnumValidateMode } = useConstant()
 
 export default FieldConf.create({
   type: 'tabs.pane',

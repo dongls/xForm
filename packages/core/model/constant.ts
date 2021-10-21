@@ -1,8 +1,8 @@
-export const XFORM_CONTEXT_PROVIDE_KEY = Symbol(__IS_DEV__ ? 'xform.builder.context.provide' : '')
-export const XFORM_SCHEMA_PROVIDE_KEY = Symbol(__IS_DEV__ ? 'xform.schema.provide' : '')
-export const XFORM_ITEM_EXTERNAL_PROVIDE_KEY = Symbol(__IS_DEV__ ? 'xform.item.external.provide' : '')
+export const XFORM_CONTEXT_PROVIDE_KEY = __IS_DEV__ ? Symbol('xform.builder.context.provide') : Symbol()
+export const XFORM_SCHEMA_PROVIDE_KEY = __IS_DEV__ ? Symbol('xform.schema.provide') : Symbol()
+export const XFORM_ITEM_EXTERNAL_PROVIDE_KEY = __IS_DEV__ ? Symbol('xform.item.external.provide') : Symbol()
 
-export const CLASS = Object.freeze({
+export const CLASS = {
   DRAGGABLE: 'xform-draggable',
   DROPPABLE: 'xform-droppable',
   FIELD: 'xform-designer-field',
@@ -17,9 +17,9 @@ export const CLASS = Object.freeze({
   LIST_SILENCE: 'xform-is-silence',
   PREVIEW: 'xform-preview',
   SCOPE: 'xform-is-scope',
-})
+}
 
-export const SELECTOR = Object.freeze({
+export const SELECTOR = {
   DRAGGABLE: `.${CLASS.DRAGGABLE}`,
   DROPPABLE: `.${CLASS.DROPPABLE}`,
   FIELD: `.${CLASS.FIELD}`,
@@ -27,17 +27,17 @@ export const SELECTOR = Object.freeze({
   IS_SELECTED: `.${CLASS.IS_SELECTED}`,
   PREVIEW: `.${CLASS.PREVIEW}`,
   SCOPE: `.${CLASS.SCOPE}`,
-})
+}
 
-export const PROPS = Object.freeze({
+export const PROPS = {
   DRAG_MODE: 'xform_prop:drag_mode',
   FIELD: 'xform_prop:field',
   FIELD_TYPE: 'xform_prop:field_type',
   SCHEMA: 'xform_prop:schema',
   SCOPE: 'xform_prop:scope',
-})
+}
 
-export const EVENTS = Object.freeze({
+export const EVENTS = {
   MESSAGE: 'message',
   REMOVE: 'remove',
   SUBMIT: 'submit',
@@ -46,15 +46,17 @@ export const EVENTS = Object.freeze({
   UPDATE_SCHEMA: 'update:schema',
   UPDATE_VALUE: 'update:value',
   VALUE_CHANGE: 'value:change',
-})
+}
 
-export const LabelPosition = Object.freeze({
+export const LabelPosition = {
   LEFT: 'left',
   RIGHT: 'right',
   TOP: 'top'
-})
+}
 
-export const LogicOperator = Object.freeze({
+// TODO: move to `BuiltInLogicOperator`
+/** @deprecated */
+export const LogicOperator = {
   AND: 'and',
   OR: 'or',
   NOT: 'not',
@@ -66,7 +68,7 @@ export const LogicOperator = Object.freeze({
   NE: 'ne',
   EMPTY: 'empty',
   CONTAINS: 'contains',
-})
+}
 
 export enum EnumDragMode {
   INSERT = 'insert',
@@ -124,9 +126,11 @@ export enum EnumBehavior{
   BUILDER = 'builder'
 }
 
-export const BuiltInDefaultValueType = Object.freeze({
+export const BuiltInDefaultValueType = {
   MANUAL: 'manual',
   OPTION_FIRST: 'option_first',
   OPTION_ALL: 'option_all',
   DATE_NOW: 'date_now'
-})
+}
+
+export const BuiltInLogicOperator = LogicOperator

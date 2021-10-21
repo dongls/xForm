@@ -8,7 +8,7 @@ import type {
 
 import { FieldConf } from './FieldConf'
 import { FormField } from './FormField'
-import FormStore from '../store'
+import FormStore from '../api/store'
 
 export type DeepPartial<T, P = string | number | boolean | Function | Array<any>> = {
   [K in keyof T]?: T[K] extends P ? T[K] : DeepPartial<T[K]> ;

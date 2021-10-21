@@ -73,14 +73,14 @@ import {
   FormDesignerContext,
   FormField,
   LogicRule,
-  constant,
   getOperator,
   getOperators,
   useRenderContext,
+  useConstant,
 } from '@dongls/xform'
 import Modal from './Modal.vue'
 
-const { LogicOperator } = constant
+const { LogicOperator } = useConstant()
 const COMMON_OPERATORS = [
   LogicOperator.AND,
   LogicOperator.OR,

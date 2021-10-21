@@ -3,14 +3,14 @@ import { defineComponent, ref } from 'vue'
 import { 
   FormField,
   FieldConf, 
-  constant,
   useRenderContext,
+  useConstant,
 } from '@dongls/xform'
 
 import icon from '@common/svg/group.svg'
 import setting from './setting.vue'
 
-const { SELECTOR, CLASS, EnumBehavior, PROPS, EnumValidateMode, EnumValidityState } = constant
+const { SELECTOR, CLASS, EnumBehavior, PROPS, EnumValidateMode, EnumValidityState } = useConstant()
 const GROUP_LIST_CLASS = 'xform-bs-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
 

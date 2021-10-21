@@ -18,7 +18,7 @@ import {
 } from '../../util'
 
 import { XFormDesignerInstance } from './component'
-import store from '../../store'
+import store from '../../api/store'
 
 export default function useDragging(){
   const utils = {

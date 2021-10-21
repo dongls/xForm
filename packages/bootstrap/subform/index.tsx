@@ -3,11 +3,10 @@ import {
   FormField,
   FieldConf,
   FormViewerContext,
-  constant,
   useRenderContext,
   useSchema,
-  useValue,
   isEmpty,
+  useConstant,
 } from '@dongls/xform'
 
 import icon from '@common/svg/subform.svg'
@@ -16,8 +15,9 @@ import { useInlineLayout } from './inline'
 import { useModalLayout } from './modal'
 import setting from './setting.vue'
 import Modal from '../Modal.vue'
+import { useValue } from '../util'
 
-const { CLASS, PROPS, EVENTS, EnumValidateMode } = constant
+const { CLASS, PROPS, EVENTS, EnumValidateMode } = useConstant()
 const DEF_INDEX_WIDTH = 60
 
 const preview = defineComponent({
@@ -87,7 +87,7 @@ const subform = defineComponent({
   },
   emits: [EVENTS.UPDATE_VALUE],
   setup(props){
-    const value = useValue<Row[]>(props)
+    const value = useValue<Row[]>()
     const modalLayout = useModalLayout(props, value)
     const inlineLayout = useInlineLayout(props, value)
 
@@ -113,7 +113,7 @@ const view = defineComponent({
     }
   },
   setup(props){
-    const value = useValue<Row[]>(props)
+    const value = useValue<Row[]>()
     const rc = useRenderContext<FormViewerContext>()
     const schema = useSchema()
 

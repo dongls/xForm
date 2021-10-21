@@ -17,7 +17,8 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { useValue, FormField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
+import { useValue } from '../util'
 
 export default defineComponent({
   name: 'xform-bs-radio',
@@ -33,7 +34,7 @@ export default defineComponent({
   },
   setup(props) {
     return {
-      value: useValue<string>(props),
+      value: useValue<string>(),
       radioClassName: computed(() => {
         const className = ['custom-control', 'custom-radio']
         if(props.field.attributes.layout == 'inline') className.push('custom-control-inline')

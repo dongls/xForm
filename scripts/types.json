@@ -1,11 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true
   },
   "include": [
-    "../../packages/**.d.ts",
-    "../../packages/core/index.ts"
+    "../packages/**.d.ts",
+    "../packages/core/index.ts"
   ]
 }

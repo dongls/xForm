@@ -5,7 +5,7 @@ import {
   FormOption, 
   FormPreset,
   ModeGroup, 
-} from './model'
+} from '../model'
 
 import { 
   clonePlainObject, 
@@ -13,9 +13,9 @@ import {
   isNull, 
   isEmpty,
   flat
-} from './util'
+} from '../util'
 
-import CONFIG from './config'
+import CONFIG from '../config'
 
 const DELIMITER = '.'
 
@@ -140,7 +140,7 @@ export function getRawStore(){
   return __IS_TEST__ ? store : null
 }
 
-export default {
+const StoreExpose = {
   findFieldConf,
   findFieldGroups,
   getConfig,
@@ -156,3 +156,9 @@ export default {
   useConfig,
   usePreset,
 }
+
+export function useStore(){
+  return StoreExpose
+}
+
+export default StoreExpose

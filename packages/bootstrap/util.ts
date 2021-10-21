@@ -1,7 +1,7 @@
-import { constant, FormField } from '@dongls/xform'
-import { computed, getCurrentInstance } from 'vue'
+import { useConstant, FormField } from '@dongls/xform'
+import { computed, getCurrentInstance, Ref, toRef } from 'vue'
 
-const { BuiltInDefaultValueType, EVENTS } = constant
+const { BuiltInDefaultValueType, EVENTS } = useConstant()
 
 // retrieve raw value set via :value bindings
 function getValue(el: HTMLOptionElement | HTMLInputElement) {
@@ -54,6 +54,11 @@ export function updateField(emit: Function, event: Event, prop: string, scope?: 
   emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
 }
 
+export function useField(){
+  const instance = getCurrentInstance()
+  return toRef(instance.props, 'field') as Ref<FormField>
+}
+
 export function useFieldProp<T>(prop: string, scope?: string, defaultValue?: any) {
   const instance = getCurrentInstance()
 
@@ -68,6 +73,22 @@ export function useFieldProp<T>(prop: string, scope?: string, defaultValue?: any
       instance.emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
     }
   })
+}
+
+export function useValue<T>(defaultValue?: any){
+  const fieldRef = useField()
+
+  return computed<T>({
+    get(){
+      const field = fieldRef.value
+      return field.value ?? defaultValue
+    },
+    set(v){
+      const field = fieldRef.value
+      field.value = v 
+    }
+  })
+  
 }
 
 export function useDefaultValueApi(defTypes: any[]){

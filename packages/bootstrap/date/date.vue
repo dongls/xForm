@@ -12,7 +12,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useValue, FormField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
+import { useValue } from '../util'
 
 export default defineComponent({
   name: 'xform-bs-date',
@@ -26,8 +27,8 @@ export default defineComponent({
       default: false
     }
   },
-  setup(props: any){
-    return { value: useValue<string>(props) }
+  setup(){
+    return { value: useValue<string>() }
   }
 })
 </script>

@@ -1,4 +1,4 @@
-import store, { getRawStore } from '../store'
+import store, { getRawStore } from '../api/store'
 import CONFIG from '../config'
 import { FieldConf, FormPreset } from '../model'
 import { mockFieldConfs } from './mock/index'

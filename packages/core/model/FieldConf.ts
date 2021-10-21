@@ -89,8 +89,7 @@ export class FieldConf extends Hook{
 
   /** 依赖的子组件 */
   dependencies: FieldConf[];
-  // TODO: 指定类型
-  operators: false | any[];
+  operators: false | string[];
 
   constructor(options: any = {}, from?: Symbol){
     if(from != CONSTRUCTOR_SIGN) console.warn('use `FieldConf.create` instead of `new FieldConf`')

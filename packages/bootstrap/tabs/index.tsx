@@ -11,10 +11,10 @@ import {
   useRenderContext,
   FormField,
   FieldConf,
-  constant,
   normalizeClass,
   normalizeWheel,
   getHtmlElement,
+  useConstant,
 } from '@dongls/xform'
 
 import { updateField } from '../util'
@@ -22,7 +22,7 @@ import icon from '@common/svg/tabs.svg'
 import pane from './pane'
 import FieldSetting from '../FieldSetting.vue'
 
-const { CLASS, EnumValidityState } = constant
+const { CLASS, EnumValidityState, EVENTS } = useConstant()
 const OFFSET_PROP = '__offset__'
 
 const setting = defineComponent({
@@ -33,7 +33,7 @@ const setting = defineComponent({
       required: true,
     },
   },
-  emits: [ constant.EVENTS.UPDATE_FIELD ],
+  emits: [ EVENTS.UPDATE_FIELD ],
   setup(props, { emit }) {
     function addTab() {
       const field = props.field

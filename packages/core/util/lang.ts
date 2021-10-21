@@ -1,4 +1,4 @@
-import { isReactive, isRef, toRaw } from 'vue'
+import { DeepReadonly, isReactive, isRef, toRaw } from 'vue'
 import { AnyProps } from '../model/common'
 
 const OBJECT_TO_STRING = Object.prototype.toString
@@ -256,4 +256,11 @@ export function createPrivateProps<T>(pkey: Symbol, props: T){
     
     return props
   }
+}
+
+export function freeze<T, P extends boolean>(object: T, deep?: P): P extends true ? DeepReadonly<T> : Readonly<T>{
+  const o = object as any
+  if(null == o || typeof o != 'object') return o
+  if(deep === true) Reflect.ownKeys(o).forEach(key => freeze(o[key], deep))
+  return Object.freeze(object) as any
 }

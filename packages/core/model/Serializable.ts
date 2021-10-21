@@ -1,7 +1,7 @@
 import { isObject, toArray } from '../util/lang'
 
 export class Serializable{
-  static readonly EXCLUDE_PROPS_KEY = Symbol(__IS_DEV__ ? 'serializable exclude prop key' : '')
+  static readonly EXCLUDE_PROPS_KEY = Symbol(__IS_DEV__ ? 'serializable exclude prop key' : 'sepk')
 
   toJSON(){
     const origin = this as any

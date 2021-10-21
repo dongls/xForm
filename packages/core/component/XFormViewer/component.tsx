@@ -25,7 +25,7 @@ import {
 
 import { XFormItemInternal } from '../XFormItem/component'
 
-import Store from '../../store'
+import Store from '../../api/store'
 
 interface XFormViewerProps{
   schema: FormSchema;
@@ -76,11 +76,12 @@ function renderField(instance: XFormViewerInstance, field: FormField, options: R
   return create(XFormItemInternal, props, children)
 }
 
+// TODO： 使用`expose` 改写
 export default defineComponent({
   name: 'xform-viewer',
   props: {
     schema: {
-      type: Object,
+      type: FormSchema,
       required: true
     },
     mode: {
@@ -92,7 +93,7 @@ export default defineComponent({
       default: null
     }
   },
-  setup(props: XFormViewerInstance){
+  setup(props: XFormViewerProps){
     const instance = getCurrentInstance()
   
     function fmtValue(field: FormField){

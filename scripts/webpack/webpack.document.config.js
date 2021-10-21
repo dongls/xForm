@@ -1,9 +1,11 @@
-const { IS_PRODUCTION, NODE_ENV } = require('./args')
+const { IS_PRODUCTION, NODE_ENV } = require('../args')
 
 const path = require('path')
 const webpack = require('webpack')
+
 const { merge } = require('webpack-merge')
-const { genHtmlWebpackPlugin } = require('./util')
+const { genHtmlWebpackPlugin } = require('../utils')
+
 const baseConfig = require('./webpack.base.config')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -53,7 +55,10 @@ const development = {
       template: './document/index.html',
       filename: './index.html'
     })
-  ]
+  ],
+  experiments: {
+    lazyCompilation: true
+  }
 }
 
 const production = {

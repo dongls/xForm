@@ -1,4 +1,4 @@
-import { reset } from '@dongls/xform'
+import { useStore } from '@dongls/xform'
 
 enum TYPE {
   STYLE = 1,
@@ -141,7 +141,7 @@ export async function usePreset(state: { preset: string, loading: boolean }, _ta
   if(null != old) removeSource(old.source)
   await loadSource(config.source)
   
-  reset({
+  useStore().reset({
     preset,
     config: { 
       modes: MODES

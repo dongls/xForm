@@ -1,4 +1,4 @@
-import Store from '../../store'
+import Store from '../../api/store'
 import useDragging from './dragging'
 
 import { 
@@ -349,6 +349,7 @@ function renderEmptyTip(){
   )
 }
 
+// TODO： 使用`expose` 改写
 export default defineComponent({
   name: 'xform-designer',
   props: {
@@ -358,7 +359,7 @@ export default defineComponent({
       default: null
     },
     schema: {
-      type: Object,
+      type: FormSchema,
       required: true
     }
   },

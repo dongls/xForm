@@ -1,5 +1,5 @@
 import { isReactive, reactive } from 'vue'
-import { findFieldConf, getConfig } from '../store'
+import { findFieldConf, getConfig } from '../api/store'
 import { ValidateFunc, FieldConf } from './FieldConf'
 import { Serializable } from './Serializable'
 import { LogicRule } from './common'

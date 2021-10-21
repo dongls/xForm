@@ -39,7 +39,7 @@ import {
 import { useValidator } from '../../validator'
 import { XFormItemInternal } from '../XFormItem/component'
 import { test } from '../../logic'
-import { getConfig } from '../../store'
+import { getConfig } from '../../api/store'
 
 interface XFormBuilderProps{
   mode: string;
@@ -113,6 +113,7 @@ function renderField(instance: XFormBuilderInstance, field: FormField, options: 
   return create(XFormItemInternal as ComputedOptions, props, children)
 }
 
+// TODO： 使用`expose` 改写
 export default defineComponent({
   name: 'xform-builder',
   inheritAttrs: false,

@@ -1,5 +1,5 @@
 process.env.NODE_ENV = process.env.NODE_ENV == 'production' ? 'production' : 'development'
-process.env.VUE_VERSION = require('../../package.json').devDependencies.vue.slice(1)
+process.env.VUE_VERSION = require('../package.json').devDependencies.vue.slice(1)
 
 process.argv.slice(2).forEach(item => {
   if(/RELEASE_VERSION=/.test(item)) process.env.RELEASE_VERSION = item.split('=')[1]
@@ -7,7 +7,7 @@ process.argv.slice(2).forEach(item => {
 })
 
 if(null == process.env.RELEASE_VERSION || '' == process.env.RELEASE_VERSION){
-  process.env.RELEASE_VERSION = require('../../package.json').version
+  process.env.RELEASE_VERSION = require('../package.json').version
 }
 
 const IS_PRODUCTION = process.env.NODE_ENV == 'production'

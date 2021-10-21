@@ -1,10 +1,11 @@
 import { defineComponent } from 'vue'
-import { FieldConf, FormField, useValue, isEmpty, constant } from '@dongls/xform'
+import { FieldConf, FormField, isEmpty, useConstant } from '@dongls/xform'
 
 import icon from '@common/svg/number.svg'
 import setting from './setting.vue'
+import { useValue } from '../util'
 
-const { LogicOperator } = constant
+const { LogicOperator } = useConstant()
 
 const build = defineComponent({
   name: 'xform-bs-number',
@@ -19,7 +20,7 @@ const build = defineComponent({
     }
   },
   setup(props){
-    const value = useValue<Number>(props)
+    const value = useValue<Number>()
     return function(){
       return (
         <input

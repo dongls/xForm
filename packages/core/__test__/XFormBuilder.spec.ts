@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { mockOption } from './mock/index'
 import { XFormBuilder, XFormItem, createSchemaRef } from '../index'
 import { ref } from 'vue'
-import store from '../store'
+import store from '../api/store'
 
 function createGlobal(){
   return {

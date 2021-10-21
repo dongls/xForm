@@ -37,9 +37,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FormField, constant } from '@dongls/xform'
+import { FormField, useConstant } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH } from './common'
 import FieldSetting from '../FieldSetting.vue'
+
+const { EVENTS } = useConstant()
 
 export default defineComponent({
   name: 'xform-bs-subform-setting',
@@ -49,18 +51,18 @@ export default defineComponent({
       required: true
     }
   },
-  emits: [constant.EVENTS.UPDATE_FIELD],
+  emits: [EVENTS.UPDATE_FIELD],
   setup(props, { emit }){
     function updateColWidth(event: Event, key: string){
       const target = event.target as HTMLInputElement
       const value = parseFloat(target.value)
       const colWidths = props.field.attributes.colWidths
       colWidths[key] = isNaN(value) ? null : value
-      emit(constant.EVENTS.UPDATE_FIELD, { prop: 'colWidths', value: colWidths, scope: 'attributes' })
+      emit(EVENTS.UPDATE_FIELD, { prop: 'colWidths', value: colWidths, scope: 'attributes' })
     }
 
     function update(prop: string, value: string, scope?: string){
-      emit(constant.EVENTS.UPDATE_FIELD, { value, prop, scope })
+      emit(EVENTS.UPDATE_FIELD, { value, prop, scope })
     }
 
     function getColumnWidth(name: string){

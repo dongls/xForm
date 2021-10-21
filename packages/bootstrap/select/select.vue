@@ -19,7 +19,8 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { useValue, FormField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
+import { useValue } from '../util'
 
 export default defineComponent({
   name: 'xform-bs-select',
@@ -33,8 +34,8 @@ export default defineComponent({
       default: false
     }
   },
-  setup(props) {
-    const value = useValue<string>(props, '')
+  setup() {
+    const value = useValue<string>('')
     return {
       value,
       className: computed(() => {

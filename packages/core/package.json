@@ -4,7 +4,7 @@
   "description": "Vue驱动的自定义表单套件。",
   "main": "dist/index.js",
   "style": "dist/index.css",
-  "types": "types/index.d.ts",
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/dongls/xForm.git"
@@ -21,11 +21,10 @@
   },
   "license": "MIT",
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "peerDependencies": {
-    "vue": "^3.0.7"
+    "vue": "^3.2.1"
   },
   "publishConfig": {
     "registry": "http://registry.npmjs.org",

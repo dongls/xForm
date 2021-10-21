@@ -1,10 +1,10 @@
 <script lang="tsx">
 import { defineComponent, ref } from 'vue'
-import { FormField, LogicRule, constant, getOperator } from '@dongls/xform'
+import { FormField, LogicRule, getOperator, useConstant } from '@dongls/xform'
 import { useLocalSchema, useIsWide } from '@document/util/common'
 import { useNotification } from '@document/component'
 
-const { LogicOperator } = constant
+const { LogicOperator } = useConstant()
 
 function fmtOperatorText(operator: string){
   const o = getOperator(operator)

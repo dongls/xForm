@@ -2,8 +2,8 @@ const IS_PRODUCTION = process.env.NODE_ENV == 'production'
 const RELEASE_TARGET = process.env.RELEASE_TARGET
 
 const path = require('path')
-const util = require('./util')
 const webpack = require('webpack')
+const utils = require('../utils')
 const { VueLoaderPlugin } = require('vue-loader')
 
 function genTarget(){
@@ -43,10 +43,10 @@ module.exports = {
         oneOf: [
           {
             resourceQuery: /module/,
-            use: util.genCssLoader(IS_PRODUCTION, true)
+            use: utils.genCssLoader(IS_PRODUCTION, true)
           },
           {
-            use: util.genCssLoader(IS_PRODUCTION, false)
+            use: utils.genCssLoader(IS_PRODUCTION, false)
           }
         ]
       },
@@ -55,16 +55,16 @@ module.exports = {
         oneOf: [
           {
             resourceQuery: /module/,
-            use: util.genScssLoader(IS_PRODUCTION, true)
+            use: utils.genScssLoader(IS_PRODUCTION, true)
           },
           {
-            use: util.genScssLoader(IS_PRODUCTION, false)
+            use: utils.genScssLoader(IS_PRODUCTION, false)
           }
         ]
       },
       {
         test: /\.less$/,
-        use: util.genLessLoader(IS_PRODUCTION)
+        use: utils.genLessLoader(IS_PRODUCTION)
       },
       { // 处理字体
         test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,

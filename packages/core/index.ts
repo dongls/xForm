@@ -2,7 +2,7 @@ import './non-standard-prop-compat'
 
 import { App } from 'vue'
 import { FormOption } from './model'
-import store from './store'
+import store from './api/store'
 
 import XFormDesigner from './component/XFormDesigner/component'
 import XFormBuilder from './component/XFormBuilder/component'
@@ -34,5 +34,5 @@ export {
 }
 
 export * from './model/exports'
-export * from './api'
+export * from './api/exports'
 export default XForm

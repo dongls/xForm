@@ -31,20 +31,22 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FormField, constant } from '@dongls/xform'
+import { FormField, useConstant } from '@dongls/xform'
 
 import divider from '../../common/components/divider.vue'
 import FieldSetting from '../FieldSetting.vue'
+
+const { EVENTS } = useConstant()
 
 export default defineComponent({
   name: 'xform-bs-divider-setting',
   props: {
     field: FormField
   },
-  emits: [constant.EVENTS.UPDATE_FIELD],
+  emits: [EVENTS.UPDATE_FIELD],
   setup(props, { emit }){
     function update(prop: string, value: any, scope?: string){
-      emit(constant.EVENTS.UPDATE_FIELD, { prop, value, scope })
+      emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
     }
 
     return {

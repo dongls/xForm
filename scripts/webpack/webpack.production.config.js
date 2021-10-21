@@ -1,19 +1,18 @@
-const { RELEASE_VERSION, RELEASE_TARGET } = require('./args')
+const { RELEASE_VERSION, RELEASE_TARGET } = require('../args')
 
 const webpack = require('webpack')
 const { merge } = require('webpack-merge')
-const util = require('./util')
+const utils = require('../utils')
 const baseConfig = require('./webpack.base.config')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
-const props = util.genPackageProps()
+const props = utils.genPackageProps()
 
 const common = {
   mode: 'production',
-  entry: props.entry,
   optimization: {
     minimizer: [
       new TerserPlugin({
@@ -32,35 +31,8 @@ const common = {
   ]
 }
 
-// TODO: webpack输出`ESM`时不支持设置`externals`，待升级后处理
-const esm = {
-  externals: {
-    '@dongls/xform': {
-      root: 'XForm',
-      commonjs: '@dongls/xform',
-      commonjs2: '@dongls/xform',
-      amd: '@dongls/xform'
-    },
-    // 'vue': 'vue'
-  },
-  output: {
-    path: props.outPath,
-    filename: 'index.esm.js',
-    clean: true,
-    module: true,
-    environment: {
-      module: true
-    },
-    library: {
-      type: 'module'
-    }
-  },
-  experiments: {
-    outputModule: true
-  }
-}
-
 const umd = {
+  entry: props.entry,
   externals: {
     'vue': {
       root: 'Vue',
@@ -78,12 +50,66 @@ const umd = {
   output: {
     path: props.outPath,
     filename: 'index.js',
-    library: props.library,
-    libraryExport: props.libraryExport,
-    libraryTarget: 'umd',
-    umdNamedDefine: true,
-    clean: true
+    library: {
+      name: props.library,
+      export: props.libraryExport,
+      type: 'umd',
+      umdNamedDefine: true
+    }
   }
 }
 
-module.exports = merge(baseConfig, common, RELEASE_TARGET == 'esm' ? esm : umd)
+const esm = {
+  entry: props.ts || props.entry,
+  externals: {
+    '@dongls/xform': '@dongls/xform',
+    'vue': 'vue'
+  },
+  output: {
+    path: props.outPath,
+    filename: 'index.esm.js',
+    module: true,
+    library: {
+      type: 'module'
+    },
+    environment: {
+      module: true
+    },
+  },
+  experiments: {
+    outputModule: true
+  }
+}
+
+const bundler = {
+  entry: props.ts || props.entry,
+  externals: {
+    '@dongls/xform': '@dongls/xform',
+    'vue': 'vue'
+  },
+  output: {
+    path: props.outPath,
+    filename: 'index.bundler.js',
+    module: true,
+    library: {
+      type: 'module'
+    },
+    environment: {
+      module: true
+    },
+  },
+  experiments: {
+    outputModule: true
+  },
+  optimization: {
+    minimize: false,
+  }
+}
+
+const targets = {
+  umd,
+  esm,
+  bundler
+}
+
+module.exports = merge(baseConfig, common, targets[RELEASE_TARGET] ?? targets.umd)

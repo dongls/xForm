@@ -3,14 +3,14 @@ import { mockOption, mockSchema } from './mock/index'
 import { XFormDesigner, XFormItem, createSchemaRef } from '../index'
 import { ModeGroup, PROPS } from '../model'
 import { h } from 'vue'
-import store from '../store'
+import store from '../api/store'
 
 describe('XFormDesigner props: mode', () => {
   test('mode is null', () => {
     const option = mockOption()
     store.reset(option)
   
-    const wrapper = mount(XFormDesigner, {
+    const wrapper = mount(XFormDesigner as any, {
       props: {
         mode: null,
         schema: createSchemaRef(mockSchema())
@@ -31,7 +31,7 @@ describe('XFormDesigner props: mode', () => {
     const option = mockOption()
     store.reset(option)
   
-    const wrapper = mount(XFormDesigner, {
+    const wrapper = mount(XFormDesigner as any, {
       props: {
         mode: 'simple',
         schema: createSchemaRef()
@@ -48,7 +48,7 @@ describe('XFormDesigner props: mode', () => {
     const option = mockOption()
     store.reset(option)
   
-    const wrapper = mount(XFormDesigner, {
+    const wrapper = mount(XFormDesigner as any, {
       props: {
         mode: 'group',
         schema: createSchemaRef()

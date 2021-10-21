@@ -12,7 +12,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useValue, FormField } from '@dongls/xform'
+import { FormField } from '@dongls/xform'
+import { useValue } from '../util'
 
 export default defineComponent({
   name: 'xform-bs-textarea',
@@ -26,8 +27,10 @@ export default defineComponent({
       default: false
     }
   },
-  setup(props){
-    return { value: useValue(props) }
+  setup(){
+    return { 
+      value: useValue<string>() 
+    }
   }
 })
 </script>

@@ -1,8 +1,8 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { constant } from '@dongls/xform'
+import { useConstant } from '@dongls/xform'
 
-const { EVENTS, LabelPosition } = constant
+const { EVENTS, LabelPosition } = useConstant()
 const positions = Object.values(LabelPosition)
 
 export default defineComponent({

@@ -18,17 +18,19 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { FormField, constant } from '@dongls/xform'
+import { FormField, useConstant } from '@dongls/xform'
 import { updateField } from '../util'
 
 import FieldSetting from '../FieldSetting.vue'
+
+const { EVENTS } = useConstant()
 
 export default defineComponent({
   name: 'xform-bs-group-setting',
   props: {
     field: FormField
   },
-  emits: [constant.EVENTS.UPDATE_FIELD],
+  emits: [EVENTS.UPDATE_FIELD],
   setup(props, { emit }){
     return { 
       updateField: updateField.bind(null, emit) 
