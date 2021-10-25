@@ -1,10 +1,10 @@
 <script lang="tsx">
 import { defineComponent, ref } from 'vue'
-import { FormField, LogicRule, getOperator, useConstant } from '@dongls/xform'
+import { FormField, LogicRule, getOperator, useConstant, FormDesignerApi } from '@dongls/xform'
 import { useLocalSchema, useIsWide } from '@document/util/common'
 import { useNotification } from '@document/component'
 
-const { LogicOperator } = useConstant()
+const { BuiltInLogicOperator } = useConstant()
 
 function fmtOperatorText(operator: string){
   const o = getOperator(operator)
@@ -29,11 +29,11 @@ function createSchemaErrorContent(arr: any[]): any{
 export default defineComponent({
   name: 'designer-view',
   emits: ['view'],
-  setup(){
+  setup(props, { emit }){
     const { schema, resetSchema } = useLocalSchema(false)    
     const { notify } = useNotification()
     const isSchemaValid = ref(false)
-    const designer = ref(null)
+    const designer = ref<FormDesignerApi>(null)
 
     function chooseField(field: FormField){
       designer.value.chooseField(field)
@@ -46,7 +46,7 @@ export default defineComponent({
           <strong>{rule.label}</strong>
           <span>的值</span>
           <strong>{fmtOperatorText(rule.operator)}</strong>
-          {rule.operator == LogicOperator.EMPTY ? null : <strong>{rule.value ?? 'N/A'}</strong>}
+          {rule.operator == BuiltInLogicOperator.EMPTY ? null : <strong>{rule.value ?? 'N/A'}</strong>}
         </div>
       )
     }
@@ -86,14 +86,14 @@ export default defineComponent({
       schema,
       reset(){
         resetSchema()
-        this.$refs.designer.resetSelectedField()
+        designer.value.resetSelectedField()
       },
       clear(){
         schema.value.clear()
-        this.$refs.designer.resetSelectedField()
+        designer.value.resetSelectedField()
       },
       viewJson(){
-        this.$emit('view', { title: 'Schema JSON', json: JSON.stringify(schema.value, null, '  ') })
+        emit('view', { title: 'Schema JSON', json: JSON.stringify(schema.value, null, '  ') })
       },
       remove(e: { field: FormField, useDefault: Function }){
         window.confirm(`确定要删除字段[${e.field.title}]?`) && e.useDefault()

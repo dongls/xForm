@@ -1,11 +1,11 @@
-import { ConcreteComponent, VNode } from 'vue'
+import { ComponentOptions, VNode } from 'vue'
 import { RawProps, FormField, EnumComponent, FieldComponent } from '../model'
 import { isObject, isPlainObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
 export function getFieldComponent(field: FormField, target: EnumComponent, mode?: string){
   const r = field.conf?.[target]
-  return (r instanceof FieldComponent ? r.get(field, mode) : r) as ConcreteComponent | VNode
+  return (r instanceof FieldComponent ? r.get(field, mode) : r) as ComponentOptions | VNode
 }
 
 /** 获取ref对应的dom或组件 */

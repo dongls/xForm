@@ -4,12 +4,13 @@ import {
   Slots,
   computed,
   createVNode,
-  defineComponent, 
   inject,
   onBeforeUnmount,
-  reactive,
-  provide,
   onMounted,
+  provide,
+  reactive,
+  useSlots,
+  ComponentOptions,
 } from 'vue'
 
 import { 
@@ -30,21 +31,26 @@ import {
 } from '../../model'
 
 import { 
-  isFunction,
-  getFieldComponent,
   fillComponentProps,
+  getFieldComponent,
+  isFunction,
 } from '../../util'
 
-type XFormItemProps = {
+type Props = {
   field: FormField;
   validation: boolean | ValidateFunc;
   label: string | boolean;
   custom: boolean;
   virtual: boolean;
   title: string;
-  type: string;
   name: string;
+  type: string;
   disabled: boolean;
+}
+
+enum EnumComponentName {
+  EXTERNAL = 'xform-item',
+  INTERNAL = 'xform-item-internal'
 }
 
 function isBuilderContext(context: FormRenderContext): context is FormBuilderContext {
@@ -72,15 +78,15 @@ function renderContent(slots: Slots, field: FormField, context: FormRenderContex
 
   const allProps = { field: field, disabled } as RawProps
 
+  // TODO: 待删除
   if(isBuilderContext(context)){
     allProps.value = field.value
-    allProps['onUpdate:value'] = context.onUpdateValue
   }
 
   return createVNode(component, fillComponentProps(component, allProps, {}))
 }
 
-function normalizeField(props: XFormItemProps): ComputedRef<FormField>{
+function normalizeField(props: Props): ComputedRef<FormField>{
   if(props.virtual !== true) return computed(() => props.field)
 
   // 为保证视图更新和数据格式一致性，这里使用reactive包裹虚拟字段
@@ -93,14 +99,8 @@ function normalizeField(props: XFormItemProps): ComputedRef<FormField>{
   })
 }
 
-enum EnumComponentName {
-  EXTERNAL = 'xform-item',
-  INTERNAL = 'xform-item-internal'
-}
-
-
-function createComponent(name: EnumComponentName){
-  return defineComponent({
+function createComponent(name: EnumComponentName): ComponentOptions{
+  return {
     name,
     props: {
       field: {
@@ -147,7 +147,8 @@ function createComponent(name: EnumComponentName){
         default: false
       }
     },
-    setup(props: XFormItemProps, { slots }){
+    setup(props: Props){
+      const slots = useSlots()
       const schema = inject<Ref<FormSchema>>(XFORM_SCHEMA_PROVIDE_KEY, null)
       const context = inject<FormRenderContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
       const fieldRef = normalizeField(props)
@@ -216,8 +217,8 @@ function createComponent(name: EnumComponentName){
         )
       }
     }
-  })
+  }
 }
 
-export const XFormItemInternal = createComponent(EnumComponentName.INTERNAL)
+export const FormItemInternal = createComponent(EnumComponentName.INTERNAL)
 export default createComponent(EnumComponentName.EXTERNAL)

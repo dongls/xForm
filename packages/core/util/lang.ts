@@ -248,10 +248,12 @@ export function isRaw(value: object){
 }
 
 export function createPrivateProps<T>(pkey: Symbol, props: T){
-  return function(key: Symbol){
+  return function(this: object, key: Symbol){
     if(key !== pkey) {
-      const ctor = this.constructor
-      throw new Error(`\`${ctor.name}.props\` is a private function.`)
+      const name = this?.constructor?.name
+      const prefix = name ? `${name}.` : ''
+      
+      throw new Error(`\`${prefix}props\` is a private function.`)
     }
     
     return props

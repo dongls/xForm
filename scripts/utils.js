@@ -6,7 +6,7 @@ const execa = require('execa')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { prompt } = require('enquirer')
-const { RELEASE_PACKAGE } = require('./args')
+const { RELEASE_PACKAGE, OUTPUT_BASE_PATH } = require('./args')
 
 const FMT_OPTIONS = {
   year: 'numeric',
@@ -36,6 +36,8 @@ const BASE_PATH = path.resolve(__dirname, '../')
 const TYPES_DIR = BASE_PATH + '/packages/core/types'
 const OUTPUT_TYPES = ['umd', 'esm', 'bundler']
 const packageNames = Object.keys(packages)
+const ARROW_INFO = chalk.blue.bold('➜') + '  '
+const ARROW_SUCC = chalk.green.bold('➜') + '  '
 
 function createCssLoader(IS_PRODUCTION, IS_MODULE){
   return {
@@ -80,7 +82,7 @@ function genPackageProps(){
   return {
     ...packages[rp],
     packageName: `@dongls/xform${rp == 'core' ? '' : '.' + rp}`,
-    outPath: path.resolve(__dirname, '../packages', rp, 'dist'),
+    outPath: path.resolve(OUTPUT_BASE_PATH, rp, 'dist'),
     library: rp == 'core' ? 'XForm' : ['XForm', rp],
     libraryExport: rp == 'core' ? undefined : 'default'
   }
@@ -148,6 +150,9 @@ function updatePackageJson(file, version){
 
 // 构建
 function build(package, target){
+  const name = chalk.red.bold(`${package}.${target}`)
+  console.log(ARROW_INFO + `构建包: ${name}\n`)
+  
   const env = {
     'NODE_ENV': 'production',
     'RELEASE_PACKAGE': package,
@@ -167,7 +172,7 @@ function buildPackage(package, version){
   // 生成声明文件
   if(package == 'core') buildTypes()
   
-  console.log('已构建包：' + chalk.green.bold(package) + '\n')
+  console.log(ARROW_SUCC + '已构建包：' + chalk.green.bold(package) + '\n')
 }
 
 function buildCode(version){
@@ -194,7 +199,7 @@ async function releaseCode(){
 
   // 测试
   execa.commandSync('npm run test', { stdio: 'inherit' })
-  console.log('已完成代码测试\n')
+  console.log(ARROW_SUCC + '已完成代码测试\n')
 
   buildDocument()
   buildCode(version)
@@ -207,7 +212,7 @@ async function releaseCode(){
   for(const package of packageNames){
     const cwd = path.resolve(__dirname, '../packages', package)
     execa.commandSync('npm publish', { stdio: 'inherit', cwd })
-    console.log('已发布包：' + chalk.green.bold(`${package}@${version}\n`))
+    console.log(ARROW_SUCC + '已发布包：' + chalk.green.bold(`${package}@${version}\n`))
   }
 
   // tag
@@ -219,6 +224,8 @@ async function releaseCode(){
 }
 
 function buildDocument(){
+  console.log(ARROW_INFO + '构建文档\n')
+
   const env = {
     'NODE_ENV': 'production',
     'TARGET': 'document',
@@ -230,7 +237,7 @@ function buildDocument(){
     '--progress'
   ], { stdio: 'inherit', env })
 
-  console.log('已构建文档\n')
+  console.log(ARROW_SUCC + '已构建文档\n')
 }
 
 function releaseDocument(){
@@ -239,7 +246,7 @@ function releaseDocument(){
   execa.commandSync('git add .')
   execa.sync('git', ['commit', '-m', 'docs: build document'])
   execa.commandSync('git push')
-  console.log('已发布文档\n')
+  console.log(ARROW_SUCC + '已发布文档\n')
 }
 
 async function release(){
@@ -259,6 +266,8 @@ function cleanTypes(){
 }
 
 function buildTypes(){
+  console.log(ARROW_INFO + '构建声明文件\n')
+
   execa.sync('node_modules/.bin/tsc', [
     '--project',
     'scripts/types.json',
@@ -274,7 +283,7 @@ function buildTypes(){
   
   cleanTypes()
 
-  console.log('已生成声明文件\n')
+  console.log(ARROW_SUCC + '成功构建声明文件\n')
 }
 
 function cleanDir(dirPath){

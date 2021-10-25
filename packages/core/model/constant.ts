@@ -54,9 +54,7 @@ export const LabelPosition = {
   TOP: 'top'
 }
 
-// TODO: move to `BuiltInLogicOperator`
-/** @deprecated */
-export const LogicOperator = {
+export const BuiltInLogicOperator = {
   AND: 'and',
   OR: 'or',
   NOT: 'not',
@@ -132,5 +130,3 @@ export const BuiltInDefaultValueType = {
   OPTION_ALL: 'option_all',
   DATE_NOW: 'date_now'
 }
-
-export const BuiltInLogicOperator = LogicOperator

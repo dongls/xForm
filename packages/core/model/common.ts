@@ -1,7 +1,6 @@
 import type { 
   Component,
-  ComponentPublicInstance,
-  ConcreteComponent,
+  ComponentOptions,
   VNode,
   VNodeProps,
 } from 'vue'
@@ -28,13 +27,15 @@ export interface ModeConf {
   [propName: string]: Array<ModeGroup | string>;
 }
 
+export type Formatter = (field: FormField, props: RawProps) => any
+
 export interface FormConfigBase{
   modes: ModeConf;
   validation: {
     immediate: boolean;
   };
   genName: (o: any) => string;
-  formatter: (field: FormField, props: RawProps, instance: ComponentPublicInstance) => any;
+  formatter: Formatter;
   logic?: boolean;
   experiments?: {}
 }
@@ -45,8 +46,8 @@ export interface FormPreset {
   name: string;
   version?: string;
   slots?: {
-    [prop: string]: VueComponent;
-    'setting_form'?: VueComponent;
+    [prop: string]: ComponentOptions;
+    'setting_form'?: ComponentOptions;
   };
   fieldConfs: FieldConf[];
   config?: FormConfig;
@@ -55,18 +56,17 @@ export interface FormPreset {
 
 export type RenderOptions = {
   parentProps?: RawProps;
-  renderPreivew?: (component: ConcreteComponent | string, props: RawProps, children: () => any, content: () => any) => VNode;
-  renderItem?: (component: ConcreteComponent | string, props: RawProps, children: () => any) => VNode;
-  renderContent?: (component: ConcreteComponent | string, props: RawProps) => VNode;
+  renderPreivew?: (component: ComponentOptions | string, props: RawProps, children: () => any, content: () => any) => VNode;
+  renderItem?: (component: ComponentOptions, props: RawProps, children: () => any) => VNode;
+  renderContent?: (component: ComponentOptions, props: RawProps) => VNode;
 }
 
+export type UpdateFieldEvent =  { prop: string, value: any, scope?: string }
 export type RenderField = (field: FormField, options?: RenderOptions) => VNode
-export type UpdateField = (field: FormField, event: { prop: string, value: any, scope?: string }) => void
+export type UpdateField = (field: FormField, event: UpdateFieldEvent) => void
 
 export interface FormBuilderContext{
   type: 'builder';
-  /** 更新字段值 */
-  onUpdateValue: (event: any) => void;
   /** 渲染字段 */
   renderField: RenderField;
 }
@@ -86,7 +86,7 @@ export interface FormViewerContext{
   type: 'viewer';
   /** 渲染字段 */
   renderField: RenderField;
-  formatter: Function;
+  formatter: Formatter;
 }
 
 export type FormRenderContext = FormBuilderContext | FormDesignerContext | FormViewerContext;

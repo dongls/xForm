@@ -1,7 +1,7 @@
 @import './assets/css/variables.css';
 @import './assets/css/common.css';
 
-@import './component/XFormBuilder/component.css';
-@import './component/XFormDesigner/component.css';
-@import './component/XFormItem/component.css';
-@import './component/XFormViewer/component.css';
+@import './component/FormBuilder/component.css';
+@import './component/FormDesigner/component.css';
+@import './component/FormItem/component.css';
+@import './component/FormViewer/component.css';

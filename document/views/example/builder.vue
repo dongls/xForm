@@ -1,16 +1,16 @@
 <script lang="ts">
-import { getCurrentInstance, ref, defineComponent, nextTick } from 'vue'
-import { FormField } from '@dongls/xform'
+import { ref, defineComponent, nextTick } from 'vue'
+import { FormField, FormBuilderApi } from '@dongls/xform'
 import { useLocalSchema, saveToLocalModel } from '@document/util/common'
 
 export default defineComponent({
   name: 'builder-view',
   emits: ['view'],
   setup(props, { emit }){
-    const instance = getCurrentInstance()
     const { schema } = useLocalSchema()
     const pending = ref(false)
     const disabled = ref(false)
+    const builder = ref<FormBuilderApi>()
 
     function viewJSON(){
       const model = schema.value.model
@@ -18,10 +18,11 @@ export default defineComponent({
     }
 
     function reset(){
-      (instance.refs.builder as any).reset()
+      builder.value.reset()
     }
 
     return {
+      builder,
       disabled,
       disableForm(){
         disabled.value = !disabled.value
@@ -29,11 +30,9 @@ export default defineComponent({
       },
       schema, 
       pending,
-      change(/* e: any */){
-        // console.log(`${e.field.name}[${e.field.title}] value change:`, e.field.value,)
+      change(){
         nextTick(() => saveToLocalModel(schema.value.model))
       },
-      reset,
       viewJSON,
       submit(validate: Function){
         pending.value = true

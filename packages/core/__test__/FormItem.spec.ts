@@ -1,12 +1,14 @@
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { mockOption } from './mock'
-import { XFormItem, FormField, FieldConf } from '../index'
+import { FormField, FieldConf } from '../index'
 import { LabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
 import { createSchemaRef } from '../api'
 import store from '../api/store'
 
-describe('XFormItem slots: default', () => {
+import FormItem from '../component/FormItem/component'
+
+describe('FormItem slots: default', () => {
   test('slot is not empty', () => {
     const field = FormField.create({  
       type: 'text',
@@ -18,7 +20,7 @@ describe('XFormItem slots: default', () => {
     const app = { template: `<xform-item>${content}</xform-item>` }
     const wrapper = mount(app, {
       props: { field: field },
-      global: { components: { [XFormItem.name]: XFormItem } }
+      global: { components: { [FormItem.name]: FormItem } }
     })
 
     expect(wrapper.find('.xform-item-title').text()).toBe(field.title)
@@ -38,7 +40,7 @@ describe('XFormItem slots: default', () => {
     const app = { template: '<xform-item/>' }
     const wrapper = mount(app, {
       props: { field: field },
-      global: { components: { [XFormItem.name]: XFormItem } }
+      global: { components: { [FormItem.name]: FormItem } }
     })
 
     expect(wrapper.find('.xform-item-title').text()).toBe(field.title)
@@ -68,7 +70,7 @@ describe('XFormItem slots: default', () => {
       { template: `<xform-item>${content}</xform-item>` }, 
       {
         props: { field: field },
-        global: { components: { [XFormItem.name]: XFormItem } }
+        global: { components: { [FormItem.name]: FormItem } }
       }
     )
     expect(notEmptySlot.html()).toBe(content)
@@ -77,14 +79,14 @@ describe('XFormItem slots: default', () => {
       { template: '<xform-item/>' }, 
       {
         props: { field: field },
-        global: { components: { [XFormItem.name]: XFormItem } }
+        global: { components: { [FormItem.name]: FormItem } }
       }
     )
     expect(emptySlot.html()).toBe(`<div>${text}</div>`)
   })
 })
 
-describe('XFormItem props: labelPosition', () => {
+describe('FormItem props: labelPosition', () => {
   test('default', () => {
     store.reset()
 
@@ -96,7 +98,7 @@ describe('XFormItem props: labelPosition', () => {
 
     const wrapper = mount({ template: '<xform-item/>' }, { 
       props: { field: field }, 
-      global: { components: { [XFormItem.name]: XFormItem } } 
+      global: { components: { [FormItem.name]: FormItem } } 
     })
     expect(wrapper.find('.xform-item').element.matches('.xform-is-left'))
   })
@@ -113,7 +115,7 @@ describe('XFormItem props: labelPosition', () => {
     const wrapper = mount({ template: '<xform-item/>' }, {
       props: { field: field },
       global: {
-        components: { [XFormItem.name]: XFormItem },
+        components: { [FormItem.name]: FormItem },
         provide: {
           [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: LabelPosition.LEFT })
         }
@@ -134,7 +136,7 @@ describe('XFormItem props: labelPosition', () => {
     const wrapper = mount({ template: '<xform-item/>' }, {
       props: { field: field },
       global: {
-        components: { [XFormItem.name]: XFormItem },
+        components: { [FormItem.name]: FormItem },
         provide: {
           [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: LabelPosition.RIGHT })
         }
@@ -155,7 +157,7 @@ describe('XFormItem props: labelPosition', () => {
     const wrapper = mount({ template: '<xform-item/>' }, {
       props: { field: field },
       global: {
-        components: { [XFormItem.name]: XFormItem },
+        components: { [FormItem.name]: FormItem },
         provide: {
           [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelPosition: LabelPosition.TOP })
         }
@@ -165,7 +167,7 @@ describe('XFormItem props: labelPosition', () => {
   })
 })
 
-describe('XFormItem props: labelSuffix', () => {
+describe('FormItem props: labelSuffix', () => {
   test('is null', () => {
     store.reset()
   
@@ -178,7 +180,7 @@ describe('XFormItem props: labelSuffix', () => {
     const wrapper = mount({ template: '<xform-item/>' }, {
       props: { field: field },
       global: {
-        components: { [XFormItem.name]: XFormItem }
+        components: { [FormItem.name]: FormItem }
       }
     })
     
@@ -197,7 +199,7 @@ describe('XFormItem props: labelSuffix', () => {
     const wrapper = mount({ template: '<xform-item/>' }, {
       props: { field: field },
       global: {
-        components: { [XFormItem.name]: XFormItem },
+        components: { [FormItem.name]: FormItem },
         provide: {
           [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
         }
@@ -210,7 +212,7 @@ describe('XFormItem props: labelSuffix', () => {
   })
 })
 
-describe('XFormItem props: label', () => {
+describe('FormItem props: label', () => {
   test('not null', () => {
     store.reset()
   
@@ -224,7 +226,7 @@ describe('XFormItem props: label', () => {
     const wrapper = mount({ template: '<xform-item/>' }, {
       props: { field: field, label },
       global: {
-        components: { [XFormItem.name]: XFormItem },
+        components: { [FormItem.name]: FormItem },
         provide: {
           [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
         }
@@ -249,7 +251,7 @@ describe('XFormItem props: label', () => {
     const wrapper = mount({ template: '<xform-item/>' }, {
       props: { field: field, label },
       global: {
-        components: { [XFormItem.name]: XFormItem },
+        components: { [FormItem.name]: FormItem },
         provide: {
           [XFORM_SCHEMA_PROVIDE_KEY]: createSchemaRef({ labelSuffix: '：' })
         }

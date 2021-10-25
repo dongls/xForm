@@ -4,7 +4,7 @@ import icon from '@common/svg/checkbox.svg'
 import checkbox from './checkbox.vue'
 import setting from './setting.vue'
 
-const { LogicOperator } = useConstant()
+const { BuiltInLogicOperator } = useConstant()
 
 export default FieldConf.create({
   icon: icon,
@@ -26,9 +26,9 @@ export default FieldConf.create({
     field.options = options
   },
   operators: [
-    LogicOperator.EQ,
-    LogicOperator.NE,
-    LogicOperator.EMPTY,
-    LogicOperator.CONTAINS
+    BuiltInLogicOperator.EQ,
+    BuiltInLogicOperator.NE,
+    BuiltInLogicOperator.EMPTY,
+    BuiltInLogicOperator.CONTAINS
   ]
 })

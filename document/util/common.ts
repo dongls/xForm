@@ -79,3 +79,5 @@ export function useLocalSchema(withModel = true){
   }
 }
 
+export const IS_DEV = __IS_DEV__
+

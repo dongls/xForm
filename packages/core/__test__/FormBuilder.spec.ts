@@ -1,19 +1,23 @@
 import { mount } from '@vue/test-utils'
 import { mockOption } from './mock/index'
-import { XFormBuilder, XFormItem, createSchemaRef } from '../index'
+import { createSchemaRef } from '../index'
 import { ref } from 'vue'
+
+import FormBuilder from '../component/FormBuilder/component'
+import FormItem from '../component/FormItem/component'
+
 import store from '../api/store'
 
 function createGlobal(){
   return {
     components: {
-      [XFormBuilder.name]: XFormBuilder,
-      [XFormItem.name]: XFormItem
+      [FormBuilder.name]: FormBuilder,
+      [FormItem.name]: FormItem
     }
   }
 }
 
-describe('XFormBuilder props: tag', () => {
+describe('FormBuilder props: tag', () => {
   test('default', async () => {
     const option = mockOption()
     store.reset(option)
@@ -73,7 +77,7 @@ describe('XFormBuilder props: tag', () => {
   })
 })
 
-describe('XFormBuilder render', () => {
+describe('FormBuilder render', () => {
   test('field is hidden', () => {
     const option = mockOption()
     store.reset(option)
@@ -96,7 +100,7 @@ describe('XFormBuilder render', () => {
   })
 })
 
-describe('XFormBuilder validate', () => {
+describe('FormBuilder validate', () => {
   test('simple case', async () => {
     store.reset(mockOption())
 

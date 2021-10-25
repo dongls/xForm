@@ -7,6 +7,10 @@
   user-select: none;
 }
 
+.xform-setting + .xform-setting{
+  margin-top: 5px;
+}
+
 .xform-bs-empty-tip{
   position: absolute;
   top: 45%;

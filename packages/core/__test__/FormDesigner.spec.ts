@@ -1,23 +1,26 @@
 import { mount } from '@vue/test-utils'
 import { mockOption, mockSchema } from './mock/index'
-import { XFormDesigner, XFormItem, createSchemaRef } from '../index'
+import { createSchemaRef } from '../index'
 import { ModeGroup, PROPS } from '../model'
 import { h } from 'vue'
 import store from '../api/store'
 
-describe('XFormDesigner props: mode', () => {
+import FormDesigner from '../component/FormDesigner/component'
+import FormItem from '../component/FormItem/component'
+
+describe('FormDesigner props: mode', () => {
   test('mode is null', () => {
     const option = mockOption()
     store.reset(option)
   
-    const wrapper = mount(XFormDesigner as any, {
+    const wrapper = mount(FormDesigner as any, {
       props: {
         mode: null,
         schema: createSchemaRef(mockSchema())
       },
       global: {
         components: {
-          [XFormItem.name]: XFormItem
+          [FormItem.name]: FormItem
         }
       }
     })
@@ -31,7 +34,7 @@ describe('XFormDesigner props: mode', () => {
     const option = mockOption()
     store.reset(option)
   
-    const wrapper = mount(XFormDesigner as any, {
+    const wrapper = mount(FormDesigner as any, {
       props: {
         mode: 'simple',
         schema: createSchemaRef()
@@ -48,7 +51,7 @@ describe('XFormDesigner props: mode', () => {
     const option = mockOption()
     store.reset(option)
   
-    const wrapper = mount(XFormDesigner as any, {
+    const wrapper = mount(FormDesigner as any, {
       props: {
         mode: 'group',
         schema: createSchemaRef()
@@ -71,7 +74,7 @@ describe('XFormDesigner props: mode', () => {
 
 })
 
-describe('XFormDesigner slots: setting_form', () => {
+describe('FormDesigner slots: setting_form', () => {
   test('slot is null', () => {
     const option = mockOption()
     store.reset(option)
@@ -89,8 +92,8 @@ describe('XFormDesigner slots: setting_form', () => {
     const wrapper = mount(app, {
       global: {
         components: {
-          [XFormDesigner.name]: XFormDesigner,  
-          [XFormItem.name]: XFormItem
+          [FormDesigner.name]: FormDesigner,  
+          [FormItem.name]: FormItem
         }
       }
     })
@@ -122,8 +125,8 @@ describe('XFormDesigner slots: setting_form', () => {
     const wrapper = mount(app, {
       global: {
         components: {
-          [XFormDesigner.name]: XFormDesigner,  
-          [XFormItem.name]: XFormItem
+          [FormDesigner.name]: FormDesigner,  
+          [FormItem.name]: FormItem
         }
       }
     })
@@ -164,8 +167,8 @@ describe('XFormDesigner slots: setting_form', () => {
     const wrapper = mount(app, {
       global: {
         components: {
-          [XFormDesigner.name]: XFormDesigner,  
-          [XFormItem.name]: XFormItem
+          [FormDesigner.name]: FormDesigner,  
+          [FormItem.name]: FormItem
         }
       }
     })
@@ -180,7 +183,7 @@ describe('XFormDesigner slots: setting_form', () => {
   })
 })
 
-describe('XFormDesigner slots: others', () => {
+describe('FormDesigner slots: others', () => {
 
   test('tool & preview & setting', async () => {
     const option = mockOption()
@@ -235,8 +238,8 @@ describe('XFormDesigner slots: others', () => {
     const wrapper = mount(app, {
       global: {
         components: {
-          [XFormDesigner.name]: XFormDesigner,  
-          [XFormItem.name]: XFormItem
+          [FormDesigner.name]: FormDesigner,  
+          [FormItem.name]: FormItem
         }
       }
     })

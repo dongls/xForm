@@ -39,7 +39,7 @@
 import { defineComponent, onBeforeUnmount, reactive } from 'vue'
 import { version } from '@dongls/xform'
 import { savePresetNameToLocal, usePreset } from './preset'
-import { useIsWide } from '../../util/common'
+import { useIsWide, IS_DEV } from '../../util/common'
 
 export default defineComponent({
   name: 'example',
@@ -78,12 +78,8 @@ export default defineComponent({
 
         savePresetNameToLocal(value)
         window.location.reload()
-      }
-    }
-  },
-  computed: {
-    isDev(){
-      return this.IS_DEV
+      },
+      isDev: IS_DEV
     }
   }
 })

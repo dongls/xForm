@@ -1,5 +1,5 @@
 import { registerOperator as r, test } from './operator'
-import { LogicRule, LogicOperator } from '../model'
+import { LogicRule, BuiltInLogicOperator } from '../model'
 
 function toPrimitive(value: unknown){
   if(typeof value == 'string') return value.trim() == '' ? null : value
@@ -9,7 +9,7 @@ function toPrimitive(value: unknown){
 }
 
 r({
-  value: LogicOperator.AND,
+  value: BuiltInLogicOperator.AND,
   label: '逻辑与',
   code: '&&',
   description: '所有',
@@ -27,7 +27,7 @@ r({
 })
 
 r({
-  value: LogicOperator.OR,
+  value: BuiltInLogicOperator.OR,
   label: '逻辑或',
   code: '||',
   description: '任一',
@@ -45,7 +45,7 @@ r({
 })
 
 r({
-  value: LogicOperator.NOT,
+  value: BuiltInLogicOperator.NOT,
   label: '逻辑非',
   code: '!',
   description: '没有',
@@ -63,7 +63,7 @@ r({
 })
 
 r({
-  value: LogicOperator.LT,
+  value: BuiltInLogicOperator.LT,
   label: '小于',
   code: '<',
   test(logic: LogicRule, model: any) {
@@ -78,7 +78,7 @@ r({
 })
 
 r({
-  value: LogicOperator.LTE,
+  value: BuiltInLogicOperator.LTE,
   label: '小于或等于',
   code: '<=',
   test(logic: LogicRule, model: any) {
@@ -93,7 +93,7 @@ r({
 })
 
 r({
-  value: LogicOperator.GT,
+  value: BuiltInLogicOperator.GT,
   label: '大于',
   code: '>',
   test(logic: LogicRule, model: any) {
@@ -108,7 +108,7 @@ r({
 })
 
 r({
-  value: LogicOperator.GTE,
+  value: BuiltInLogicOperator.GTE,
   label: '大于或等于',
   code: '>=',
   test(logic: LogicRule, model: any) {
@@ -123,7 +123,7 @@ r({
 })
 
 r({
-  value: LogicOperator.EQ,
+  value: BuiltInLogicOperator.EQ,
   label: '等于',
   code: '==',
   test(logic: LogicRule, model: any) {
@@ -138,7 +138,7 @@ r({
 })
 
 r({
-  value: LogicOperator.NE,
+  value: BuiltInLogicOperator.NE,
   label: '不等于',
   code: '!=',
   test(logic: LogicRule, model: any) {
@@ -153,7 +153,7 @@ r({
 })
 
 r({
-  value: LogicOperator.EMPTY,
+  value: BuiltInLogicOperator.EMPTY,
   label: '为空',
   code: 'empty',
   test(logic: LogicRule, model: any) {
@@ -169,7 +169,7 @@ r({
 })
 
 r({
-  value: LogicOperator.CONTAINS,
+  value: BuiltInLogicOperator.CONTAINS,
   label: '包含',
   code: 'contains',
   test(logic: LogicRule, model: any) {

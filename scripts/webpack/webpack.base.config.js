@@ -7,9 +7,10 @@ const utils = require('../utils')
 const { VueLoaderPlugin } = require('vue-loader')
 
 function genTarget(){
-  if(!IS_PRODUCTION) return 'web'
+  if(!IS_PRODUCTION || RELEASE_TARGET == 'bundler') return 'web'
   if(RELEASE_TARGET == 'esm') return 'browserslist:esm'
-  return 'browserslist:production'
+
+  return 'browserslist:umd'
 }
 
 module.exports = {

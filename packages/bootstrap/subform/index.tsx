@@ -173,8 +173,8 @@ const view = defineComponent({
 })
 
 export default FieldConf.create({
-  type: 'subform',
-  title: '子表单',
+  type: 'datatable',
+  title: '数据表格',
   icon,
   accept: ['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'date'],
   setting,

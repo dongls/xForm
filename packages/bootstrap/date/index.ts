@@ -4,7 +4,7 @@ import icon from '@common/svg/date.svg'
 import date from './date.vue'
 import setting from './setting.vue'
 
-const { LogicOperator } = useConstant()
+const { BuiltInLogicOperator } = useConstant()
 
 export default FieldConf.create({
   icon: icon,
@@ -17,12 +17,12 @@ export default FieldConf.create({
     return Promise.resolve()
   },
   operators: [
-    LogicOperator.LT,
-    LogicOperator.LTE,
-    LogicOperator.GT,
-    LogicOperator.GTE,
-    LogicOperator.EQ,
-    LogicOperator.NE,
-    LogicOperator.EMPTY,
+    BuiltInLogicOperator.LT,
+    BuiltInLogicOperator.LTE,
+    BuiltInLogicOperator.GT,
+    BuiltInLogicOperator.GTE,
+    BuiltInLogicOperator.EQ,
+    BuiltInLogicOperator.NE,
+    BuiltInLogicOperator.EMPTY,
   ]
 })

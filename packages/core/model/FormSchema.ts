@@ -159,7 +159,7 @@ export class FormSchema extends FormScope {
       raw[key] = isNull(o) ? clonePlainObject(v) : o
     }
 
-    return new FormSchema(raw, model)
+    return new FormSchema(raw, model, CONSTRUCTOR_SIGN)
   }
 
   /** 验证schema的完整性，默认值验证是否填写标题 */

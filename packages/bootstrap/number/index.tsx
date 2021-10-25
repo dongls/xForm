@@ -5,7 +5,7 @@ import icon from '@common/svg/number.svg'
 import setting from './setting.vue'
 import { useValue } from '../util'
 
-const { LogicOperator } = useConstant()
+const { BuiltInLogicOperator } = useConstant()
 
 const build = defineComponent({
   name: 'xform-bs-number',
@@ -49,12 +49,12 @@ export default FieldConf.create({
     return Promise.resolve()
   },
   operators: [
-    LogicOperator.LT,
-    LogicOperator.LTE,
-    LogicOperator.GT,
-    LogicOperator.GTE,
-    LogicOperator.EQ,
-    LogicOperator.NE,
-    LogicOperator.EMPTY,
+    BuiltInLogicOperator.LT,
+    BuiltInLogicOperator.LTE,
+    BuiltInLogicOperator.GT,
+    BuiltInLogicOperator.GTE,
+    BuiltInLogicOperator.EQ,
+    BuiltInLogicOperator.NE,
+    BuiltInLogicOperator.EMPTY,
   ]
 })

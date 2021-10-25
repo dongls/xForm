@@ -1,0 +1,26 @@
+body{
+  margin: 0;
+  display: flex;
+}
+
+aside{
+  width: 200px;
+  border-right: 1px solid #aaa;
+  padding: 5px;
+  overflow: auto;
+}
+
+aside a{
+  display: block;
+  color: rgb(0, 0, 238);
+}
+
+aside a + a{
+  margin-top: 4px;
+}
+
+iframe{
+  display: block;
+  border: none;
+  flex: 1;
+}

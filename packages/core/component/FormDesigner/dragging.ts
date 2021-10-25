@@ -17,13 +17,14 @@ import {
   getScope
 } from '../../util'
 
-import { XFormDesignerInstance } from './component'
 import store from '../../api/store'
+
+import { FormDesignerApi } from './component'
 
 export default function useDragging(){
   const utils = {
     getInternalInstance,
-    getPublicInstance,
+    getApi,
     resetDragStatus,
     getMarkEl,
     moveMarkEl,
@@ -39,8 +40,8 @@ export default function useDragging(){
     return GLOBAL.instance
   }
 
-  function getPublicInstance(){
-    return GLOBAL.instance.proxy as XFormDesignerInstance
+  function getApi(){
+    return GLOBAL.instance.exposeProxy as FormDesignerApi
   }
 
   function getMarkEl(){
@@ -154,7 +155,7 @@ export default function useDragging(){
     const dropEvent = context.createDropEvent(path, event, { ...utils })
     if(context.trigger(dropEvent).defaultPrevented) return
 
-    const pInstance = getPublicInstance()
+    const api = getApi()
     const rootScopeEl = getRootScopeEl()
     const targetScopeEl = mark.closest(SELECTOR.SCOPE) ?? rootScopeEl
     const targetScope = getScope(targetScopeEl)
@@ -172,8 +173,8 @@ export default function useDragging(){
       if(null != fc){
         const field = new FormField(fc)
         targetScope.insert(newIndex, field)
-        pInstance.updateSchema()
-        pInstance.chooseField(field)
+        api.updateSchema()
+        api.chooseField(field)
       }
 
       return resetDragStatus()
@@ -193,8 +194,8 @@ export default function useDragging(){
         targetScope.insert(newIndex, field)
       }
 
-      pInstance.updateSchema()
-      pInstance.chooseField(field)
+      api.updateSchema()
+      api.chooseField(field)
       return resetDragStatus()
     }
 

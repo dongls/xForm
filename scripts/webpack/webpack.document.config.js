@@ -1,7 +1,6 @@
 const { IS_PRODUCTION, NODE_ENV } = require('../args')
 
 const path = require('path')
-const webpack = require('webpack')
 
 const { merge } = require('webpack-merge')
 const { genHtmlWebpackPlugin } = require('../utils')
@@ -36,10 +35,12 @@ const development = {
   devServer: {
     historyApiFallback: true,
     host: '127.0.0.1',
-    hot: true,
+    static: {
+      directory: path.join(__dirname, '../../docs'),
+      publicPath: '/docs'
+    },
     open: true,
     port: 8801,
-    publicPath: '/',
   },
   output: {
     publicPath: '/',
@@ -50,7 +51,6 @@ const development = {
     }
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: './document/index.html',
       filename: './index.html'

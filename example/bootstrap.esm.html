@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xform bootstrap example for esm</title>
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="/libs/bootstrap/bootstrap.min.css" />
+  <script src="/libs/bootstrap/jquery.slim.min.js"></script>
+  <script src="/libs/bootstrap/popper.min.js"></script>
+  <script src="/libs/bootstrap/bootstrap.min.js"></script>
+  <!-- xform -->
+  <link href="/example/packages/core/dist/index.css" rel="stylesheet">
+  <!-- xform.bootstrap -->
+  <link href="/example/packages/bootstrap/dist/index.css" rel="stylesheet">
+</head>
+<body>
+  <div id="app" style="height: 100vh;"></div>
+
+  <script type="text/x-template" id="template">
+  <xform-designer v-model:schema="schema"></xform-designer>
+  </script>
+
+  <!-- chorme 89+ -->
+  <script type="importmap">
+    {
+      "imports":{
+        "vue": "https://unpkg.com/vue@3.2.1/dist/vue.esm-browser.prod.js",
+        "@dongls/xform": "/example/packages/core/dist/index.esm.js",
+        "@dongls/xform.bootstrap": "/example/packages/bootstrap/dist/index.esm.js"
+      }
+    }
+  </script>
+  
+  <script type="module">
+    import { createApp } from 'vue'
+    import XForm, { useApi } from '@dongls/xform'
+    import XFormBootstrap from '@dongls/xform.bootstrap'
+
+    const api = useApi()
+    const App = {
+      template: '#template',
+      setup(){
+        return {
+          schema: api.createSchemaRef()
+        }
+      }
+    }
+
+    const option = { preset: XFormBootstrap }
+    const app = createApp(App)
+    
+    app.use(XForm, option)
+    app.mount('#app')
+  </script>
+</body>
+</html>

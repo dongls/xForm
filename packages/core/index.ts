@@ -4,19 +4,19 @@ import { App } from 'vue'
 import { FormOption } from './model'
 import store from './api/store'
 
-import XFormDesigner from './component/XFormDesigner/component'
-import XFormBuilder from './component/XFormBuilder/component'
-import XFormViewer from './component/XFormViewer/component'
-import XFormItem from './component/XFormItem/component'
+import FormDesigner, { FormDesignerApi } from './component/FormDesigner/component'
+import FormBuilder, { FormBuilderApi } from './component/FormBuilder/component'
+import FormViewer from './component/FormViewer/component'
+import FormItem from './component/FormItem/component'
 
 const version = __VERSION__
 const install = function(app: App, options: FormOption){
   if(null != options) store.use(options)
 
-  app.component(XFormDesigner.name, XFormDesigner)
-  app.component(XFormBuilder.name, XFormBuilder)
-  app.component(XFormViewer.name, XFormViewer)
-  app.component(XFormItem.name, XFormItem)
+  app.component(FormDesigner.name, FormDesigner)
+  app.component(FormBuilder.name, FormBuilder)
+  app.component(FormViewer.name, FormViewer)
+  app.component(FormItem.name, FormItem)
 }
 
 const XForm = {
@@ -25,10 +25,8 @@ const XForm = {
 }
 
 export {
-  XFormBuilder,
-  XFormDesigner,
-  XFormItem,
-  XFormViewer,
+  FormBuilderApi,
+  FormDesignerApi,
   install,
   version,
 }

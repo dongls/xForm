@@ -4,3 +4,4 @@ node_modules
 __private__
 coverage
 types
+example/packages

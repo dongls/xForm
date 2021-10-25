@@ -16,7 +16,10 @@ const common = {
   optimization: {
     minimizer: [
       new TerserPlugin({
-        extractComments: false
+        extractComments: false,
+        terserOptions: {
+          keep_classnames: true
+        }
       }),
       new CssMinimizerPlugin()
     ]

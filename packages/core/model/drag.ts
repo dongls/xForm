@@ -19,7 +19,7 @@ import {
   isString,
 } from '../util'
 
-import { XFormDesignerInstance } from '../component/XFormDesigner/component'
+import { FormDesignerApi } from '../component/FormDesigner/component'
 import { AnyProps } from './common'
 
 const DELTA_X = 72
@@ -28,7 +28,7 @@ const MODIFIABLE_KEY = ['currentTarget', 'cancelBubble', 'defaultPrevented']
 
 export interface InternalDragUtils{
   getInternalInstance: () => ComponentInternalInstance;
-  getPublicInstance: () => XFormDesignerInstance;
+  getApi: () => FormDesignerApi;
   resetDragStatus: () => void,
   getMarkEl: () => HTMLElement,
   getRootScopeEl: () => HTMLElement,

@@ -80,11 +80,11 @@ import {
 } from '@dongls/xform'
 import Modal from './Modal.vue'
 
-const { LogicOperator } = useConstant()
+const { BuiltInLogicOperator } = useConstant()
 const COMMON_OPERATORS = [
-  LogicOperator.AND,
-  LogicOperator.OR,
-  LogicOperator.NOT
+  BuiltInLogicOperator.AND,
+  BuiltInLogicOperator.OR,
+  BuiltInLogicOperator.NOT
 ]
 
 function checkCondition(operator: string){
@@ -106,7 +106,7 @@ function createContent(rule: LogicRule, field: FormField){
   if(checkCondition(rule.operator)) return null
 
   const value = (
-    rule.operator == LogicOperator.EMPTY
+    rule.operator == BuiltInLogicOperator.EMPTY
       ? null
       : <input type="text" class="form-control" placeholder="目标值" v-model={rule.value}/>
   )
@@ -156,7 +156,7 @@ function checkLogic(logic: LogicRule): any{
   }
 
   if(!logic.name) return false
-  if(logic.operator != LogicOperator.EMPTY && !logic.value) return false
+  if(logic.operator != BuiltInLogicOperator.EMPTY && !logic.value) return false
 
   return true
 }
@@ -196,7 +196,7 @@ const Preivew = defineComponent({
           {name}
           <span>的值</span>
           <strong>{fmtOperatorText(rule.operator)}</strong>
-          {rule.operator == LogicOperator.EMPTY ? null : <strong>{rule.value ?? 'N/A'}</strong>}
+          {rule.operator == BuiltInLogicOperator.EMPTY ? null : <strong>{rule.value ?? 'N/A'}</strong>}
         </div>
       )
     }
