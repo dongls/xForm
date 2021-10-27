@@ -150,4 +150,6 @@ export async function usePreset(state: { preset: string, loading: boolean }, _ta
 
   state.preset = target
   state.loading = false
+
+  document.querySelector('#loading').remove()
 }

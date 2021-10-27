@@ -108,10 +108,10 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
 
   function createTip(rows: number, disabled: boolean, width: number){
     if(rows > 0) return null
-    if(disabled) return <div class="xform-bs-subform-tip" style={`width: ${width}px`}>暂无数据</div>
+    if(disabled) return <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>暂无数据</div>
   
     return (
-      <div class="xform-bs-subform-tip" style={`width: ${width}px`}>
+      <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>
         <span>点击</span>
         <button type="button" class="btn btn-link btn-sm shadow-none" onClick={showInsertModal}>+ 添加</button>
         <span>按钮插入数据</span>
@@ -148,15 +148,15 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
       })
 
       const operate = disabled ? null : (
-        <td class="xform-bs-subform-operate">
+        <td class="xform-bs-datatable-operate">
           <button type="button" class="btn btn-link shadow-none" onClick={showEditModal.bind(null, row)}>编辑</button>
           <button type="button" class="btn btn-link text-danger shadow-none" onClick={removeRow.bind(null, row)}>删除</button>
         </td>
       )
       
       return (
-        <tr class="xform-bs-subform-row">
-          <td class="xform-bs-subform-index">{index + 1}</td>
+        <tr class="xform-bs-datatable-row">
+          <td class="xform-bs-datatable-index">{index + 1}</td>
           {tds}
           {operate}
         </tr>
@@ -173,29 +173,29 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
           {disabled ? null : <col style={`width: ${DEF_OPERATE_WIDTH}px`}/>}
         </colgroup>
         <thead>
-          <th class="xform-bs-subform-index">{button}</th>
+          <th class="xform-bs-datatable-index">{button}</th>
           {columns.map(column => {
             const klass = {
-              'xform-bs-subform-cell': true,
+              'xform-bs-datatable-cell': true,
               'xform-is-required': !disabled && !column.disabled && column.required
             }
             return <th class={klass}><span>{column.title}</span></th>
           })}
-          {disabled ? null : <th class="xform-bs-subform-operate">操作</th>}
+          {disabled ? null : <th class="xform-bs-datatable-operate">操作</th>}
         </thead>
         <tbody>{rows}</tbody>
       </table>
     )
 
     return (
-      <div class="xform-bs-subform" data-layout="modal">
+      <div class="xform-bs-datatable" data-layout="modal">
         <div class="table-responsive">
           {table}
           {createTip(rows.length, disabled, width)}
         </div>
         <modal
           title={`${currentRow == null ? '添加' : '编辑'}数据`}
-          class="xform-bs-subform-modal-layout"
+          class="xform-bs-datatable-modal-layout"
           onConfirm={submit}
           {...{ visible: show.value, 'onUpdate:visible': updateShow }}
         >

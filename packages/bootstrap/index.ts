@@ -13,7 +13,7 @@ import Date from './date'
 import Divider from './divider'
 import Group from './group'
 import Tabs from './tabs'
-import Subform from './subform'
+import Datatable from './datatable'
 
 const bootstrap: FormPreset = {
   name: 'bootstrap',
@@ -32,7 +32,7 @@ const bootstrap: FormPreset = {
     Divider,
     Group,
     Tabs,
-    Subform
+    Datatable
   ]
 }
 

@@ -4,7 +4,7 @@
     background-color: rgb(253, 213, 138);
   }
 
-  .xform-bs-subform{
+  .xform-bs-datatable{
     border: 1px solid #ccc;
     position: relative;
     z-index: 9;
@@ -23,7 +23,7 @@
     transform: translate(-50%, -50%);
   }
 
-  .xform-bs-subform-cell{
+  .xform-bs-datatable-cell{
     text-align: center;
     line-height: 26px;
     height: 26px;
@@ -31,7 +31,7 @@
     overflow: hidden;
   }
 
-  .xform-bs-subform-columns{
+  .xform-bs-datatable-columns{
     padding: 5px;
     height: 50px;
     display: flex;
@@ -41,7 +41,7 @@
   }
 }
 
-.xform-bs-subform{
+.xform-bs-datatable{
   .xform-item{
     margin-bottom: 0;
     
@@ -59,41 +59,41 @@
     background-color: #ececec;
   }
 
-  th.xform-bs-subform-index,
-  th.xform-bs-subform-operate{
+  th.xform-bs-datatable-index,
+  th.xform-bs-datatable-operate{
     background-color: #f5f5f5;
   }
 
-  td.xform-bs-subform-index,
-  td.xform-bs-subform-operate{
+  td.xform-bs-datatable-index,
+  td.xform-bs-datatable-operate{
     background-color: #fff;
   }
 
-  tr:hover td.xform-bs-subform-index,
-  tr:hover td.xform-bs-subform-operate{
+  tr:hover td.xform-bs-datatable-index,
+  tr:hover td.xform-bs-datatable-operate{
     background-color: #ececec;
   }
 }
 
-.xform-bs-subform[data-layout="modal"] th,
-.xform-bs-subform[data-layout="modal"] td,
-.xform-bs-subform-view td,
-.xform-bs-subform-view th{
+.xform-bs-datatable[data-layout="modal"] th,
+.xform-bs-datatable[data-layout="modal"] td,
+.xform-bs-datatable-view td,
+.xform-bs-datatable-view th{
   padding: 8px;
 }
 
-.xform-bs-subform .table,
-.xform-bs-subform-view .table{
+.xform-bs-datatable .table,
+.xform-bs-datatable-view .table{
   margin-bottom: 0;
 }
 
-.xform-bs-subform[data-layout="inline"]{
-  td.xform-bs-subform-index button{
+.xform-bs-datatable[data-layout="inline"]{
+  td.xform-bs-datatable-index button{
     display: none;
     text-align: center;
   }
 
-  tbody tr:hover td.xform-bs-subform-index{
+  tbody tr:hover td.xform-bs-datatable-index{
     strong{
       display: none;
       
@@ -105,15 +105,15 @@
   }
 }
 
-.xform-bs-subform-cell span{
+.xform-bs-datatable-cell span{
   position: relative;
 }
 
-.xform-bs-subform-cell.xform-is-required{
+.xform-bs-datatable-cell.xform-is-required{
   font-weight: 700;
 }
 
-.xform-bs-subform-cell.xform-is-required span:before{
+.xform-bs-datatable-cell.xform-is-required span:before{
   content: "*";
   position: absolute;
   top: 0;
@@ -124,23 +124,23 @@
   font-weight: 700;
 }
 
-.xform-bs-subform-operate{
+.xform-bs-datatable-operate{
   text-align: center;
   position: sticky;
   right: 0;
   z-index: 8;
 }
 
-.xform-bs-subform-index > button,
-.xform-bs-subform-operate > button{
+.xform-bs-datatable-index > button,
+.xform-bs-datatable-operate > button{
   font-size: 14px;
   padding: 0;
 }
-.xform-bs-subform-operate > button + button{
+.xform-bs-datatable-operate > button + button{
   margin-left: 10px;
 }
 
-.xform-bs-subform-index{
+.xform-bs-datatable-index{
   position: sticky;
   left: 0;
   z-index: 8;
@@ -148,7 +148,7 @@
   font-size: 14px;
 }
 
-.xform-bs-subform-tip{
+.xform-bs-datatable-tip{
   text-align: center;
   color: #6c757d;
   max-width: 100%;
@@ -173,11 +173,11 @@
   }
 }
 
-.xform-bs-subform-error{
+.xform-bs-datatable-error{
   line-height: 31px;
 }
 
-.xform-bs-subform-modal-layout{
+.xform-bs-datatable-modal-layout{
   .modal-dialog{
     margin-top: 12vh;
     max-height: 76vh;

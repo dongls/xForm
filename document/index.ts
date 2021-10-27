@@ -12,7 +12,7 @@ const app = Vue.createApp(App)
 app.use(router)
 app.use(XForm)
 app.use(component)
-app.mount(document.body)
+app.mount('#app')
 
 app.config.performance = __IS_DEV__
 app.config.globalProperties.IS_DEV = __IS_DEV__

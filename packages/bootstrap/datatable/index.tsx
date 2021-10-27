@@ -9,7 +9,7 @@ import {
   useConstant,
 } from '@dongls/xform'
 
-import icon from '@common/svg/subform.svg'
+import icon from '@common/svg/datatable.svg'
 import { Row, DEF_COLUMN_WIDTH, BODY_CLASS } from './common'
 import { useInlineLayout } from './inline'
 import { useModalLayout } from './modal'
@@ -21,7 +21,7 @@ const { CLASS, PROPS, EVENTS, EnumValidateMode } = useConstant()
 const DEF_INDEX_WIDTH = 60
 
 const preview = defineComponent({
-  name: 'xform-bs-subform-preview',
+  name: 'xform-bs-datatable-preview',
   props: {
     field: {
       type: FormField,
@@ -43,7 +43,7 @@ const preview = defineComponent({
               return rc.renderField(f, { 
                 renderItem(){
                   const klass = {
-                    'xform-bs-subform-cell': true,
+                    'xform-bs-datatable-cell': true,
                     'xform-is-required': f.required
                   }
 
@@ -65,7 +65,7 @@ const preview = defineComponent({
       }
       
       return (
-        <div class={`xform-bs-subform ${CLASS.IS_VERTICAL_MARK} ${CLASS.IS_SCROLL}`}>
+        <div class={`xform-bs-datatable ${CLASS.IS_VERTICAL_MARK} ${CLASS.IS_SCROLL}`}>
           <div {..._p}>{content}</div>
         </div>
       )
@@ -73,8 +73,8 @@ const preview = defineComponent({
   }
 })
 
-const subform = defineComponent({
-  name: 'xform-bs-subform',
+const datatable = defineComponent({
+  name: 'xform-bs-datatable',
   props: {
     field: {
       type: FormField,
@@ -101,7 +101,7 @@ const subform = defineComponent({
 })
 
 const view = defineComponent({
-  name: 'xform-bs-subform-view',
+  name: 'xform-bs-datatable-view',
   props: {
     field: {
       type: FormField,
@@ -141,12 +141,12 @@ const view = defineComponent({
           }</td>
         })
 
-        const opreate = <td class="xform-bs-subform-operate"><strong>{index + 1}</strong></td>
+        const opreate = <td class="xform-bs-datatable-operate"><strong>{index + 1}</strong></td>
         return <tr>{opreate}{cells}</tr>
       })
 
       return (
-        <div class="xform-bs-subform xform-bs-subform-view">
+        <div class="xform-bs-datatable xform-bs-datatable-view">
           <div class="table-responsive">
             <table class="table table-hover" style={{ width: total + 'px' }}>
               <colgroup>
@@ -154,10 +154,10 @@ const view = defineComponent({
                 {cols}
               </colgroup>
               <thead>
-                <th class="xform-bs-subform-operate">#</th>
+                <th class="xform-bs-datatable-operate">#</th>
                 {columns.map(column => {
                   const klass = {
-                    'xform-bs-subform-cell': true,
+                    'xform-bs-datatable-cell': true,
                     'xform-is-required': !props.disabled && !column.disabled && column.required
                   }
                   return <th class={klass}><span>{column.title}</span></th>
@@ -179,7 +179,7 @@ export default FieldConf.create({
   accept: ['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'date'],
   setting,
   preview,
-  build: subform,
+  build: datatable,
   view,
   onDragOver(event) {
     const current = event.currentTarget

@@ -1,5 +1,12 @@
-const { getOptions } = require('loader-utils')
+const { parseQuery } = require('loader-utils')
 const md = require('./markdown-it')
+
+function getOptions(loaderContext) {
+  const query = loaderContext.query
+  if (typeof query === 'string' && query !== '') return parseQuery(loaderContext.query)
+  if (!query || typeof query !== 'object') return {}
+  return query
+}
 
 module.exports = function (source) {
   const options = getOptions(this)

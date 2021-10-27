@@ -5,9 +5,30 @@
   <meta name="author" content="dongls,173110115@qq.com">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>xForm示例</title>
+  <title>xForm在线示例</title>
+  <style>
+    #loading{
+      position: fixed;
+      top: 24vh;
+      left: calc(50% + 4ch);
+      font-size: 16px;
+      font-family: monospace;
+      line-height: 20px;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 8ch;
+      animation: typing 1.5s steps(3) infinite;
+    }
+    
+    @keyframes typing{
+      75%{width: 11ch;}
+      100%{width: 11ch;}
+    }
+  </style>
 </head>
 <body>
+  <div id="loading">loading ...</div>
   <div id="app"></div>
 </body>
 </html>

@@ -19,8 +19,8 @@
     </section>
     <section class="xform-bs-field-setting-prop">
       <header>列宽：</header>
-      <div class="xform-bs-subform-column" v-for="column in field.fields" :key="column.uid">
-        <div class="xform-bs-subform-column-bar" :style="{ width: `${getColumnWidth(column.name) ?? DEF_COLUMN_WIDTH}px` }"/>
+      <div class="xform-bs-datatable-column" v-for="column in field.fields" :key="column.uid">
+        <div class="xform-bs-datatable-column-bar" :style="{ width: `${getColumnWidth(column.name) ?? DEF_COLUMN_WIDTH}px` }"/>
         <label>{{ column.title }}</label>
         <input 
           type="number" min="0"
@@ -44,7 +44,7 @@ import FieldSetting from '../FieldSetting.vue'
 const { EVENTS } = useConstant()
 
 export default defineComponent({
-  name: 'xform-bs-subform-setting',
+  name: 'xform-bs-datatable-setting',
   props: {
     field: {
       type: FormField,
@@ -78,7 +78,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.xform-bs-subform-column{
+.xform-bs-datatable-column{
   position: relative;
   border: 1px solid #ced4da;
   line-height: 30px;
@@ -123,12 +123,12 @@ export default defineComponent({
     }
   }
 
-  & + .xform-bs-subform-column{
+  & + .xform-bs-datatable-column{
     margin-top: 5px;
   }
 }
 
-.xform-bs-subform-column-bar{
+.xform-bs-datatable-column-bar{
   position: absolute;
   left: 0;
   top: 0;

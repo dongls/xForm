@@ -1,6 +1,5 @@
 <template>
-  <div v-if="state.loading" class="loading">loading...</div>
-  <div v-else class="example">
+  <div v-if="!state.loading" class="example">
     <div class="header">
       <div class="header-left">
         <div class="logo">xForm<small>v{{ version }}</small></div>
@@ -289,11 +288,5 @@ html.is-example{
 
 .btn-text{
   text-decoration: none !important;
-}
-
-.loading{
-  padding-top: 24vh;
-  text-align: center;
-  font-size: 16px;
 }
 </style>

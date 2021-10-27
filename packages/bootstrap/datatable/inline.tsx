@@ -31,10 +31,10 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
 
   function createTip(rows: number, disabled: boolean, width: number){
     if(rows > 0) return null
-    if(disabled) return <div class="xform-bs-subform-tip" style={`width: ${width}px`}>暂无数据</div>
+    if(disabled) return <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>暂无数据</div>
   
     return (
-      <div class="xform-bs-subform-tip" style={`width: ${width}px`}>
+      <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>
         <span>点击</span>
         <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>+ 添加</button>
         <span>按钮插入数据</span>
@@ -70,8 +70,8 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
       })
 
       return (
-        <tr class="xform-bs-subform-row">
-          <td class="xform-bs-subform-index">
+        <tr class="xform-bs-datatable-row">
+          <td class="xform-bs-datatable-index">
             <strong>{index + 1}</strong>
             { disabled ? null : <button type="button" class="btn btn-link text-danger" onClick={removeRow.bind(null, row)}>删除</button> }
           </td>
@@ -82,7 +82,7 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
 
     const button = disabled ? '#' : <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>添加</button>
     return (
-      <div class="xform-bs-subform" data-layout="inline">
+      <div class="xform-bs-datatable" data-layout="inline">
         <div class="table-responsive">
           <table class="table table-hover" style={{ width: total + 'px' }}>
             <colgroup>
@@ -90,10 +90,10 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
               {cols}
             </colgroup>
             <thead>
-              <th class="xform-bs-subform-index">{button}</th>
+              <th class="xform-bs-datatable-index">{button}</th>
               {columns.map(column => {
                 const klass = {
-                  'xform-bs-subform-cell': true,
+                  'xform-bs-datatable-cell': true,
                   'xform-is-required': !disabled && !column.disabled && column.required
                 }
                 return <th class={klass}><span>{column.title}</span></th>

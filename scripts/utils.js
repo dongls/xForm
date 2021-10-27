@@ -97,7 +97,8 @@ function genHtmlWebpackPlugin(filename, options = {}){
   return new HtmlWebpackPlugin({
     template: options.template || './document/index.html',
     filename,
-    meta
+    meta,
+    minify: false
   })
 }
 
