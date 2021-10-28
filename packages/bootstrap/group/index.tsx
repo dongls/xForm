@@ -92,8 +92,8 @@ const build = defineComponent({
           [CLASS.DROPPABLE]: inDesigner,
           [CLASS.SCOPE]: true
         },
-        [PROPS.FIELD]: inDesigner ? props.field : undefined,
-        [PROPS.SCOPE]: props.field
+        ['.' + PROPS.FIELD]: inDesigner ? props.field : undefined,
+        ['.' + PROPS.SCOPE]: props.field
       }
 
       const content = fields.map(f => {

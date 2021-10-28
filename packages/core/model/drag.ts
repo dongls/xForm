@@ -46,14 +46,14 @@ export interface InternalDragEventContext extends InternalDragUtils, AnyProps{
 
 class InternalDragEvent{
   cancelBubble = false // 是否被取消
-  currentTarget: Element; // 当前被触发事件的元素
+  currentTarget: Element // 当前被触发事件的元素
   defaultPrevented = false // 是否阻止默认行为
-  context: InternalDragEventContext;
-  dragElement: Element; // 正在拖拽的元素
-  originEvent: Event; // 当前触发的原生事件
-  path: Element[]; // 事件路径
-  target: Element; // 当前触发事件的元素
-  type: string; // 事件类型
+  context: InternalDragEventContext
+  dragElement: Element // 正在拖拽的元素
+  originEvent: Event // 当前触发的原生事件
+  path: Element[] // 事件路径
+  target: Element // 当前触发事件的元素
+  type: string // 事件类型
 
   constructor(type: string, path: Element[], dragElement: Element, originEvent: Event, context: InternalDragEventContext){
     this.dragElement = dragElement
@@ -83,18 +83,18 @@ export type PublicDragEvent = {
 }
 
 export class InternalDragContext{
-  clientX: number; // 上一位置的x左边
-  clientY: number; // 上一位置的y坐标
-  deltaX: number; // ghostEl左边与鼠标之间的偏移量
-  deltaY: number; // ghostEl上边与鼠标之间的偏移量
-  dragElement: Element; // 拖拽的元素
-  dropElement: Element; // 拖放的目标元素
-  field?: FormField; // 字段
-  fieldType: string; // 字段类型
-  init = false; // 是否初始化
-  mode: EnumDragMode; // 拖拽模式
-  directionY: number;
-  directionX: number;
+  clientX: number // 上一位置的x左边
+  clientY: number // 上一位置的y坐标
+  deltaX: number // ghostEl左边与鼠标之间的偏移量
+  deltaY: number // ghostEl上边与鼠标之间的偏移量
+  dragElement: Element // 拖拽的元素
+  dropElement: Element // 拖放的目标元素
+  field?: FormField // 字段
+  fieldType: string // 字段类型
+  init = false // 是否初始化
+  mode: EnumDragMode // 拖拽模式
+  directionY: number
+  directionX: number
 
   constructor(event: MouseEvent, dragElement: Element) {
     const field = getProperty<FormField>(dragElement, PROPS.FIELD)

@@ -30,11 +30,11 @@ export const SELECTOR = {
 }
 
 export const PROPS = {
-  DRAG_MODE: 'xform_prop:drag_mode',
-  FIELD: 'xform_prop:field',
-  FIELD_TYPE: 'xform_prop:field_type',
-  SCHEMA: 'xform_prop:schema',
-  SCOPE: 'xform_prop:scope',
+  DRAG_MODE: '__PROP_XFORM_DRAGE_MODE__',
+  FIELD: '__PROP_XFORM_FIELD__',
+  FIELD_TYPE: '__PROP_XFORM_FIELD_TYPE__',
+  SCHEMA: '__PROP_XFORM_SCHEMA__',
+  SCOPE: '__PROP_XFORM_SCOPE__',
 }
 
 export const EVENTS = {

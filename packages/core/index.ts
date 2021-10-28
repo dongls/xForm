@@ -1,5 +1,3 @@
-import './non-standard-prop-compat'
-
 import { App } from 'vue'
 import { FormOption } from './model'
 import store from './api/store'

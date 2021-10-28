@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { mockOption, mockSchema } from './mock/index'
 import { createSchemaRef } from '../index'
-import { ModeGroup, PROPS } from '../model'
+import { ModeGroup } from '../model'
 import { h } from 'vue'
 import store from '../api/store'
 
@@ -66,7 +66,7 @@ describe('FormDesigner props: mode', () => {
 
       return {
         title: titleEl.exists() ? titleEl.text() : null,
-        types: fieldEl.map(f => (f.element as any)[PROPS.FIELD_TYPE])
+        types: fieldEl.map(f => f.element.__PROP_XFORM_FIELD_TYPE__)
       }
     })
     expect(group).toEqual(result)

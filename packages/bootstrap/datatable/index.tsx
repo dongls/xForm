@@ -60,8 +60,8 @@ const preview = defineComponent({
 
       const _p = {
         class: `${BODY_CLASS} ${CLASS.DROPPABLE} ${CLASS.SCOPE}`,
-        [PROPS.FIELD]: props.field,
-        [PROPS.SCOPE]: props.field
+        ['.' + PROPS.FIELD]: props.field,
+        ['.' + PROPS.SCOPE]: props.field
       }
       
       return (

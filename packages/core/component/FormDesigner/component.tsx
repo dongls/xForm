@@ -181,8 +181,8 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
         const props = {
           'class': `${CLASS.FIELD} xform-template-${fc.type} ${CLASS.DRAGGABLE}`,
           'key': fc.type,
-          [PROPS.FIELD_TYPE]: fc.type,
-          [PROPS.DRAG_MODE]: EnumDragMode.INSERT
+          ['.' + PROPS.FIELD_TYPE]: fc.type,
+          ['.' + PROPS.DRAG_MODE]: EnumDragMode.INSERT
         }
   
         return (
@@ -344,8 +344,8 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
         'xform-is-preview-hidden': field.hidden
       },
       'key': field.uid,
-      [PROPS.FIELD]: field,
-      [PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
+      ['.' + PROPS.FIELD]: field,
+      ['.' + PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
     }
 
     if(__IS_TEST__ === true){
@@ -376,7 +376,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     const props = {
       'ref': 'list',
       'class': ['xform-designer-list', CLASS.DROPPABLE],
-      [PROPS.SCOPE]: schemaRef.value
+      ['.' + PROPS.SCOPE]: schemaRef.value
     }
 
     return (

@@ -49,8 +49,8 @@ export default FieldConf.create({
             [CLASS.DROPPABLE]: true,
             [CLASS.SCOPE]: true
           },
-          [PROPS.FIELD]: props.field,
-          [PROPS.SCOPE]: props.field
+          ['.' + PROPS.FIELD]: props.field,
+          ['.' + PROPS.SCOPE]: props.field
         }
 
         return <div {..._p}>{content}</div>

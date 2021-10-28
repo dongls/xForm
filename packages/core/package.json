@@ -24,7 +24,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "vue": "^3.2.1"
+    "vue": "^3.2.0"
   },
   "publishConfig": {
     "registry": "http://registry.npmjs.org",
