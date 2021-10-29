@@ -7,6 +7,7 @@ import {
 } from 'vue'
 
 import {  
+  FormOption,
   FormRenderContext,
   FormSchema,
   XFORM_CONTEXT_PROVIDE_KEY, 
@@ -17,6 +18,10 @@ import {
   freeze,
   isObject 
 } from '../util'
+
+import { resetConfig, useConfig } from './Config'
+import { resetPreset, usePreset } from './Preset'
+import { resetField } from './Field'
 
 export {
   findElementFromPoint,
@@ -31,9 +36,35 @@ export {
   normalizeWheel,
 } from '../util'
 
-export { useStore } from './store'
+export { 
+  getConfig,
+  isImmediateValidate,
+  resetConfig,
+  useConfig,
+} from './Config'
 
-export * from './DefaultValue'
+export { 
+  genDefaultValue,
+  registerDefaultValueType,
+  removeDefaultValueType,
+} from './DefaultValue'
+
+export {
+  findField,
+  findModeGroup,
+  hasField,
+  registerField,
+  removeField,
+  resetField,
+} from './Field'
+
+export {
+  getPreset,
+  resetPreset,
+  usePreset,
+} from './Preset'
+
+export { createConfig } from './Store'
 
 export { getOperator, getOperators } from '../logic'
 
@@ -56,4 +87,18 @@ export function useSchema(){
 
 export function useConstant(){
   return freeze(constant, true)
+}
+
+// TODO: support install ?
+export function use(option: FormOption){
+  if(option.preset) usePreset(option.preset)
+  if(option.config) useConfig(option.config)
+}
+
+export function reset(option?: FormOption){
+  resetPreset()
+  resetConfig()
+  resetField()
+  
+  if(null != option) use(option)
 }

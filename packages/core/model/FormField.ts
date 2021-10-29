@@ -1,5 +1,5 @@
 import { isReactive, reactive } from 'vue'
-import { findFieldConf, getConfig } from '../api/store'
+import { findField, getConfig } from '../api'
 import { ValidateFunc, FieldConf } from './FieldConf'
 import { Serializable } from './Serializable'
 import { LogicRule } from './common'
@@ -64,49 +64,49 @@ export class FormField extends FormScope{
   private props: (key: Symbol) => PrivateProps
 
   /** 创建时自动生成，全局唯一，不可修改 */
-  uid: string;
+  uid: string
   /** 字段类型，请保证类型唯一 */
-  type: string;
+  type: string
   /** 字段标识，不唯一 */
-  name: string;
+  name: string
   /** 字段名称 */
-  title?: string;
+  title?: string
 
-  placeholder?: string;
-  options?: Option[];
+  placeholder?: string
+  options?: Option[]
 
   /* 必填 */
-  required?: boolean;
+  required?: boolean
   /**
    * 禁用当前字段：
    * - 禁用时，字段本身无法填写
    * - 禁用时，如果存在子字段，那么子字段也被禁用
    * - 禁用时，验证失效
    */
-  disabled?: boolean;
+  disabled?: boolean
   /** 隐藏字段 */
-  hidden?: boolean;
+  hidden?: boolean
 
   /** 各字段类型的私有属性都存储在此 */
-  attributes?: { [prop: string]: any };
+  attributes?: { [prop: string]: any }
   /** 是否允许字段被删除 */
-  allowRemove?: boolean;
+  allowRemove?: boolean
   /** 是否允许复制字段 */
-  allowClone?: boolean;
-  parent?: FormField | FormSchema = null;
+  allowClone?: boolean
+  parent?: FormField | FormSchema = null
   /** 子类型, 避免直接修改 */
   fields: FormField[] = []
   /** 表单项的值 */
-  value: any;
+  value: any
   /** 默认值，字段没有填写时生效 */
   defaultValue: {
     type: string,
     value?: any
-  };
+  }
   /** 逻辑 */
   logic: LogicRule
   /** 表单验证相关属性 */
-  validation: Validation;
+  validation: Validation
 
   /** 字段运行时状态 */
   state = {
@@ -125,7 +125,7 @@ export class FormField extends FormScope{
 
     const params = this.normalizeParams(o)
     const init = o instanceof FieldConf
-    const fc = findFieldConf(params.type)
+    const fc = findField(params.type)
     const props: PrivateProps = { 
       value: undefined,
       valid: EnumValidityState.NONE
@@ -166,7 +166,7 @@ export class FormField extends FormScope{
 
   /** 查询该字段对应的字段类型对象, 不存在返回null */
   get conf(){
-    return findFieldConf(this.type)
+    return findField(this.type)
   }
 
   /** 字段是否验证失败 */

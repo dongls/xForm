@@ -8,6 +8,7 @@ import {
   mixinRestParams,
   parseMessage,
 } from '../util/lang'
+
 import { Serializable } from './Serializable'
 import { FormField } from './FormField'
 import { FormScope } from './FormScope'
@@ -107,7 +108,6 @@ export class FormSchema extends FormScope {
     this.labelSuffix = o.labelSuffix
     this.labelPosition = o.labelPosition
     this.viewerPlaceholder = o.viewerPlaceholder
-
     this.createFields(o.fields, f => {
       const field = FormField.create(f)
       withModel && field.setValue(model[f.name], true)

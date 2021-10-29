@@ -1,9 +1,8 @@
 import { mount } from '@vue/test-utils'
 import { mockOption, mockSchema } from './mock/index'
-import { createSchemaRef } from '../index'
+import { createSchemaRef, findField, reset } from '../api'
 import { ModeGroup } from '../model'
 import { h } from 'vue'
-import store from '../api/store'
 
 import FormDesigner from '../component/FormDesigner/component'
 import FormItem from '../component/FormItem/component'
@@ -11,7 +10,7 @@ import FormItem from '../component/FormItem/component'
 describe('FormDesigner props: mode', () => {
   test('mode is null', () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
   
     const wrapper = mount(FormDesigner as any, {
       props: {
@@ -32,7 +31,7 @@ describe('FormDesigner props: mode', () => {
 
   test('mode is simple', () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
   
     const wrapper = mount(FormDesigner as any, {
       props: {
@@ -42,14 +41,14 @@ describe('FormDesigner props: mode', () => {
     })
 
     const types = option.config.modes.simple as string[]
-    const fieldText = types.map(f => store.findFieldConf(f).title)
+    const fieldText = types.map(f => findField(f).title)
     const renderFieldText = wrapper.findAll('.xform-designer-field').map(f => f.text())
     expect(renderFieldText).toEqual(fieldText)
   })
 
   test('mode is group', () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
   
     const wrapper = mount(FormDesigner as any, {
       props: {
@@ -77,7 +76,7 @@ describe('FormDesigner props: mode', () => {
 describe('FormDesigner slots: setting_form', () => {
   test('slot is null', () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
 
     const app = {
       template: `
@@ -110,7 +109,7 @@ describe('FormDesigner slots: setting_form', () => {
       'setting_form': h('div', slotText)
     }
     
-    store.reset(option)
+    reset(option)
 
     const app = {
       template: `
@@ -148,7 +147,7 @@ describe('FormDesigner slots: setting_form', () => {
       'setting_form': h('div', slotText)
     }
     
-    store.reset(option)
+    reset(option)
 
     const app = {
       template: `
@@ -187,7 +186,7 @@ describe('FormDesigner slots: others', () => {
 
   test('tool & preview & setting', async () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
   
     const toolSlotClass = 'is-slot-tool'
     const toolSlotText = 'mock tool slot'

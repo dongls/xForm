@@ -36,7 +36,7 @@ import {
 import { useValidator } from '../../validator'
 import { FormItemInternal } from '../FormItem/component'
 import { test } from '../../logic'
-import { getConfig } from '../../api/store'
+import { getConfig } from '../../api'
 
 interface Props{
   mode: string;

@@ -25,8 +25,8 @@ import {
   isFunction
 } from '../../util'
 
+import { getConfig } from '../../api'
 import { FormItemInternal } from '../FormItem/component'
-import Store from '../../api/store'
 
 function useRenderContext(instance: ComponentInternalInstance, formatter: Formatter){
   /**
@@ -91,7 +91,7 @@ export default defineComponent({
   },
   setup(props){
     function formatter(field: FormField){
-      const fmt = isFunction(props.formatter) ? props.formatter : Store.getConfig().formatter
+      const fmt = isFunction(props.formatter) ? props.formatter : getConfig().formatter
       return fmt(field, props)
     }
 

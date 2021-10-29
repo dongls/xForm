@@ -1,4 +1,4 @@
-import { createSchema } from '../index'
+import { createSchema } from '../api'
 
 test('validate', async () => {
   const schema = createSchema({

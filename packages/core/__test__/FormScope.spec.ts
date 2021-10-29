@@ -1,5 +1,6 @@
 import { createSchema } from '../index'
 import { FormField } from '../model'
+
 test('form scope', async () => {
   const schema = createSchema({})
   const field = new FormField()

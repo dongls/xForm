@@ -1,4 +1,3 @@
-import Store from '../../api/store'
 import useDragging from './dragging'
 
 import { 
@@ -10,7 +9,6 @@ import {
   nextTick,
   provide,
   ref,
-  resolveComponent,
   toRef,
   createVNode,
   Ref,
@@ -47,7 +45,14 @@ import {
   toArray,
 } from '../../util'
 
+import { 
+  findModeGroup, 
+  getConfig, 
+  getPreset
+} from '../../api'
+
 import { useLogic } from '../../logic'
+import { FormItemInternal } from '../FormItem/component'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
@@ -236,7 +241,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     const slots = instance.slots
     if(isFunction(slots[SETTING_FORM_SLOT])) return slots[SETTING_FORM_SLOT]({ schema })
 
-    const preset = Store.getPreset()
+    const preset = getPreset()
     if(preset?.slots?.[SETTING_FORM_SLOT]) return h(preset.slots[SETTING_FORM_SLOT], {
       schema,
       'onUpdate:prop': function(event: any){
@@ -324,10 +329,9 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     }
 
     const disabled = field.disabled || options.parentProps?.disabled === true
-    const component = resolveComponent('xform-item') as any
     const props = { field, validation: false, disabled }
     const create = isFunction(options?.renderItem) ? options.renderItem : h
-    return create(component, props, children)
+    return create(FormItemInternal, props, children)
   }
 
   /** 渲染字段预览组件 */
@@ -428,7 +432,7 @@ export default defineComponent({
     const rc = useRenderContext(instance, schemaRef, modeRef)
     const { dragstart } = useDragging()
 
-    if(Store.getConfig().logic === true) {
+    if(getConfig().logic === true) {
       useLogic(schemaRef, (data: any) => emit(EVENTS.MESSAGE, data))
     }
     
@@ -455,7 +459,7 @@ export default defineComponent({
       return (
         <div class="xform-designer" ref="root" onMousedown={dragstart}>
           <div class="xform-designer-panel">
-            { rc.renderFieldPanel(Store.findFieldGroups(modeRef.value)) }
+            { rc.renderFieldPanel(findModeGroup(modeRef.value)) }
           </div>
           <div class="xform-designer-main">
             { isFunction(slots.tool) && slots.tool() }

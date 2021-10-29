@@ -17,8 +17,7 @@ import {
   getScope
 } from '../../util'
 
-import store from '../../api/store'
-
+import { findField } from '../../api'
 import { FormDesignerApi } from './component'
 
 export default function useDragging(){
@@ -169,7 +168,7 @@ export default function useDragging(){
       )
       if(newIndex < 0) return resetDragStatus()
 
-      const fc = store.findFieldConf(context.fieldType)
+      const fc = findField(context.fieldType)
       if(null != fc){
         const field = new FormField(fc)
         targetScope.insert(newIndex, field)

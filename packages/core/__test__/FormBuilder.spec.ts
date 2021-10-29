@@ -1,12 +1,10 @@
 import { mount } from '@vue/test-utils'
 import { mockOption } from './mock/index'
-import { createSchemaRef } from '../index'
+import { createSchemaRef, reset } from '../api'
 import { ref } from 'vue'
 
 import FormBuilder from '../component/FormBuilder/component'
 import FormItem from '../component/FormItem/component'
-
-import store from '../api/store'
 
 function createGlobal(){
   return {
@@ -20,7 +18,7 @@ function createGlobal(){
 describe('FormBuilder props: tag', () => {
   test('default', async () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
     
     const component = {
       template: `
@@ -49,7 +47,7 @@ describe('FormBuilder props: tag', () => {
 
   test('tag is div', async () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
     
     const component = {
       template: `
@@ -80,7 +78,7 @@ describe('FormBuilder props: tag', () => {
 describe('FormBuilder render', () => {
   test('field is hidden', () => {
     const option = mockOption()
-    store.reset(option)
+    reset(option)
 
     const schema = createSchemaRef({
       fields: [
@@ -102,7 +100,7 @@ describe('FormBuilder render', () => {
 
 describe('FormBuilder validate', () => {
   test('simple case', async () => {
-    store.reset(mockOption())
+    reset(mockOption())
 
     const component = {  
       template: `

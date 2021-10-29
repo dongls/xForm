@@ -1,6 +1,6 @@
 import { App } from 'vue'
 import { FormOption } from './model'
-import store from './api/store'
+import { use } from './api'
 
 import FormDesigner, { FormDesignerApi } from './component/FormDesigner/component'
 import FormBuilder, { FormBuilderApi } from './component/FormBuilder/component'
@@ -9,7 +9,7 @@ import FormItem from './component/FormItem/component'
 
 const version = __VERSION__
 const install = function(app: App, options: FormOption){
-  if(null != options) store.use(options)
+  if(null != options) use(options)
 
   app.component(FormDesigner.name, FormDesigner)
   app.component(FormBuilder.name, FormBuilder)
@@ -30,5 +30,5 @@ export {
 }
 
 export * from './model/exports'
-export * from './api/exports'
+export * from './api/Exports'
 export default XForm

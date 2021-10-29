@@ -18,21 +18,21 @@ const CONSTRUCTOR_SIGN = Symbol()
 
 class Hook{
   /** 字段值初始化时触发 */
-  onValueInit?: (field: FormField, value: any) => any;
+  onValueInit?: (field: FormField, value: any) => any
   /** 字段值提交时触发 */
-  onValueSubmit?: (field: FormField) => any;
+  onValueSubmit?: (field: FormField) => any
   /** 验证字段自身时调用 */
-  onValidate?: (field: FormField) => Promise<string | void>;
+  onValidate?: (field: FormField) => Promise<string | void>
   /** 字段创建时调用 */
-  onCreate?: (field: FormField, params: any, init: boolean) => void;
+  onCreate?: (field: FormField, params: any, init: boolean) => void
   /** 字段删除后时调用 */
-  onRemoved?: (field: FormField, scope: FormScope, instance: ComponentInternalInstance) => void;
+  onRemoved?: (field: FormField, scope: FormScope, instance: ComponentInternalInstance) => void
   /** 字段提交时触发，一般在转换为JSON时调用 */
   onSubmit?: (data: any) => object;
   /** 字段拖到该字段上方时调用 */
   [EnumDragHook.DRAGOVER]?: DragHookFn;
   /** 字段放到该字段上调用 */
-  [EnumDragHook.DROP]?: DragHookFn;
+  [EnumDragHook.DROP]?: DragHookFn
 
   constructor(options: Partial<Hook> = {}){
     this.onValueInit = toFunction(options.onValueInit)
@@ -47,7 +47,7 @@ class Hook{
 }
 
 export class FieldComponent{
-  factory?: (field: FormField, mode: string) => VueComponent | VNode;
+  factory?: (field: FormField, mode: string) => VueComponent | VNode
   extension: {
     // prop: [mode][_[field.name]]?
     [prop: string]: VueComponent
@@ -68,28 +68,28 @@ export class FieldComponent{
 /** 描述字段类型的类，XForm就是根据它决定每一个字段的行为 */
 export class FieldConf extends Hook{
   /** 字段类型 */
-  type: string;
+  type: string
   /** 字段名称 */
-  title: string;
+  title: string
   /** 字段icon */
-  icon?: string | Function;
-  alias: FieldConf;
+  icon?: string | Function
+  alias: FieldConf
 
   /** 可接受的子字段类型，为空则接受所有字段 */
-  accept?: string[];
-  scoped?: boolean;
-  custom?: boolean;
+  accept?: string[]
+  scoped?: boolean
+  custom?: boolean
   /** 验证器，用于验证表单值 */
-  validator?: Validator;
+  validator?: Validator
 
-  setting?: VueComponent | FieldComponent;
-  preview?: VueComponent | FieldComponent;
-  build?: VueComponent | FieldComponent;
-  view?: VueComponent | FieldComponent;
+  setting?: VueComponent | FieldComponent
+  preview?: VueComponent | FieldComponent
+  build?: VueComponent | FieldComponent
+  view?: VueComponent | FieldComponent
 
   /** 依赖的子组件 */
-  dependencies: FieldConf[];
-  operators: false | string[];
+  dependencies: FieldConf[]
+  operators: false | string[]
 
   constructor(options: any = {}, from?: Symbol){
     if(from != CONSTRUCTOR_SIGN) console.warn('use `FieldConf.create` instead of `new FieldConf`')

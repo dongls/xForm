@@ -3,8 +3,7 @@ import { h } from 'vue'
 import { mockOption } from './mock'
 import { FormField, FieldConf } from '../index'
 import { LabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
-import { createSchemaRef } from '../api'
-import store from '../api/store'
+import { createSchemaRef, registerField, reset } from '../api'
 
 import FormItem from '../component/FormItem/component'
 
@@ -29,7 +28,7 @@ describe('FormItem slots: default', () => {
   })
 
   test('slot is empty', () => {
-    store.reset(mockOption())
+    reset(mockOption())
 
     const field = FormField.create({  
       type: 'text',
@@ -57,8 +56,8 @@ describe('FormItem slots: default', () => {
       build: h('div', text)
     })
 
-    store.reset()
-    store.register(conf)
+    reset()
+    registerField(conf)
 
     const field = FormField.create({  
       type: 'text',
@@ -88,7 +87,7 @@ describe('FormItem slots: default', () => {
 
 describe('FormItem props: labelPosition', () => {
   test('default', () => {
-    store.reset()
+    reset()
 
     const field = FormField.create({  
       type: 'text',
@@ -104,7 +103,7 @@ describe('FormItem props: labelPosition', () => {
   })
 
   test('left', () => {
-    store.reset()
+    reset()
 
     const field = FormField.create({  
       type: 'text',
@@ -125,7 +124,7 @@ describe('FormItem props: labelPosition', () => {
   })
 
   test('right', () => {
-    store.reset()
+    reset()
 
     const field = FormField.create({  
       type: 'text',
@@ -146,7 +145,7 @@ describe('FormItem props: labelPosition', () => {
   })
 
   test('top', () => {
-    store.reset()
+    reset()
 
     const field = FormField.create({  
       type: 'text',
@@ -169,7 +168,7 @@ describe('FormItem props: labelPosition', () => {
 
 describe('FormItem props: labelSuffix', () => {
   test('is null', () => {
-    store.reset()
+    reset()
   
     const field = FormField.create({  
       type: 'text',
@@ -188,7 +187,7 @@ describe('FormItem props: labelSuffix', () => {
   })
 
   test('not null', () => {
-    store.reset()
+    reset()
   
     const field = FormField.create({  
       type: 'text',
@@ -214,7 +213,7 @@ describe('FormItem props: labelSuffix', () => {
 
 describe('FormItem props: label', () => {
   test('not null', () => {
-    store.reset()
+    reset()
   
     const field = FormField.create({  
       type: 'text',
@@ -239,7 +238,7 @@ describe('FormItem props: label', () => {
   })
 
   test('not null', () => {
-    store.reset()
+    reset()
   
     const field = FormField.create({  
       type: 'text',

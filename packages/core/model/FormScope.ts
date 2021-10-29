@@ -6,8 +6,8 @@ import { Serializable } from './Serializable'
 type FieldOrIndex = FormScope | number
 
 export abstract class FormScope extends Serializable{
-  parent?: FormScope;
-  fields: FormScope[] = [];
+  parent?: FormScope
+  fields: FormScope[] = []
 
   constructor(){
     super()

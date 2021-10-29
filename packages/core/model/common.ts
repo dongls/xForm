@@ -7,7 +7,6 @@ import type {
 
 import { FieldConf } from './FieldConf'
 import { FormField } from './FormField'
-import FormStore from '../api/store'
 
 export type DeepPartial<T, P = string | number | boolean | Function | Array<any>> = {
   [K in keyof T]?: T[K] extends P ? T[K] : DeepPartial<T[K]> ;
@@ -29,7 +28,7 @@ export interface ModeConf {
 
 export type Formatter = (field: FormField, props: RawProps) => any
 
-export interface FormConfigBase{
+export interface BaseFormConfig{
   modes: ModeConf;
   validation: {
     immediate: boolean;
@@ -40,7 +39,7 @@ export interface FormConfigBase{
   experiments?: {}
 }
 
-export type FormConfig = DeepPartial<FormConfigBase>
+export type FormConfig = DeepPartial<BaseFormConfig>
 
 export interface FormPreset {
   name: string;
@@ -51,7 +50,7 @@ export interface FormPreset {
   };
   fieldConfs: FieldConf[];
   config?: FormConfig;
-  install?: (store: typeof FormStore) => void
+  install?: () => void
 }
 
 export type RenderOptions = {
