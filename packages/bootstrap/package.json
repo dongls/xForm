@@ -26,7 +26,7 @@
     "@dongls/xform": "0.6.0"
   },
   "publishConfig": {
-    "registry": "http://registry.npmjs.org",
+    "registry": "https://registry.npmjs.org",
     "access": "public"
   }
 }

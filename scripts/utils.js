@@ -167,7 +167,7 @@ function build(package, target){
 }
  
 function buildPackage(package, version){
-  updatePackageJson(path.resolve(__dirname, '../packages', package, 'package.json'), version)
+  if(version) updatePackageJson(path.resolve(__dirname, '../packages', package, 'package.json'), version)
   OUTPUT_TYPES.forEach(target => build(package, target))
 
   // 生成声明文件

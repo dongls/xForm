@@ -48,7 +48,7 @@ import {
 import { 
   findModeGroup, 
   getConfig, 
-  getPreset
+  getSlot
 } from '../../api'
 
 import { useLogic } from '../../logic'
@@ -241,8 +241,8 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     const slots = instance.slots
     if(isFunction(slots[SETTING_FORM_SLOT])) return slots[SETTING_FORM_SLOT]({ schema })
 
-    const preset = getPreset()
-    if(preset?.slots?.[SETTING_FORM_SLOT]) return h(preset.slots[SETTING_FORM_SLOT], {
+    const slot = getSlot(SETTING_FORM_SLOT)
+    if(slot) return h(slot, {
       schema,
       'onUpdate:prop': function(event: any){
         const { prop, value } = event

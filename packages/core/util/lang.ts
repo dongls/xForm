@@ -48,8 +48,10 @@ export function isNull(value: unknown): value is null{
 }
 
 /** 是否为对象 */
-export function isObject(value: unknown){
-  return value != null && (typeof value == 'object' || typeof value == 'function')
+export function isObject(value: unknown, withFunc = false){
+  if(value == null) return false
+
+  return withFunc ? (typeof value == 'object' || typeof value == 'function') : typeof value == 'object'
 }
 
 /** 是否为正则表达式 */

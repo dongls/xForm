@@ -78,11 +78,6 @@ function renderContent(slots: Slots, field: FormField, context: FormRenderContex
 
   const allProps = { field: field, disabled } as RawProps
 
-  // TODO: 待删除
-  if(isBuilderContext(context)){
-    allProps.value = field.value
-  }
-
   return createVNode(component, fillComponentProps(component, allProps, {}))
 }
 
@@ -189,6 +184,7 @@ function createComponent(name: EnumComponentName): ComponentOptions{
             'xform-item': true,
             [`xform-is-${labelPosition}`]: true,
             'xform-is-required': required,
+            'xform-is-exteranl': isExternal,
             [CLASS.IS_ERROR]: field.validation.valid == EnumValidityState.ERROR
           }
         } as AnyProps

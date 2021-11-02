@@ -58,14 +58,9 @@ export {
   resetField,
 } from './Field'
 
-export {
-  getPreset,
-  resetPreset,
-  usePreset,
-} from './Preset'
-
+export { getPreset, resetPreset, usePreset } from './Preset'
+export { registerSlots, registerSlot, removeSlot, getSlot } from './Slots'
 export { createConfig } from './Store'
-
 export { getOperator, getOperators } from '../logic'
 
 export function useRenderContext<T = FormRenderContext>(){
@@ -89,8 +84,9 @@ export function useConstant(){
   return freeze(constant, true)
 }
 
-// TODO: support install ?
 export function use(option: FormOption){
+  if(!isObject(option)) return
+
   if(option.preset) usePreset(option.preset)
   if(option.config) useConfig(option.config)
 }

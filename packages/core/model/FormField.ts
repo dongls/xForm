@@ -156,7 +156,12 @@ export class FormField extends FormScope{
     // 混入用户自定义属性
     mixinRestParams(this, params)
     // 生成uid
-    Object.defineProperty(this, 'uid', { value: 'field__' + getIncNum() })
+    Object.defineProperty(this, 'uid', { 
+      value: 'field__' + getIncNum(),
+      enumerable: false,
+      writable: false,
+      configurable: false
+    })
     // 创建私有属性
     this.props = createPrivateProps<PrivateProps>(PRIVATE_PROPS_KEY, props)
 

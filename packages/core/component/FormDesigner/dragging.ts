@@ -40,7 +40,7 @@ export default function useDragging(){
   }
 
   function getApi(){
-    return GLOBAL.instance.exposeProxy as FormDesignerApi
+    return GLOBAL.instance.exposed as FormDesignerApi
   }
 
   function getMarkEl(){

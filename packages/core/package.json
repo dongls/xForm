@@ -24,10 +24,10 @@
     "dist"
   ],
   "peerDependencies": {
-    "vue": "^3.2.0"
+    "vue": "^3.2.1"
   },
   "publishConfig": {
-    "registry": "http://registry.npmjs.org",
+    "registry": "https://registry.npmjs.org",
     "access": "public"
   }
 }

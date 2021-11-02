@@ -1,8 +1,8 @@
 import '../packages/core/index.css'
+
 import * as Vue from 'vue'
 
 import XForm from '@dongls/xform'
-
 import App from './app.vue'
 import router from './router'
 import component from './component/index'

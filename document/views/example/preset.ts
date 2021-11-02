@@ -143,9 +143,7 @@ export async function usePreset(state: { preset: string, loading: boolean }, _ta
   
   reset({
     preset,
-    config: { 
-      modes: MODES
-    }
+    config: {  modes: MODES }
   })
 
   state.preset = target

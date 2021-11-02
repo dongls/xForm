@@ -1,3 +1,4 @@
+import { ComponentOptions } from 'vue'
 import { 
   BaseFormConfig,
   FieldConf, 
@@ -29,4 +30,5 @@ export const store = {
   preset: null as FormPreset,
   config: createConfig(),
   fields: new Map<string, FieldConf>(),
+  slots: new Map<string, ComponentOptions>()
 }

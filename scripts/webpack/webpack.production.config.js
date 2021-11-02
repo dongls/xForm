@@ -15,14 +15,14 @@ const common = {
   mode: 'production',
   optimization: {
     minimizer: [
-      new TerserPlugin({
+      RELEASE_TARGET == 'bundler' ? null : new TerserPlugin({
         extractComments: false,
         terserOptions: {
           keep_classnames: true
         }
       }),
       new CssMinimizerPlugin()
-    ]
+    ].filter(i => i)
   },
   plugins: [
     new MiniCssExtractPlugin({
@@ -63,7 +63,7 @@ const umd = {
 }
 
 const esm = {
-  entry: props.ts || props.entry,
+  entry: props.entry,
   externals: {
     '@dongls/xform': '@dongls/xform',
     'vue': 'vue'
@@ -85,7 +85,7 @@ const esm = {
 }
 
 const bundler = {
-  entry: props.ts || props.entry,
+  entry: props.entry,
   externals: {
     '@dongls/xform': '@dongls/xform',
     'vue': 'vue'
@@ -104,9 +104,6 @@ const bundler = {
   experiments: {
     outputModule: true
   },
-  optimization: {
-    minimize: false,
-  }
 }
 
 const targets = {
