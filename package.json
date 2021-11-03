@@ -1,7 +1,7 @@
 {
   "name": "xform",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "基于Vue@3.x的动态表单生成器。",
   "scripts": {
     "build:code": "node scripts/build.code",

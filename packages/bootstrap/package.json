@@ -1,6 +1,6 @@
 {
   "name": "@dongls/xform.bootstrap",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "基于Bootstrap的xForm字段库。",
   "main": "dist/index.js",
   "style": "dist/index.css",
@@ -23,7 +23,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "@dongls/xform": "0.6.0"
+    "@dongls/xform": "0.7.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
