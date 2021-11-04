@@ -67,7 +67,6 @@
 </template>
 
 <script lang="tsx">
-// TODO: 目标值支持读取字段值
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { 
   FormDesignerContext,

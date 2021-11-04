@@ -3,11 +3,10 @@
 
 > `xForm`使用了诸如`expose`、`.prop`之类的api, **请确保你的`Vue`版本不低于3.2.0**。
 
-## 更新计划 `v0.7.0`
-- [x] 字段类型: 数据表单`datatable`
-- [x] 表单禁用、字段隐藏
-- [x] 逻辑表单
-- [x] 支持设置默认值
+## 更新计划 `v0.7.1`
+- [ ] 支持[Element Plus][element]
+- [ ] 字段逻辑支持读取字段选项
+- [ ] 支持通过css custom-property自定义样式
 
 ## 兼容性
 `xForm`使用了诸如`Proxy`、`Reflect`之类的新特性，因此需要浏览器至少实现了`ES2015`标准。需要注意的是，`xForm`**不支持IE浏览器，也没有相关的支持计划**。
@@ -23,3 +22,5 @@
 [doc]: https://dongls.github.io/xForm/
 [example]: https://github.com/dongls/xForm/tree/master/document/views/example
 [test]: https://github.com/dongls/xForm/tree/master/packages/core/__test__
+
+[element]: https://element-plus.gitee.io/zh-CN/#/zh-CN

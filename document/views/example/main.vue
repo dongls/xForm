@@ -13,12 +13,13 @@
 
       <div class="header-right">
         <router-link v-if="isDev" to="/doc">文档</router-link>
-        <div class="libs">
+        <div class="libs" :title="`${state.preset}@${state.version}`">
           <label>UI库：</label>
           <div class="lib-picker">
             <select :value="state.preset" @input="handlePreset">
-              <option value="bootstrap">Bootstrap@4.6.0</option>
-              <option value="antdv" v-if="isDev">Ant Design Vue@2.1.2</option>
+              <option value="bootstrap">Bootstrap</option>
+              <option value="element-plus" v-if="isDev">Element Plus</option>
+              <option value="antdv" v-if="isDev">Ant Design Vue</option>
             </select>
           </div>
         </div>
@@ -35,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, reactive } from 'vue'
+import { defineComponent, getCurrentInstance, onBeforeUnmount, reactive } from 'vue'
 import { version } from '@dongls/xform'
 import { savePresetNameToLocal, usePreset } from './preset'
 import { useIsWide, IS_DEV } from '../../util/common'
@@ -43,16 +44,18 @@ import { useIsWide, IS_DEV } from '../../util/common'
 export default defineComponent({
   name: 'example',
   setup(){
+    const instance = getCurrentInstance()
     const state = reactive({
       loading: true,
       preset: '',
 
       show: false,
       json: '',
-      title: ''
+      title: '',
+      version: null
     })
 
-    usePreset(state)
+    usePreset(instance, state)
 
     document.documentElement.classList.add('is-example')
     onBeforeUnmount(() => {
@@ -161,9 +164,11 @@ html.is-example{
     outline: none;
     background-color: transparent;
     color: #fff;
-    width: 180px;
+    width: 120px;
     appearance: none;
     font-weight: 700;
+    padding-right: 12px;
+    font-size: 14px;
 
     option{
       color: var(--doc-text-color-primary);
@@ -173,6 +178,7 @@ html.is-example{
 
 .lib-picker{
   position: relative;
+
   &::after{
     content: "";
     position: absolute;

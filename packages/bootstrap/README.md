@@ -13,6 +13,7 @@
 - text
 - textarea
 - group
+- datatable
 
 ## License
 [MIT](LICENSE)
