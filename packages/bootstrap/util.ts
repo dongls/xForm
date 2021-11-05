@@ -1,10 +1,9 @@
 import { useConstant, FormField } from '@dongls/xform'
 import { computed, getCurrentInstance } from 'vue'
-import { useFieldProp } from '@common/util'
 
-export { useValue, useField, useFieldProp } from '@common/util/index'
+export { useValue, useField, useFieldProp, useDefaultValueApi } from '@common/util/index'
 
-const { BuiltInDefaultValueType, EVENTS } = useConstant()
+const { EVENTS } = useConstant()
 
 // retrieve raw value set via :value bindings
 function getValue(el: HTMLOptionElement | HTMLInputElement) {
@@ -55,49 +54,6 @@ export function updateField(emit: Function, event: Event, prop: string, scope?: 
   const value = parseValue(target, 'setting')
 
   emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
-}
-
-export function useDefaultValueApi(defTypes: any[]){
-  const defaultValue = useFieldProp<{type: string, value?: any}>('defaultValue')
-
-  function useCompatType(){
-    return computed({
-      get(){
-        const type = defaultValue.value.type
-        return defTypes.some(i => i.value == type) ? type : BuiltInDefaultValueType.MANUAL
-      },
-      set(value: string){
-        defaultValue.value.type = value
-
-        if(value != BuiltInDefaultValueType.MANUAL){
-          defaultValue.value.value = undefined
-        }
-      }
-    })
-  }
-  
-  function useCompatValue(getter?: any){
-    return computed({
-      get: function(){
-        if(typeof getter == 'function') return getter(defaultValue.value)
-
-        return defaultValue.value.value
-      },
-      set(value){
-        defaultValue.value.value = value == '' ? undefined : value
-      }
-    })
-  }
-  
-  function useIsManual(){
-    return computed(() => defaultValue.value.type == BuiltInDefaultValueType.MANUAL)
-  }
-
-  return {
-    useCompatType,
-    useCompatValue,
-    useIsManual
-  }
 }
 
 export function useOptions(afterUpdate?: Function){

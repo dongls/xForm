@@ -5,6 +5,16 @@
 
 ## 更新计划 `v0.7.1`
 - [ ] 支持[Element Plus][element]
+  - [ ] checkbox
+  - [ ] datatable
+  - [ ] date
+  - [x] divider
+  - [ ] group
+  - [ ] number
+  - [ ] radio
+  - [ ] select
+  - [x] text
+  - [x] textarea
 - [ ] 字段逻辑支持读取字段选项
 - [ ] 支持通过css custom-property自定义样式
 

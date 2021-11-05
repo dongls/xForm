@@ -1,7 +1,8 @@
-<script lang="ts">
+<script lang="tsx">
 import { ref, defineComponent, nextTick } from 'vue'
 import { FormField, FormBuilderApi } from '@dongls/xform'
 import { useLocalSchema, saveToLocalModel } from '@document/util/common'
+import { useBuilderDefaultSlot, useBuilderFooterSlot, useTarget } from './preset'
 
 export default defineComponent({
   name: 'builder-view',
@@ -11,6 +12,17 @@ export default defineComponent({
     const pending = ref(false)
     const disabled = ref(false)
     const builder = ref<FormBuilderApi>()
+    const target = useTarget()
+    const state = {
+      pending,
+      disabled,
+      validator,
+      disableForm,
+      viewJSON
+    }
+
+    const footerSlot = useBuilderFooterSlot(target, state)
+    const defaultSlot = useBuilderDefaultSlot(target, state)
 
     function viewJSON(){
       const model = schema.value.model
@@ -21,73 +33,54 @@ export default defineComponent({
       builder.value.reset()
     }
 
-    return {
-      builder,
-      disabled,
-      disableForm(){
-        disabled.value = !disabled.value
-        if(disabled.value) reset()
-      },
-      schema, 
-      pending,
-      change(){
-        nextTick(() => saveToLocalModel(schema.value.model))
-      },
-      viewJSON,
-      submit(validate: Function){
-        pending.value = true
-        return validate().then((r: { valid: boolean, model: any }) => {
-          console.info('validate result: ', r)
-          if(r.valid) viewJSON()
-        }).finally(() => pending.value = false)
-      },
-      validator(field: FormField, value: any){
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if(!value) return reject('必填')
+    function change(){
+      nextTick(() => saveToLocalModel(schema.value.model))
+    }
 
-            resolve(null)
-          }, 1000)
-        })
+    function submit(validate: Function){
+      pending.value = true
+      return validate().then((r: { valid: boolean, model: any }) => {
+        console.info('validate result: ', r)
+        if(r.valid) viewJSON()
+      }).finally(() => pending.value = false)
+    }
+
+    function disableForm(){
+      disabled.value = !disabled.value
+      if(disabled.value) reset()
+    }
+
+    function validator(field: FormField, value: any){
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if(!value) return reject('必填')
+
+          resolve(null)
+        }, 1000)
+      })
+    }
+
+    return function(){
+      const slots = {
+        header: () => <h3 class="example-builder-title">笔记本电脑报修单</h3>,
+        footer: footerSlot,
+        default: defaultSlot
       }
+
+      return (
+        <xform-builder 
+          ref={builder}
+          class="example-builder"
+          schema={schema.value}
+          disabled={disabled.value}
+          onSubmit={submit}
+          {...{ 'onValue:change': change }}
+        >{slots}</xform-builder>
+      )
     }
   }
 })
 </script>
-
-<template>
-  <xform-builder 
-    ref="builder"
-    :schema="schema" 
-    class="example-builder"
-    @value:change="change"
-    @submit="submit"
-    :disabled="disabled"
-  >
-    <template #header>
-      <h3 class="example-builder-title">笔记本电脑报修单</h3>
-    </template>
-
-    <!-- <template #type_divider><hr></template> -->
-
-    <xform-item name="address" title="地址" :validation="validator" virtual>
-      <template #default="{field}">
-        <input v-model="field.value" type="text" class="form-control form-control-sm" placeholder="详细地址" :disabled="disabled">
-        <p class="example-builder-tip">该字段并非由设计器生成，而是页面单独添加的字段</p>
-      </template>
-    </xform-item>
-    <!-- <xform-item :field="field" validation/> -->
-    
-    <template #footer>
-      <div class="example-builder-footer">
-        <button type="button" class="btn btn-link btn-text btn-sm" :disabled="pending" @click="viewJSON">查看JSON</button>
-        <button type="button" class="btn btn-link btn-text btn-sm" @click="disableForm">{{ disabled ? '启用' : '禁用' }}表单</button>
-        <button type="reset" class="btn btn-light btn-text btn-sm" :disabled="pending || disabled">重置</button>
-        <button type="submit" class="btn btn-primary btn-sm" :disabled="pending || disabled">提交</button>
-      </div>
-    </template>
-  </xform-builder>
-</template>
 
 <style>
 .example-builder{

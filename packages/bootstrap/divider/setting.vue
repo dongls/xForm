@@ -54,7 +54,7 @@ export default defineComponent({
       update,
       updateField(event: Event, prop: string, scope?: string){
         const target = event.target as HTMLInputElement
-        const value = target.value
+        const value = parseInt(target.value)
         update(prop, value, scope)
       }
     }

@@ -1,11 +1,12 @@
 <template>
-  <el-input 
+  <el-input
+    type="textarea"
     v-model="value"
     :id="field.uid"
     :name="field.name"
+    :rows="3"
     :placeholder="field.placeholder"
     :disabled="disabled || field.disabled"
-    size="small"
   />
 </template>
 
@@ -15,7 +16,7 @@ import { FormField } from '@dongls/xform'
 import { useValue } from '../util'
 
 export default defineComponent({
-  name: 'xform-el-text',
+  name: 'xform-el-textarea',
   props: {
     field: {
       type: FormField,
@@ -27,7 +28,9 @@ export default defineComponent({
     }
   },
   setup(){
-    return { value: useValue<string>() }
+    return { 
+      value: useValue<string>() 
+    }
   }
 })
 </script>

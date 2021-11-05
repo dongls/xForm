@@ -1,4 +1,5 @@
 <script lang="ts">
+// TODO: use jsx instead template
 import { defineComponent } from 'vue'
 import { useLocalSchema } from '@document/util/common'
 

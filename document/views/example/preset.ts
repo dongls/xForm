@@ -1,84 +1,8 @@
-import { reset } from '@dongls/xform'
-import { ComponentInternalInstance } from 'vue'
+import { getCurrentInstance, inject, provide, Ref, ref } from 'vue'
+import { TYPE, config, DEAFULT_TARGET } from './config'
 
-enum TYPE {
-  STYLE = 1,
-  SCRIPT = 2
-}
-
-type ConfigMap = {
-  [prop: string]: {
-    version: string,
-    source: any[],
-    factory: () => Promise<any>,
-    install: (preset: any, instance: ComponentInternalInstance) => void
-  }
-}
-
-const publicPath = __IS_DEV__ ? '/docs' : '/xForm'
-const DEF_PRESET = 'bootstrap'
 const LOCAL_PRESET_NAME_KEY = '__xform_preset_name__'
-
-const MODES = {
-  example: [
-    {
-      title: '基础字段',
-      types: ['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'date']
-    },
-    {
-      title: '辅助字段',
-      types: ['divider', 'group', 'tabs', 'datatable']
-    }
-  ],
-  simple: ['text', 'textarea', 'number', 'select']
-}
-
-const CONFIGS: ConfigMap = {
-  'bootstrap': {
-    version: '4.6.0',
-    source: [
-      [publicPath + '/libs/bootstrap/bootstrap.min.css', TYPE.STYLE],
-      [publicPath + '/libs/bootstrap/jquery.slim.min.js', TYPE.SCRIPT],
-      [publicPath + '/libs/bootstrap/popper.min.js', TYPE.SCRIPT],
-      [publicPath + '/libs/bootstrap/bootstrap.min.js', TYPE.SCRIPT]
-    ],
-    factory(){
-      return import(/* webpackPrefetch: true */ '../../../packages/bootstrap').then(r => r.default)
-    },
-    install(preset){
-      reset({ preset, config: { modes: MODES } })
-    }
-  },
-  'antdv': {
-    version: '2.1.2',
-    source: [
-      [publicPath + '/libs/antdv/antd.min.css', TYPE.STYLE],
-      [publicPath + '/libs/antdv/antd.min.js', TYPE.SCRIPT],
-    ],
-    factory(){
-      return import(/* webpackPrefetch: true */ '../../../packages/antdv').then(r => r.default)
-    },
-    install(preset){
-      reset({ preset, config: { modes: MODES } })
-    }
-  },
-  'element-plus': {
-    version: 'v1.2.0-beta.1',
-    source: [
-      [publicPath + '/libs/element-plus/index.css', TYPE.STYLE],
-      [publicPath + '/libs/element-plus/index.js', TYPE.SCRIPT],
-    ],
-    factory(){
-      return import(/* webpackPrefetch: true */'../../../packages/element-plus/index').then(r => r.default)
-    },
-    install(preset, instance: ComponentInternalInstance){
-      const ElementPlus = (window as any).ElementPlus
-      if(ElementPlus) instance.appContext.app.use(ElementPlus)
-
-      reset({ preset, config: { modes: MODES } })
-    }
-  }
-}
+const UI_LIBARY_PROVIDE_KEY = 'ui-libary-target'
 
 function findNode(link: string, type: number){
   const selector = (
@@ -90,6 +14,7 @@ function findNode(link: string, type: number){
   return document.querySelector(selector)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function removeSource(source: any){
   if(!Array.isArray(source)) return
 
@@ -143,18 +68,16 @@ function createScript(link: string){
   })
 }
 
-function getTarget(target: string){
-  if(target in CONFIGS) return target
-
-  const name = getLocalPresetName()
-  return name in CONFIGS ? name : DEF_PRESET
+function getTarget(target?: string){
+  const name = target ?? getLocalPresetName()
+  return config.has(name) ? name : DEAFULT_TARGET
 }
 
 function getLocalPresetName(){
   try {
     return localStorage.getItem(LOCAL_PRESET_NAME_KEY)
   } catch (error) {
-    return DEF_PRESET
+    return DEAFULT_TARGET
   } 
 }
 
@@ -162,24 +85,58 @@ export function savePresetNameToLocal(value: string){
   localStorage.setItem(LOCAL_PRESET_NAME_KEY, value)
 }
 
-export async function usePreset(instance: ComponentInternalInstance, state: { preset: string, loading: boolean, version: string }, _target?: string){
-  const target = getTarget(_target)
-  if(target == state.preset) return
-
-  const config = CONFIGS[target]
-
-  state.loading = true
-  const preset = await config.factory()
-
-  const old = CONFIGS[state.preset]
-  if(null != old) removeSource(old.source)
-  await loadSource(config.source)
+export function usePreset(loading: Ref<boolean>){
+  const instance = getCurrentInstance()
+  const target = getTarget()
+  const current = config.get(target)
   
-  config.install(preset, instance)
+  async function use(){
+    loading.value = true
 
-  state.preset = target
-  state.version = config.version
-  state.loading = false
+    await loadSource(current.source)
+    const preset = await current.factory()
+    current.install(preset, instance)
 
-  document.querySelector('#loading').remove()
+    document.querySelector('#loading')?.remove()
+    loading.value = false
+  }
+
+  provide(UI_LIBARY_PROVIDE_KEY, target)
+
+  return {
+    version: current.version,
+    name: ref(target),
+    use
+  }
+}
+
+export function useTarget(){
+  return inject<string>(UI_LIBARY_PROVIDE_KEY)
+}
+
+export function useDesignerToolSlot(target: string, state: any){
+  const current = config.get(target)
+  const slot = current.renderDesignerToolSlot
+
+  return typeof slot == 'function' ? slot.bind(null, state) : function(){
+    return null as any
+  }
+}
+
+export function useBuilderFooterSlot(target: string, state: any){
+  const current = config.get(target)
+  const slot = current.renderBuilderFooterSlot
+
+  return typeof slot == 'function' ? slot.bind(null, state) : function(){
+    return null as any
+  }
+}
+
+export function useBuilderDefaultSlot(target: string, state: any){
+  const current = config.get(target)
+  const slot = current.renderBuilderDefaultSlot
+
+  return typeof slot == 'function' ? slot.bind(null, state) : function(){
+    return null as any
+  }
 }

@@ -1,1 +1,1 @@
-export { useValue } from '@common/util/index'
+export { useValue, useDefaultValueApi } from '@common/util/index'

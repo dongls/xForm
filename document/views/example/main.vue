@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!state.loading" class="example">
+  <div v-if="!loading" class="example">
     <div class="header">
       <div class="header-left">
         <div class="logo">xForm<small>v{{ version }}</small></div>
@@ -13,12 +13,12 @@
 
       <div class="header-right">
         <router-link v-if="isDev" to="/doc">文档</router-link>
-        <div class="libs" :title="`${state.preset}@${state.version}`">
+        <div class="libs" :title="`${preset}@${presetVersion}`">
           <label>UI库：</label>
           <div class="lib-picker">
-            <select :value="state.preset" @input="handlePreset">
+            <select :value="preset" @input="handlePreset">
               <option value="bootstrap">Bootstrap</option>
-              <option value="element-plus" v-if="isDev">Element Plus</option>
+              <option value="element-plus">Element Plus</option>
               <option value="antdv" v-if="isDev">Ant Design Vue</option>
             </select>
           </div>
@@ -29,49 +29,52 @@
       <router-view @view="viewJson"/>
     </div>
 
-    <modal v-model:show="state.show" :title="state.title">
-      <textarea class="form-control example-value" :value="state.json" readonly/>
+    <modal v-model:show="show" :title="title">
+      <textarea class="example-value" :value="json" readonly/>
     </modal>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, onBeforeUnmount, reactive } from 'vue'
+import { defineComponent, onBeforeUnmount, ref } from 'vue'
 import { version } from '@dongls/xform'
 import { savePresetNameToLocal, usePreset } from './preset'
 import { useIsWide, IS_DEV } from '../../util/common'
 
+function toggleClass(){
+  document.documentElement.classList.add('is-example')
+
+  onBeforeUnmount(() => {
+    document.documentElement.classList.remove('is-example')
+  })
+}
+
 export default defineComponent({
   name: 'example',
   setup(){
-    const instance = getCurrentInstance()
-    const state = reactive({
-      loading: true,
-      preset: '',
+    const loading = ref(false)
+    const show = ref(false)
+    const json = ref<string>()
+    const title = ref<string>()
+    const preset = usePreset(loading)
 
-      show: false,
-      json: '',
-      title: '',
-      version: null
-    })
-
-    usePreset(instance, state)
-
-    document.documentElement.classList.add('is-example')
-    onBeforeUnmount(() => {
-      document.documentElement.classList.remove('is-example')
-    })
+    preset.use()
+    toggleClass()
 
     return {
+      isDev: IS_DEV,
       isWide: useIsWide(),
-      state,
-      version,
+      json,
+      loading,
+      preset: preset.name,
+      presetVersion: preset.version,
+      show,
+      title,
+      version: version,
       viewJson(event: any){
-        const { title, json } = event
-
-        state.title = title
-        state.json = json
-        state.show = true
+        title.value = event.title
+        json.value = event.json
+        show.value = true
       },
       handlePreset(event: Event){
         const target = event.target as HTMLSelectElement
@@ -80,8 +83,7 @@ export default defineComponent({
 
         savePresetNameToLocal(value)
         window.location.reload()
-      },
-      isDev: IS_DEV
+      }
     }
   }
 })
@@ -100,6 +102,16 @@ textarea.example-value{
   font-family: 'cascadia code', Consolas, Arial, Helvetica, sans-serif;
   box-sizing: border-box;
   line-height: 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  outline: none;
+
+  &:focus{
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 .2rem rgba(0,123,255,.25)
+  }
 }
 
 .icon-outbound{

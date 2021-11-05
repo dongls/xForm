@@ -433,3 +433,6 @@
   z-index: 9;
 }
 
+.xform-designer-setting [title]{
+  cursor: help;
+}
