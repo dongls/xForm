@@ -1,7 +1,12 @@
-import { useConstant, FormField } from '@dongls/xform'
-import { computed, getCurrentInstance } from 'vue'
+import { useConstant } from '@dongls/xform'
 
-export { useValue, useField, useFieldProp, useDefaultValueApi } from '@common/util/index'
+export {
+  useValue,
+  useField,
+  useFieldProp,
+  useDefaultValueApi,
+  useOptions
+} from '@common/util/index'
 
 const { EVENTS } = useConstant()
 
@@ -54,47 +59,4 @@ export function updateField(emit: Function, event: Event, prop: string, scope?: 
   const value = parseValue(target, 'setting')
 
   emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
-}
-
-export function useOptions(afterUpdate?: Function){
-  const instance = getCurrentInstance()
-  const options = computed(() => (instance.props.field as FormField).options)
-
-  function update(prop: string, value: any, scope?: string){
-    instance.emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
-
-    if(typeof afterUpdate == 'function') afterUpdate()
-  }
-  
-  function addOption(){
-    const opts = options.value
-    opts.push({ value: `选项${opts.length + 1}` })
-    update('options', opts)
-  }
-
-  function updateOption(event: Event, option: any){
-    const target = event.target as HTMLInputElement
-    const value: any = target.value
-
-    option.value = value
-    update('options', options.value)
-  }
-  
-  function removeOption(option: any){
-    const opts = options.value
-    if(opts.length <= 1) return
-
-    const index = opts.indexOf(option)
-    if(index >= 0) opts.splice(index, 1)
-
-    update('options', opts)
-  }
-  
-  return {
-    options,
-    addOption,
-    updateOption,
-    removeOption,
-    update
-  }
 }

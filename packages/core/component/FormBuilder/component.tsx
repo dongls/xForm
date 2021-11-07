@@ -144,6 +144,7 @@ export default defineComponent({
   setup(props: Props, { emit, expose }){
     const instance = getCurrentInstance()
     const rc = useRenderContext(instance)
+    const version = ref(1)
 
     const schemaRef = toRef(props, 'schema') as Ref<FormSchema>
     const pending = ref(false)
@@ -176,7 +177,10 @@ export default defineComponent({
     function reset(){
       preventValidate.value = true
       resetValidate()
-      nextTick(() => preventValidate.value = false)
+      nextTick(() => {
+        preventValidate.value = false
+        version.value++
+      })
     }
 
     // 验证整个表单
@@ -220,7 +224,7 @@ export default defineComponent({
       const schema = props.schema
       const tagName = (isString(props.tag) ? props.tag : 'form').toLowerCase()
 
-      const _p = { 'class': 'xform-builder' } as RawProps
+      const _p = { 'class': 'xform-builder', 'key': version.value } as RawProps
       if(tagName == 'form') mixinFormProps(_p)
         
       return (

@@ -1,11 +1,14 @@
 <template>
-  <el-input 
+  <el-date-picker
     v-model="value"
-    :id="field.uid"
     :name="field.name"
     :placeholder="field.placeholder"
     :disabled="disabled || field.disabled"
-    class="xform-el-text" size="small"
+    :format="field.attributes.format"
+    :value-format="field.attributes.valueFormat"
+    :editable="false"
+    :popper-options="popperOptions"
+    class="xform-el-date" size="small"
   />
 </template>
 
@@ -15,7 +18,7 @@ import { FormField } from '@dongls/xform'
 import { useValue } from '../util'
 
 export default defineComponent({
-  name: 'xform-el-text',
+  name: 'xform-el-date',
   props: {
     field: {
       type: FormField,
@@ -27,7 +30,18 @@ export default defineComponent({
     }
   },
   setup(){
-    return { value: useValue<string>() }
+    return { 
+      value: useValue<string>(),
+      popperOptions: {
+        placement: 'bottom-start'
+      }
+    }
   }
 })
 </script>
+
+<style lang="scss">
+.xform-el-date{
+  width: 100% !important;
+}
+</style>

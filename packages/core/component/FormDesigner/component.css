@@ -12,6 +12,8 @@
   background-color: #fff;
   overflow-y: auto;
   overflow-x: hidden;
+  box-sizing: content-box;
+  width: 320px;
 }
 
 .xform-designer-main{
@@ -374,7 +376,7 @@
 
 /** xform setting */
 .xform-designer-setting{
-  min-width: 360px;
+  width: 360px;
   height: 100%;
   border-left: 1px solid #eee;
   overflow: hidden;

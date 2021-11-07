@@ -7,12 +7,12 @@
 - [ ] 支持[Element Plus][element]
   - [ ] checkbox
   - [ ] datatable
-  - [ ] date
+  - [x] date
   - [x] divider
   - [ ] group
-  - [ ] number
+  - [x] number
   - [ ] radio
-  - [ ] select
+  - [x] select
   - [x] text
   - [x] textarea
 - [ ] 字段逻辑支持读取字段选项

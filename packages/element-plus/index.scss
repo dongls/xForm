@@ -1,0 +1,10 @@
+.xform-el-setting-option{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  margin-bottom: 5px;
+
+  .el-button{
+    margin-left: 5px;
+  }
+}

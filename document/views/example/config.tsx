@@ -95,7 +95,7 @@ config.set('bootstrap', {
     }
 
     return (
-      <xform-item name="address" title="地址" validation={state.validator} disabled={state.disabled.value} virtual>
+      <xform-item name="address" title="地址" validation={state.validator} disabled={state.disabled.value} required virtual>
         {slots}
       </xform-item>
     )
@@ -113,17 +113,20 @@ config.set('bootstrap', {
 })
 
 config.set('element-plus', {
-  version: 'v1.2.0-beta.1',
+  version: 'v1.2.0-beta.2',
   source: [
     [publicPath + '/libs/element-plus/index.css', TYPE.STYLE],
     [publicPath + '/libs/element-plus/index.js', TYPE.SCRIPT],
+    [publicPath + '/libs/element-plus/zh-cn.js', TYPE.SCRIPT],
   ],
   factory(){
     return import(/* webpackPrefetch: true */'./element-plus/index').then(r => r.default)
   },
   install(preset, instance: ComponentInternalInstance){
     const ElementPlus = (window as any).ElementPlus
-    if(ElementPlus) instance.appContext.app.use(ElementPlus)
+    if(ElementPlus) {
+      instance.appContext.app.use(ElementPlus, { locale: ElementPlus.zhCn })
+    }
 
     reset({ preset, config: { modes: MODES } })
   },
@@ -142,12 +145,29 @@ config.set('element-plus', {
       </div>
     )
   },
+  renderBuilderDefaultSlot(state){
+    const slots = {
+      default(ctx: { field: FormField, disabled: boolean }){
+        const { field, disabled } = ctx
+        return [
+          <el-input v-model={field.value} size="small" placeholder="详细地址" disabled={disabled}/>,
+          <p class="example-builder-tip">该字段并非由设计器生成，而是页面单独添加的字段</p>
+        ]
+      }
+    }
+
+    return (
+      <xform-item name="address" title="地址" validation={state.validator} disabled={state.disabled.value} required={true} virtual>
+        {slots}
+      </xform-item>
+    )
+  },
   renderBuilderFooterSlot(state){
     return (
       <div class="example-builder-footer">
         <el-button type="text" size="small" disabled={state.pending.value} onClick={state.viewJSON}>查看JSON</el-button>
         <el-button type="text" size="small" onClick={state.disableForm}>{ state.disabled.value ? '启用' : '禁用' }表单</el-button>
-        <el-button size="small" disabled={state.pending.value || state.disabled.value}>重置</el-button>
+        <el-button size="small" native-type="reset" disabled={state.pending.value || state.disabled.value}>重置</el-button>
         <el-button type="primary" size="small" native-type="submit" disabled={state.pending.value || state.disabled.value}>提交</el-button>
       </div>
     )

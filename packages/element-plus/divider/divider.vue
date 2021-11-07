@@ -20,7 +20,7 @@ export default defineComponent({
 
 <template>
   <xform-divider 
-    class="xform-item" 
+    class="xform-item xform-el-divider" 
     :title="field.title" 
     :layout="field.attributes.layout" 
     :type="field.attributes.type" 

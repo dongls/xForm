@@ -18,7 +18,7 @@ export function useFieldProp<T>(prop: string, scope?: string, defaultValue?: any
       return value ?? defaultValue
     },
     set(v: any){
-      const value = v == '' ? undefined : v
+      const value = v === '' ? undefined : v
       instance.emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
     }
   })
@@ -34,12 +34,12 @@ export function useValue<T>(defaultValue?: any){
     },
     set(v){
       const field = fieldRef.value
-      field.value = v 
+      field.value = v
     }
   })
 }
 
-export function useDefaultValueApi(defTypes: any[]){
+export function useDefaultValueApi(defTypes: any[] = []){
   const defaultValue = useFieldProp<{type: string, value?: any}>('defaultValue')
 
   function useCompatType(){
@@ -66,7 +66,7 @@ export function useDefaultValueApi(defTypes: any[]){
         return defaultValue.value.value
       },
       set(value){
-        defaultValue.value.value = value == '' ? undefined : value
+        defaultValue.value.value = value === '' ? undefined : value
       }
     })
   }
@@ -79,5 +79,48 @@ export function useDefaultValueApi(defTypes: any[]){
     useCompatType,
     useCompatValue,
     useIsManual
+  }
+}
+
+export function useOptions(afterUpdate?: Function){
+  const instance = getCurrentInstance()
+  const options = computed(() => (instance.props.field as FormField).options)
+
+  function update(prop: string, value: any, scope?: string){
+    instance.emit(EVENTS.UPDATE_FIELD, { prop, value, scope })
+
+    if(typeof afterUpdate == 'function') afterUpdate()
+  }
+  
+  function addOption(){
+    const opts = options.value
+    opts.push({ value: `选项${opts.length + 1}` })
+    update('options', opts)
+  }
+
+  function updateOption(event: Event, option: any){
+    const target = event.target as HTMLInputElement
+    const value: any = target.value
+
+    option.value = value
+    update('options', options.value)
+  }
+  
+  function removeOption(option: any){
+    const opts = options.value
+    if(opts.length <= 1) return
+
+    const index = opts.indexOf(option)
+    if(index >= 0) opts.splice(index, 1)
+
+    update('options', opts)
+  }
+  
+  return {
+    options,
+    addOption,
+    updateOption,
+    removeOption,
+    update
   }
 }

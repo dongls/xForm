@@ -1,1 +1,6 @@
-export { useValue, useDefaultValueApi } from '@common/util/index'
+export { 
+  useValue, 
+  useDefaultValueApi, 
+  useFieldProp,
+  useOptions
+} from '@common/util/index'

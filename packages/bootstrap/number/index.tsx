@@ -44,7 +44,7 @@ export default FieldConf.create({
   build,
   validator(field, value: number | string){
     if(field.required && isEmpty(value)) return Promise.reject('必填')
-    if(field.attributes.integer && !/^[-+]?[1-9]\d*$/.test(value + '')) return Promise.reject('请输入整数')
+    if(field.attributes.integer && !/^[-+]?[1-9]?\d+$/.test(value + '')) return Promise.reject('请输入整数')
 
     return Promise.resolve()
   },

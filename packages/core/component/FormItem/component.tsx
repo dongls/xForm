@@ -46,6 +46,7 @@ type Props = {
   name: string;
   type: string;
   disabled: boolean;
+  required: boolean;
 }
 
 enum EnumComponentName {
@@ -90,6 +91,7 @@ function normalizeField(props: Props): ComputedRef<FormField>{
     virtualField.type = props.type
     virtualField.name = props.name
     virtualField.title = props.title
+    virtualField.required = props.required === true
     return virtualField
   })
 }
@@ -138,6 +140,10 @@ function createComponent(name: EnumComponentName): ComponentOptions{
         default: null
       },
       disabled: {
+        type: Boolean,
+        default: false
+      },
+      required: {
         type: Boolean,
         default: false
       }

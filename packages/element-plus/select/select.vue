@@ -1,14 +1,18 @@
 <template>
-  <el-input
-    type="textarea"
-    v-model="value"
-    :id="field.uid"
+  <el-select
     :name="field.name"
-    :rows="3"
-    :placeholder="field.placeholder"
     :disabled="disabled || field.disabled"
-    class="xform-el-textarea"
-  />
+    :placeholder="field.placeholder"
+    v-model="value"
+    class="xform-el-select" size="small"
+    clearable
+  >
+    <el-option 
+      v-for="(option, index) in field.options" :key="index" 
+      :value="option.value" 
+      :label="option.value"
+    />
+  </el-select>
 </template>
 
 <script lang="ts">
@@ -17,7 +21,7 @@ import { FormField } from '@dongls/xform'
 import { useValue } from '../util'
 
 export default defineComponent({
-  name: 'xform-el-textarea',
+  name: 'xform-el-select',
   props: {
     field: {
       type: FormField,
@@ -28,10 +32,16 @@ export default defineComponent({
       default: false
     }
   },
-  setup(){
-    return { 
-      value: useValue<string>() 
+  setup() {
+    return {
+      value: useValue<string>()
     }
   }
 })
 </script>
+
+<style>
+.xform-el-select{
+  width: 100%;
+}
+</style>
