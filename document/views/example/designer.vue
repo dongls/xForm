@@ -1,9 +1,9 @@
 <script lang="tsx">
 import { defineComponent, ref } from 'vue'
 import { FormField, LogicRule, getOperator, useConstant, FormDesignerApi } from '@dongls/xform'
-import { useLocalSchema, useIsWide } from '@document/util/common'
+import { useLocalSchema, useIsWide, toFalse } from '@document/util/common'
 import { useNotification } from '@document/component'
-import { useTarget, useDesignerToolSlot } from './preset'
+import { useTarget, useDesignerToolSlot, useConfirm } from './preset'
 
 const { BuiltInLogicOperator } = useConstant()
 
@@ -36,6 +36,7 @@ export default defineComponent({
     const target = useTarget()
     const isWide = useIsWide()
     const designer = ref<FormDesignerApi>(null)
+    const onConfirm = useConfirm(target)
     const toolSlot = useDesignerToolSlot(target, {
       isWide,
       validateSchema,
@@ -60,8 +61,9 @@ export default defineComponent({
       )
     }
 
-    function remove(e: { field: FormField, useDefault: Function }){
-      window.confirm(`确定要删除字段[${e.field.title}]?`) && e.useDefault()
+    async function onRemove(e: { field: FormField, useDefault: Function }){
+      const r = await onConfirm(e.field).catch(toFalse)
+      if(r === true) e.useDefault()
     }
 
     function showMessage(event: any){
@@ -131,7 +133,7 @@ export default defineComponent({
           ref={designer}
           schema={schema.value}
           mode="example"
-          onRemove={remove}
+          onRemove={onRemove}
           onMessage={showMessage}
         />
       )

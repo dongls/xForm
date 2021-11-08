@@ -1,5 +1,5 @@
 import { getCurrentInstance, inject, provide, Ref, ref } from 'vue'
-import { TYPE, config, DEAFULT_TARGET } from './config'
+import { TYPE, config, DEAFULT_TARGET, ConfirmFunc } from './config'
 
 const LOCAL_PRESET_NAME_KEY = '__xform_preset_name__'
 const UI_LIBARY_PROVIDE_KEY = 'ui-libary-target'
@@ -139,4 +139,12 @@ export function useBuilderDefaultSlot(target: string, state: any){
   return typeof slot == 'function' ? slot.bind(null, state) : function(){
     return null as any
   }
+}
+
+export function useConfirm(target: string){
+  const current = config.get(target)
+  const fn = current.onConfirm
+  return typeof fn == 'function' ? fn : function(field){
+    return Promise.resolve(window.confirm(`确定要删除字段[${field.title}]?`))
+  } as ConfirmFunc
 }

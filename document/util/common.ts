@@ -81,3 +81,10 @@ export function useLocalSchema(withModel = true){
 
 export const IS_DEV = __IS_DEV__
 
+export function toFalse(){
+  return false
+}
+
+export function toTrue(){
+  return true
+}

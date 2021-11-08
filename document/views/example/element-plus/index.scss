@@ -9,3 +9,15 @@
     font-size: 14px;
   }
 }
+
+.example-remove-confirm strong{
+  margin: 0 2px;
+
+  &[danger]{
+    color: #F56C6C;
+  }
+
+  &[info]{
+    color: #409EFF;
+  }
+}

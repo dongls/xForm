@@ -1,5 +1,8 @@
 import { ComponentInternalInstance } from 'vue'
 import { FormField, reset } from '@dongls/xform'
+import { toTrue } from '@document/util/common'
+
+export type ConfirmFunc = (field: FormField) => Promise<boolean>
 
 type DesignerSlotState = {
   isWide: any,
@@ -25,7 +28,10 @@ type Config = {
   renderDesignerToolSlot?: (state: DesignerSlotState) => any,
   renderBuilderDefaultSlot?: (state: BuilderSlotState) => any,
   renderBuilderFooterSlot?: (state: BuilderSlotState) => any,
-  renderViewerDefaultSlot?: (state: BuilderSlotState) => any
+  renderViewerDefaultSlot?: (state: BuilderSlotState) => any,
+  // TODO
+  onMessage?: any,
+  onConfirm?: ConfirmFunc,
 }
 
 export const enum TYPE {
@@ -50,6 +56,10 @@ const MODES = {
 const publicPath = __IS_DEV__ ? '/docs' : '/xForm'
 export const config = new Map<string, Config>()
 export const DEAFULT_TARGET = 'bootstrap'
+
+function getElementPlus(){
+  return (window as any).ElementPlus
+}
 
 config.set('bootstrap', {
   version: '4.6.0',
@@ -123,7 +133,7 @@ config.set('element-plus', {
     return import(/* webpackPrefetch: true */'./element-plus/index').then(r => r.default)
   },
   install(preset, instance: ComponentInternalInstance){
-    const ElementPlus = (window as any).ElementPlus
+    const ElementPlus = getElementPlus()
     if(ElementPlus) {
       instance.appContext.app.use(ElementPlus, { locale: ElementPlus.zhCn })
     }
@@ -171,6 +181,18 @@ config.set('element-plus', {
         <el-button type="primary" size="small" native-type="submit" disabled={state.pending.value || state.disabled.value}>提交</el-button>
       </div>
     )
+  },
+  onConfirm(field){
+    return getElementPlus().ElMessageBox.confirm(
+      `点击<strong>确定</strong>将<strong danger>删除</strong>字段<strong info>${field.title}</strong>!`,
+      '确定要删除该字段?',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        dangerouslyUseHTMLString: true,
+        customClass: 'example-remove-confirm'
+      }
+    ).then(toTrue)
   }
 })
 
