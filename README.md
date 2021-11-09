@@ -5,13 +5,13 @@
 
 ## 更新计划 `v0.7.1`
 - [ ] 支持[Element Plus][element]
-  - [ ] checkbox
+  - [x] checkbox
   - [ ] datatable
   - [x] date
   - [x] divider
   - [ ] group
   - [x] number
-  - [ ] radio
+  - [x] radio
   - [x] select
   - [x] text
   - [x] textarea

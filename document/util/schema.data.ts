@@ -85,7 +85,6 @@ export default {
         }
       ],
       attributes: {
-        style: 'inline',
         layout: 'inline'
       }
     },

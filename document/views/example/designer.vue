@@ -2,8 +2,7 @@
 import { defineComponent, ref } from 'vue'
 import { FormField, LogicRule, getOperator, useConstant, FormDesignerApi } from '@dongls/xform'
 import { useLocalSchema, useIsWide, toFalse } from '@document/util/common'
-import { useNotification } from '@document/component'
-import { useTarget, useDesignerToolSlot, useConfirm } from './preset'
+import { useTarget, useDesignerToolSlot, useConfirm, useNotify } from './preset'
 
 const { BuiltInLogicOperator } = useConstant()
 
@@ -32,11 +31,11 @@ export default defineComponent({
   emits: ['view'],
   setup(props, { emit }){
     const { schema, resetSchema } = useLocalSchema(false)    
-    const { notify } = useNotification()
     const target = useTarget()
     const isWide = useIsWide()
     const designer = ref<FormDesignerApi>(null)
-    const onConfirm = useConfirm(target)
+    const confirm = useConfirm(target)
+    const notify = useNotify(target)
     const toolSlot = useDesignerToolSlot(target, {
       isWide,
       validateSchema,
@@ -62,7 +61,7 @@ export default defineComponent({
     }
 
     async function onRemove(e: { field: FormField, useDefault: Function }){
-      const r = await onConfirm(e.field).catch(toFalse)
+      const r = await confirm(e.field).catch(toFalse)
       if(r === true) e.useDefault()
     }
 
@@ -107,7 +106,7 @@ export default defineComponent({
           type: 'error',
           delay: 0,
           title: '验证失败',
-          content: createSchemaErrorContent(r.result)
+          content: <div>{createSchemaErrorContent(r.result)}</div>
         })
       })
     }

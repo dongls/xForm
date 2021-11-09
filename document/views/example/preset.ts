@@ -1,5 +1,6 @@
 import { getCurrentInstance, inject, provide, Ref, ref } from 'vue'
-import { TYPE, config, DEAFULT_TARGET, ConfirmFunc } from './config'
+import { useNotification } from '@document/component'
+import { TYPE, config, DEAFULT_TARGET, ConfirmFunc, NotifyFunc } from './config'
 
 const LOCAL_PRESET_NAME_KEY = '__xform_preset_name__'
 const UI_LIBARY_PROVIDE_KEY = 'ui-libary-target'
@@ -141,10 +142,17 @@ export function useBuilderDefaultSlot(target: string, state: any){
   }
 }
 
-export function useConfirm(target: string){
+export function useConfirm(target: string): ConfirmFunc{
   const current = config.get(target)
-  const fn = current.onConfirm
+  const fn = current.confirm
   return typeof fn == 'function' ? fn : function(field){
     return Promise.resolve(window.confirm(`确定要删除字段[${field.title}]?`))
-  } as ConfirmFunc
+  }
+}
+
+export function useNotify(target: string): NotifyFunc{
+  const current = config.get(target)
+  const fn = current.notify
+
+  return typeof fn == 'function' ? fn : useNotification().notify
 }

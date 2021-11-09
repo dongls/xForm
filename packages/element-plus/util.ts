@@ -2,5 +2,6 @@ export {
   useValue, 
   useDefaultValueApi, 
   useFieldProp,
-  useOptions
+  useOptions,
+  useSchemaProp
 } from '@common/util/index'

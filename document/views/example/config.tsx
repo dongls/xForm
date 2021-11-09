@@ -1,8 +1,10 @@
 import { ComponentInternalInstance } from 'vue'
 import { FormField, reset } from '@dongls/xform'
 import { toTrue } from '@document/util/common'
+import { Options as NotifyOptions } from '@document/component/Notification/index'
 
 export type ConfirmFunc = (field: FormField) => Promise<boolean>
+export type NotifyFunc = (o: NotifyOptions) => void
 
 type DesignerSlotState = {
   isWide: any,
@@ -29,9 +31,8 @@ type Config = {
   renderBuilderDefaultSlot?: (state: BuilderSlotState) => any,
   renderBuilderFooterSlot?: (state: BuilderSlotState) => any,
   renderViewerDefaultSlot?: (state: BuilderSlotState) => any,
-  // TODO
-  onMessage?: any,
-  onConfirm?: ConfirmFunc,
+  confirm?: ConfirmFunc,
+  notify?: NotifyFunc
 }
 
 export const enum TYPE {
@@ -182,7 +183,7 @@ config.set('element-plus', {
       </div>
     )
   },
-  onConfirm(field){
+  confirm(field){
     return getElementPlus().ElMessageBox.confirm(
       `点击<strong>确定</strong>将<strong danger>删除</strong>字段<strong info>${field.title}</strong>!`,
       '确定要删除该字段?',
@@ -190,9 +191,18 @@ config.set('element-plus', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         dangerouslyUseHTMLString: true,
-        customClass: 'example-remove-confirm'
+        customClass: 'example-el-confirm'
       }
     ).then(toTrue)
+  },
+  notify(options){
+    return getElementPlus().ElNotification({
+      title: options.title,
+      duration: options.delay,
+      message: options.content || options.message,
+      type: options.type,
+      customClass: 'example-el-notify'
+    })
   }
 })
 

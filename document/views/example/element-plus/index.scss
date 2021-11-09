@@ -10,7 +10,7 @@
   }
 }
 
-.example-remove-confirm strong{
+.example-el-confirm strong{
   margin: 0 2px;
 
   &[danger]{
@@ -19,5 +19,11 @@
 
   &[info]{
     color: #409EFF;
+  }
+}
+
+.example-el-notify{
+  .example-schema-error{
+    padding-left: 0;
   }
 }

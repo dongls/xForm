@@ -40,11 +40,7 @@ function checkValidateMode(v: any){
 function eachFieldValue(value: any, callback: any): void{
   if(value == null || typeof value != 'object') return
 
-  if(value instanceof FormField) {
-    callback(value)
-    return eachFieldValue(value.value, callback)
-  }
-
+  if(value instanceof FormField) return callback(value)
   if(Array.isArray(value)) return value.forEach(v => eachFieldValue(v, callback))
   if(isObject(value)) return Object.values(value).forEach(v => eachFieldValue(v, callback))
 }
@@ -175,7 +171,7 @@ export function useValidator(schemaRef: Ref<FormSchema>, disabledRef: ComputedRe
   }
 
   function resetCallback(field: FormField){
-    if(!isObject(field.value)) field.setValue(undefined, true)
+    field.setValue(undefined, true)
 
     queue.forEach(p => p.uid === field.uid && queue.delete(p))
     field.resetValidate()

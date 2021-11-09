@@ -3,7 +3,7 @@ import './index.scss'
 import { genRandomStr } from '@dongls/xform'
 import { App, createApp, defineComponent, VNode } from 'vue'
 
-type Options = {
+export type Options = {
   type?: 'error' | 'warning' | 'info' | 'success';
   delay?: number;
   title?: string;

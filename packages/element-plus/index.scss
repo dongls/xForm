@@ -1,3 +1,11 @@
+.xform-setting + .xform-setting{
+  margin-top: 10px;
+}
+
+.xform-setting header{
+  font-weight: 700;
+}
+
 .xform-el-setting-option{
   display: flex;
   flex-flow: row nowrap;

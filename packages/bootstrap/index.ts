@@ -1,7 +1,6 @@
 import './index.scss'
 
 import { FormPreset } from '@dongls/xform'
-
 import FormSetting from './FormSetting.vue'
 
 import Text from './text'

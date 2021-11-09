@@ -1,4 +1,4 @@
-import { FormField, useConstant } from '@dongls/xform'
+import { FormField, FormSchema, useConstant } from '@dongls/xform'
 import { computed, getCurrentInstance, Ref, toRef } from 'vue'
 
 const { EVENTS, BuiltInDefaultValueType } = useConstant()
@@ -9,11 +9,12 @@ export function useField(){
 }
 
 export function useFieldProp<T>(prop: string, scope?: string, defaultValue?: any) {
+  const fieldRef = useField()
   const instance = getCurrentInstance()
 
   return computed<T>({
     get(){
-      const field = instance.props.field as FormField
+      const field = fieldRef.value
       const value = scope ? field?.[scope]?.[prop] : field?.[prop]
       return value ?? defaultValue
     },
@@ -123,4 +124,27 @@ export function useOptions(afterUpdate?: Function){
     removeOption,
     update
   }
+}
+
+export function useSchema(){
+  const instance = getCurrentInstance()
+  return toRef(instance.props, 'schema') as Ref<FormSchema>
+}
+
+export function useSchemaProp<T extends string | boolean | object | any[]>(prop: string, valueOrGetter?: ((schema: FormSchema) => T) | T){
+  const schemaRef = useSchema()
+  const instance = getCurrentInstance()
+  
+  return computed<T>({
+    get: typeof valueOrGetter == 'function' ? function(){
+      return valueOrGetter(schemaRef.value)
+    } : function(){
+      const schema = schemaRef.value
+      return schema[prop] ?? valueOrGetter
+    },
+    set(v: any){
+      const value = v === '' ? undefined : v
+      instance.emit(EVENTS.UPDATE_PROP, { prop, value })
+    }
+  })
 }

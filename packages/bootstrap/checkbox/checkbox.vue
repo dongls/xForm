@@ -1,6 +1,6 @@
 <template>
   <div class="xform-bs-checkbox">
-    <div v-for="(option, i) in field.options" :key="i" :class="radioClassName">
+    <div v-for="(option, i) in field.options" :key="i" :class="className">
       <input 
         v-model="value" 
         :id="field.uid + '_' + i" 
@@ -35,7 +35,7 @@ export default defineComponent({
   setup(props) {
     return {
       value: useValue<string[]>([]),
-      radioClassName: computed(() => {
+      className: computed(() => {
         const className = ['custom-control', 'custom-checkbox']
         if(props.field.attributes.layout == 'inline') className.push('custom-control-inline')
         return className
