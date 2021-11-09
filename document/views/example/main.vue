@@ -2,7 +2,7 @@
   <div v-if="!loading" class="example">
     <div class="header">
       <div class="header-left">
-        <div class="logo">xForm<small>v{{ version }}</small></div>
+        <div class="logo">xForm<small>v{{ version }}@{{ TIMESTAMP }}</small></div>
       </div>
       
       <nav class="example-nav">
@@ -12,14 +12,14 @@
       </nav>
 
       <div class="header-right">
-        <router-link v-if="isDev" to="/doc">文档</router-link>
+        <router-link v-if="IS_DEV" to="/doc">文档</router-link>
         <div class="libs" :title="`${preset}@${presetVersion}`">
           <label>UI库：</label>
           <div class="lib-picker">
             <select :value="preset" @input="handlePreset">
               <option value="bootstrap">Bootstrap</option>
               <option value="element-plus">Element Plus</option>
-              <option value="antdv" v-if="isDev">Ant Design Vue</option>
+              <option value="antdv" v-if="IS_DEV">Ant Design Vue</option>
             </select>
           </div>
         </div>
@@ -39,7 +39,7 @@
 import { defineComponent, onBeforeUnmount, ref } from 'vue'
 import { version } from '@dongls/xform'
 import { savePresetNameToLocal, usePreset } from './preset'
-import { useIsWide, IS_DEV } from '../../util/common'
+import { useIsWide, IS_DEV, TIMESTAMP } from '../../util/common'
 
 function toggleClass(){
   document.documentElement.classList.add('is-example')
@@ -62,7 +62,8 @@ export default defineComponent({
     toggleClass()
 
     return {
-      isDev: IS_DEV,
+      TIMESTAMP,
+      IS_DEV,
       isWide: useIsWide(),
       json,
       loading,
@@ -302,9 +303,5 @@ html.is-example{
   & + .example-nav-link{
     margin-left: 4px;
   }
-}
-
-.btn-text{
-  text-decoration: none !important;
 }
 </style>

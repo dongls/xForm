@@ -2,6 +2,8 @@
   box-sizing: border-box;
   display: flex;
   flex-flow: row nowrap;
+  
+  font-size: var(--xform-font-size);
   color: var(--xform-text-color);
 }
 

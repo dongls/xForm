@@ -1,9 +1,12 @@
 :root{
   --xform-color-primary: #409eff;
+  --xform-color-primary-lighten: #e8f3ff;
+
   --xform-color-danger: #f56c6c;
   
-  --xform-color-primary-lighten: #e8f3ff;
   --xform-text-color: #343a40;
+  --xform-font-size: 14px;
 
   --xform-label-width: 120px;
+  --xform-designer-mark-color: red;
 }

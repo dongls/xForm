@@ -9,12 +9,13 @@
   - [ ] datatable
   - [x] date
   - [x] divider
-  - [ ] group
+  - [x] group
   - [x] number
   - [x] radio
   - [x] select
   - [x] text
   - [x] textarea
+  - [ ] tabs
 - [ ] 字段逻辑支持读取字段选项
 - [ ] 支持通过css custom-property自定义样式
 
@@ -33,4 +34,4 @@
 [example]: https://github.com/dongls/xForm/tree/master/document/views/example
 [test]: https://github.com/dongls/xForm/tree/master/packages/core/__test__
 
-[element]: https://element-plus.gitee.io/zh-CN/#/zh-CN
+[element]: https://github.com/element-plus/element-plus

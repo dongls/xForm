@@ -14,9 +14,9 @@
 
     <section class="xform-el-field-setting-prop" v-if="attributes">
       <header>属性：</header>
-      <el-checkbox size="small" v-if="required" v-model="fieldRef.required" title="勾选则该字段在表单提交时必须填写">必填</el-checkbox>
-      <el-checkbox size="small" v-model="fieldRef.disabled" title="勾选则该字段在表单中无法编辑, 也不参与表单验证">禁用</el-checkbox>
-      <el-checkbox size="small" v-model="fieldRef.hidden" title="勾选则该字段将不会再表单中显示">隐藏</el-checkbox>
+      <el-checkbox size="small" v-if="required" v-model="fieldRef.required" :name="`${field.name}-required`" title="勾选则该字段在表单提交时必须填写">必填</el-checkbox>
+      <el-checkbox size="small" v-model="fieldRef.disabled" :name="`${field.name}-disabled`" title="勾选则该字段在表单中无法编辑, 也不参与表单验证">禁用</el-checkbox>
+      <el-checkbox size="small" v-model="fieldRef.hidden" :name="`${field.name}-hidden`" title="勾选则该字段将不会再表单中显示">隐藏</el-checkbox>
       <slot name="attributes"/>
     </section>
 

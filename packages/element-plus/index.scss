@@ -16,3 +16,15 @@
     margin-left: 5px;
   }
 }
+
+.xform-el-empty-tip{
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  text-align: center;
+  color: #9a9a9a;
+  font-size: 14px;
+  font-weight: 600;
+}

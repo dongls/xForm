@@ -45,12 +45,16 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style lang="scss">
 .xform-bs-radio {
   padding: 5px 0;
 }
 
 .xform-bs-radio .custom-radio{
   line-height: 24px;
+
+  & + .custom-radio{
+    margin-top: 5px;
+  }
 }
 </style>

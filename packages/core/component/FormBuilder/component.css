@@ -1,7 +1,7 @@
 .xform-builder{
   background-color: #fff;
   
-  font-size: 14px;
+  font-size: var(--xform-font-size);
   color: var(--xform-text-color);
   padding: 0 10px;
   margin: 0 auto;

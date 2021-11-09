@@ -47,7 +47,7 @@ export default defineComponent({
 
 <style>
 .xform-el-radio-block .el-radio{
-  width: 100%;
+  width: fit-content;
   margin: 0;
   display: flex;
   white-space: normal;

@@ -6,6 +6,7 @@ import FormSetting from './FormSetting.vue'
 import Checkbox from './checkbox'
 import Date from './date'
 import Divider from './divider'
+import Group from './group'
 import Number from './number'
 import Radio from './radio'
 import Select from './select'
@@ -22,6 +23,7 @@ const ElementPlus: FormPreset = {
     Checkbox,
     Date,
     Divider,
+    Group,
     Number,
     Radio,
     Select,

@@ -1,0 +1,53 @@
+.xform-preview-group{
+  &.xform-is-selected > .xform-preview-cover,
+  &:hover > .xform-preview-cover{
+    background-color: rgb(253, 213, 138);
+  }
+}
+
+.xform-el-group{
+  display: block;
+  
+  .el-card{
+    --el-card-padding: 10px;
+  }
+
+  .xform-el-group-list{
+    position: relative;
+    min-height: 200px;
+  }
+}
+
+.xform-el-group.xform-is-collasped{
+  .el-card__header{
+    border-bottom: 0;
+  }
+  
+  .el-card__body{
+    display: none;
+  }
+}
+
+.xform-el-group .xform-el-card-header{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  line-height: 24px;
+
+  h3{
+    flex: 1;
+    margin: 0;
+    font-size: var(--xform-font-size);
+    font-weight: 700;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .el-button--text{
+    padding: 0;
+    font-size: var(--xform-font-size);
+    min-height: 0;
+  }
+}

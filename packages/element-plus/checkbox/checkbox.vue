@@ -47,7 +47,7 @@ export default defineComponent({
 
 <style>
 .xform-el-checkbox-block .el-checkbox{
-  width: 100%;
+  width: fit-content;
   margin: 0;
   display: flex;
   white-space: normal;

@@ -23,7 +23,7 @@
         <label class="custom-control-label" :for="`${field.name}-disabled`" title="勾选则该字段在表单中无法编辑, 也不参与表单验证">禁用</label>
       </div>
       <div class="custom-control custom-checkbox custom-control-inline">
-        <input :id="`${field.name}-hidden`" name="`${field.name}-hidden`" type="checkbox" class="custom-control-input" v-model="fieldRef.hidden">
+        <input :id="`${field.name}-hidden`" :name="`${field.name}-hidden`" type="checkbox" class="custom-control-input" v-model="fieldRef.hidden">
         <label class="custom-control-label" :for="`${field.name}-hidden`" title="勾选则该字段将不会再表单中显示">隐藏</label>
       </div>
       <slot name="attributes"/>

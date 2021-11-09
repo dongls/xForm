@@ -8,16 +8,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { prompt } = require('enquirer')
 const { RELEASE_PACKAGE, OUTPUT_BASE_PATH } = require('./args')
 
-const FMT_OPTIONS = {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-  hourCycle: 'h23'
-}
-
 const packages = {
   'core': {
     entry: ['./packages/core/index.css', './packages/core/index.ts'],
@@ -38,6 +28,20 @@ const OUTPUT_TYPES = ['umd', 'esm', 'bundler']
 const packageNames = Object.keys(packages)
 const ARROW_INFO = chalk.blue.bold('➜') + '  '
 const ARROW_SUCC = chalk.green.bold('➜') + '  '
+
+function fillZero(num){
+  return num < 10 ? '0' + num : num
+}
+
+function getTimestamp(){
+  const f = fillZero
+  const now = new Date()
+  const month = now.getMonth() + 1
+  const day = now.getDate()
+  const hour = now.getHours()
+  const min = now.getMinutes()
+  return `${f(month)}${f(day)}${f(hour)}${f(min)}`
+}
 
 function createCssLoader(IS_PRODUCTION, IS_MODULE){
   return {
@@ -89,15 +93,9 @@ function genPackageProps(){
 }
 
 function genHtmlWebpackPlugin(filename, options = {}){
-  const defMeta = {
-    'xform:date': (new Date()).toLocaleDateString('zh-CN', FMT_OPTIONS)
-  }
-  const meta = Object.assign({}, defMeta, options.meta || {})
-
   return new HtmlWebpackPlugin({
     template: options.template || './document/index.html',
     filename,
-    meta,
     minify: false
   })
 }
@@ -311,5 +309,6 @@ module.exports = {
   genLessLoader,
   genPackageProps,
   genScssLoader,
+  getTimestamp,
   release,
 }

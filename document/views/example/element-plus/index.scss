@@ -2,6 +2,10 @@
   .el-button--small{
     font-size: 14px;
   }
+
+  .el-button + .el-button{
+    margin-left: 15px;
+  }
 }
 
 .example-builder-footer{

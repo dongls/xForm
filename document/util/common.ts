@@ -80,6 +80,7 @@ export function useLocalSchema(withModel = true){
 }
 
 export const IS_DEV = __IS_DEV__
+export const TIMESTAMP = __TIMESTAMP__
 
 export function toFalse(){
   return false

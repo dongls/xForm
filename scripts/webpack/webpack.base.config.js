@@ -100,6 +100,7 @@ module.exports = {
       '__VUE_OPTIONS_API__': JSON.stringify(true),
       '__VUE_PROD_DEVTOOLS__': JSON.stringify(!IS_PRODUCTION),
       '__VUE_VERSION__': JSON.stringify(process.env.VUE_VERSION),
+      '__TIMESTAMP__': utils.getTimestamp()
     }),
     new VueLoaderPlugin()
   ]

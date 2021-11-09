@@ -1,5 +1,5 @@
 .xform-viewer{
-  font-size: 14px;
+  font-size: var(--xform-font-size);
   color: var(--xform-text-color);
   background-color: #fff;
   margin: 0 auto;

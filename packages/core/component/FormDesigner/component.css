@@ -3,7 +3,7 @@
   flex-flow: row nowrap;
   height: 100%;
 
-  font-size: 14px;
+  font-size: var(--xform-font-size);
   color: var(--xform-text-color);
 }
 
@@ -281,7 +281,7 @@
   padding: 5px 0;
   height: 3px;
   margin: 0 auto;
-  background: linear-gradient(to bottom, transparent 5px, red 5px, red 8px, transparent 8px);
+  background: linear-gradient(to bottom, transparent 5px, var(--xform-designer-mark-color) 5px, var(--xform-designer-mark-color) 8px, transparent 8px);
   z-index: 10;
   box-sizing: content-box;
   border: none;
@@ -300,12 +300,12 @@
 
 .xform-designer-mark > hr::before{
   left: 0;
-  border-left: 4px solid red;
+  border-left: 4px solid var(--xform-designer-mark-color);
 }
 
 .xform-designer-mark > hr::after{
   right: 0;
-  border-right: 4px solid red;
+  border-right: 4px solid var(--xform-designer-mark-color);
 }
 
 .is-vertical-mark .xform-designer-mark{

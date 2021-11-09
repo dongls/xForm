@@ -45,12 +45,16 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style lang="scss">
 .xform-bs-checkbox {
   padding: 5px 0;
 }
 
 .xform-bs-checkbox .custom-checkbox{
   line-height: 24px;
+
+  & + .custom-checkbox{
+    margin-top: 5px;
+  }
 }
 </style>
