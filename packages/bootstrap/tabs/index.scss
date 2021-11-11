@@ -1,6 +1,7 @@
 .xform-bs-tabs{
   display: block;
   background-color: #fff;
+  position: relative;
 
   .tab-pane{
     padding: 10px 5px;
@@ -13,6 +14,14 @@
   .nav-tabs-title{
     padding: .5rem 10px;
     border-bottom: 1px solid #dee2e6;
+    cursor: default;
+    max-width: var(--xform-label-width);
+    font-size: var(--xform-font-size);
+    color: var(--xform-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: content-box;
   }
 
   .nav-tabs{
@@ -66,9 +75,6 @@
   .tab-pane{
     position: relative;
     padding: 5px;
-    .xform-preview:first-child{
-      margin-top: 0px;
-    }
   }
 }
 

@@ -15,7 +15,7 @@
   - [x] select
   - [x] text
   - [x] textarea
-  - [ ] tabs
+  - [x] tabs
 - [ ] 字段逻辑支持读取字段选项
 - [ ] 支持通过css custom-property自定义样式
 

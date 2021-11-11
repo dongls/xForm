@@ -73,6 +73,7 @@ export class FieldConf extends Hook{
   title: string
   /** 字段icon */
   icon?: string | Function
+  // eslint-disable-next-line no-use-before-define
   alias: FieldConf
 
   /** 可接受的子字段类型，为空则接受所有字段 */
@@ -88,6 +89,7 @@ export class FieldConf extends Hook{
   view?: VueComponent | FieldComponent
 
   /** 依赖的子组件 */
+  // eslint-disable-next-line no-use-before-define
   dependencies: FieldConf[]
   operators: false | string[]
 

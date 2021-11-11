@@ -1,0 +1,190 @@
+.xform-preview-datatable{
+  &.xform-is-selected > .xform-preview-cover,
+  &:hover > .xform-preview-cover{
+    background-color: rgb(253, 213, 138);
+  }
+
+  .xform-bs-datatable{
+    border: 1px solid #ccc;
+    position: relative;
+    z-index: 9;
+  }
+
+  .xform-preview{
+    margin-top: 0;
+
+    & + .xform-preview{
+      margin-left: 5px;
+    }
+  }
+
+  .xform-bs-empty-tip{
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .xform-bs-datatable-cell{
+    text-align: center;
+    line-height: 26px;
+    height: 26px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .xform-bs-datatable-columns{
+    padding: 5px;
+    height: 50px;
+    display: flex;
+    flex-flow: row nowrap;
+    float: left;
+    min-width: 100%;
+  }
+}
+
+.xform-bs-datatable{
+  .xform-item{
+    margin-bottom: 0;
+    
+    .xform-item-message{
+      bottom: -13px;
+      line-height: 14px;
+    }
+  }
+
+  tr td{
+    vertical-align: middle;
+  }
+
+  .table-hover tbody tr:hover{
+    background-color: #ececec;
+  }
+
+  th.xform-bs-datatable-index,
+  th.xform-bs-datatable-operate{
+    background-color: #f5f5f5;
+  }
+
+  td.xform-bs-datatable-index,
+  td.xform-bs-datatable-operate{
+    background-color: #fff;
+  }
+
+  tr:hover td.xform-bs-datatable-index,
+  tr:hover td.xform-bs-datatable-operate{
+    background-color: #ececec;
+  }
+}
+
+.xform-bs-datatable[data-layout="modal"] th,
+.xform-bs-datatable[data-layout="modal"] td,
+.xform-bs-datatable-view td,
+.xform-bs-datatable-view th{
+  padding: 8px;
+}
+
+.xform-bs-datatable .table,
+.xform-bs-datatable-view .table{
+  margin-bottom: 0;
+}
+
+.xform-bs-datatable[data-layout="inline"]{
+  td.xform-bs-datatable-index button{
+    display: none;
+    text-align: center;
+  }
+
+  tbody tr:hover td.xform-bs-datatable-index{
+    strong{
+      display: none;
+      
+    }
+
+    button{
+      display: block;
+    }
+  }
+}
+
+.xform-bs-datatable-cell span{
+  position: relative;
+}
+
+.xform-bs-datatable-cell.xform-is-required{
+  font-weight: 700;
+}
+
+.xform-bs-datatable-cell.xform-is-required span:before{
+  content: "*";
+  position: absolute;
+  top: 0;
+  left: -8px;
+  color: var(--xform-color-danger);
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.xform-bs-datatable-operate{
+  text-align: center;
+  position: sticky;
+  right: 0;
+  z-index: 8;
+}
+
+.xform-bs-datatable-index > button,
+.xform-bs-datatable-operate > button{
+  font-size: 14px;
+  padding: 0;
+}
+.xform-bs-datatable-operate > button + button{
+  margin-left: 10px;
+}
+
+.xform-bs-datatable-index{
+  position: sticky;
+  left: 0;
+  z-index: 8;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.xform-bs-datatable-tip{
+  text-align: center;
+  color: #6c757d;
+  max-width: 100%;
+  padding: 10px 0;
+  position: sticky;
+  left: 0;
+  user-select: none;
+
+  span{
+    display: inline-block;
+    line-height: 20px;
+    height: 20px;
+    vertical-align: middle;
+  }
+
+  button{
+    padding: 0 5px;
+    border: none;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: middle;
+  }
+}
+
+.xform-bs-datatable-error{
+  line-height: 31px;
+}
+
+.xform-bs-datatable-modal-layout{
+  .modal-dialog{
+    margin-top: 12vh;
+    max-height: 76vh;
+    min-height: auto;
+  }
+
+  .modal-body{
+    padding: 10px 0 0 0;
+  }
+}

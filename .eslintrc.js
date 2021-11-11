@@ -100,7 +100,8 @@ module.exports = {
     'vue/no-v-html': 'off',
     'vue/one-component-per-file': 'off',
     'vue/attributes-order': 'off',
-    'vue/multiline-html-element-content-newline': 'off'
+    'vue/multiline-html-element-content-newline': 'off',
+    'vue/multi-word-component-names': 'off'
   },
   overrides: [
     {

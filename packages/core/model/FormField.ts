@@ -93,8 +93,10 @@ export class FormField extends FormScope{
   allowRemove?: boolean
   /** 是否允许复制字段 */
   allowClone?: boolean
+  // eslint-disable-next-line no-use-before-define
   parent?: FormField | FormSchema = null
   /** 子类型, 避免直接修改 */
+  // eslint-disable-next-line no-use-before-define
   fields: FormField[] = []
   /** 表单项的值 */
   value: any

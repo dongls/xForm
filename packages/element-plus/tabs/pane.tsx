@@ -15,7 +15,7 @@ export default FieldConf.create({
   custom: true,
   scoped: true,
   build: defineComponent({
-    name: 'xform-bs-tabs-pane',
+    name: 'xform-el-tabs-pane',
     props: {
       field: {
         type: FormField,
@@ -39,13 +39,13 @@ export default FieldConf.create({
 
         const content = (
           props.behavior == 'designer' && fields.length == 0 
-            ? <p class={[CLASS.IS_EMPTY_TIP, 'xform-bs-empty-tip']}>请将左侧控件拖动到此处</p>
+            ? <p class={[CLASS.IS_EMPTY_TIP, 'xform-el-empty-tip']}>请将左侧控件拖动到此处</p>
             : fields.map((f) => context.renderField(inDesigner ? f : value[f.name], { parentProps: { disabled: props.disabled } }))
         )
 
         const _p = {
           class: {
-            'tab-pane': true,
+            'xform-el-tab-pane': true,
             [CLASS.DROPPABLE]: true,
             [CLASS.SCOPE]: true
           },
@@ -58,7 +58,7 @@ export default FieldConf.create({
     },
   }),
   view: defineComponent({
-    name: 'xform-bs-tabs-pane-view',
+    name: 'xform-el-tabs-pane-view',
     props: {
       field: {
         type: FormField,
@@ -76,7 +76,7 @@ export default FieldConf.create({
       return function () {
         const fields = props.field.fields
         return (
-          <div class="tab-pane">
+          <div class="xform-el-tab-pane">
             {fields.map((f) => context.renderField(value[f.name], { parentProps: { disabled: props.disabled } }))}
           </div>
         )

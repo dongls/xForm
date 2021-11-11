@@ -10,6 +10,7 @@ import Group from './group'
 import Number from './number'
 import Radio from './radio'
 import Select from './select'
+import Tabs from './tabs'
 import Text from './text'
 import Textare from './textarea'
 
@@ -27,6 +28,7 @@ const ElementPlus: FormPreset = {
     Number,
     Radio,
     Select,
+    Tabs,
     Text,
     Textare,
   ]

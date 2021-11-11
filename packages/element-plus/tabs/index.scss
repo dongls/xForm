@@ -1,0 +1,84 @@
+.xform-el-tabs{
+  display: block;
+  position: relative;
+  background-color: #fff;
+
+  .el-tabs{
+    box-shadow: none;
+    transition: var(--el-transition-duration);
+    border-radius: 4px;
+    overflow: hidden;
+
+    &:hover{
+      box-shadow: var(--el-box-shadow-light);
+    }
+  }
+
+  .el-tabs__nav-prev,
+  .el-tabs__nav-next{
+    width: 20px;
+    height: 38px;
+    text-align: center;
+
+    &:hover{
+      color: var(--el-color-primary);
+    }
+  }
+
+  .el-tabs__content{
+    padding: 10px;
+  }
+
+  &.xform-is-with-title {
+    .el-tabs__header{
+      display: flex;
+      
+      &::before{
+        content: var(--xform-el-tabs-field-title);
+        align-self: center;
+        padding: 0 10px;
+        font-size: var(--xform-font-size);
+        color: var(--xform-text-color);
+        font-weight: 700;
+        max-width: var(--xform-label-width);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        box-sizing: content-box;
+      }
+    }
+  
+    .el-tabs__nav-wrap{
+      flex: 1;
+    }
+
+    .el-tabs--border-card .el-tabs__item:first-child{
+      margin-left: 0;
+    }
+  }
+}
+
+.xform-el-tab-pane{
+  min-height: 200px;
+}
+
+.xform-preview-tabs{
+  .el-tabs__nav-wrap{
+    position: relative;
+    z-index: 9;
+  }
+
+  .xform-el-tab-pane{
+    position: relative;
+  }
+}
+
+.xform-preview-tabs.xform-is-selected > .xform-preview-cover,
+.xform-preview-tabs:hover > .xform-preview-cover{
+  background-color: rgb(253, 213, 138);
+}
+
+.xform-el-tabs-option .el-button--small{
+  padding-left: 10px;
+  padding-right: 10px;
+}

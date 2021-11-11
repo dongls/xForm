@@ -2,7 +2,11 @@
   <div v-if="!loading" class="example">
     <div class="header">
       <div class="header-left">
-        <div class="logo">xForm<small>v{{ version }}@{{ TIMESTAMP }}</small></div>
+        <div class="logo">
+          <strong>xForm</strong>
+          <span>v{{ version }}@{{ TIMESTAMP }}</span>
+          <a :href="preset.homepage" target="_blank">{{ preset.name }}@{{ preset.version }}</a>
+        </div>
       </div>
       
       <nav class="example-nav">
@@ -13,13 +17,13 @@
 
       <div class="header-right">
         <router-link v-if="IS_DEV" to="/doc">文档</router-link>
-        <div class="libs" :title="`${preset}@${presetVersion}`">
+        <div class="libs" :title="`${preset.name}@${preset.version}`">
           <label>UI库：</label>
           <div class="lib-picker">
-            <select :value="preset" @input="handlePreset">
-              <option value="bootstrap">Bootstrap</option>
-              <option value="element-plus">Element Plus</option>
-              <option value="antdv" v-if="IS_DEV">Ant Design Vue</option>
+            <select :value="preset.id" @input="handlePreset">
+              <template v-for="lib in preset.libs">
+                <option v-if="lib.show" :key="lib.id" :value="lib.id" :class="{'is-dev': lib.IS_DEV}">{{ lib.name }}</option>
+              </template>
             </select>
           </div>
         </div>
@@ -50,7 +54,7 @@ function toggleClass(){
 }
 
 export default defineComponent({
-  name: 'example',
+  name: 'example-view',
   setup(){
     const loading = ref(false)
     const show = ref(false)
@@ -67,8 +71,7 @@ export default defineComponent({
       isWide: useIsWide(),
       json,
       loading,
-      preset: preset.name,
-      presetVersion: preset.version,
+      preset,
       show,
       title,
       version: version,
@@ -185,6 +188,10 @@ html.is-example{
 
     option{
       color: var(--doc-text-color-primary);
+
+      &.is-dev{
+        color: red;
+      }
     }
   }
 }
@@ -228,14 +235,33 @@ html.is-example{
 }
 
 .logo{
-  font-weight: 600; 
-  font-size: 24px;
   color: #fff;
 
-  small{
+  strong{
+    font-weight: 600; 
+    font-size: 24px;
+  }
+
+  span{
     font-weight: 400;
     font-size: 13px;
     margin-left: 4px;
+    white-space: pre;
+
+    &::after{
+      content: "/";
+      margin: 0 5px;
+    }
+  }
+
+  a{
+    color: #fff !important;
+    text-decoration: none;
+    font-size: 13px;
+
+    &:hover{
+      text-decoration: underline;
+    }
   }
 }
 

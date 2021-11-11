@@ -17,7 +17,7 @@
         <button type="button" class="btn btn-link text-danger" @click="removeOption(option)" :disabled="options.length <= 1">删除</button>
       </div>
       
-      <button type="text" class="btn btn-sm btn-link bs-btn-text" @click="addOption">添加选项</button>
+      <button type="button" class="btn btn-sm btn-link bs-btn-text" @click="addOption">添加选项</button>
     </section>
 
     <section class="xform-bs-field-setting-prop">

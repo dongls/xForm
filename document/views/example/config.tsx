@@ -22,8 +22,12 @@ type BuilderSlotState = {
   viewJSON: any
 }
 
-type Config = {
+export type Config = {
+  IS_DEV?: boolean,
+  id: string,
+  name: string,
   version: string,
+  homepage: string,
   source: any[],
   factory: () => Promise<any>,
   install: (preset: any, instance: ComponentInternalInstance) => void,
@@ -56,14 +60,21 @@ const MODES = {
 
 const publicPath = __IS_DEV__ ? '/docs' : '/xForm'
 export const config = new Map<string, Config>()
-export const DEAFULT_TARGET = 'bootstrap'
+export const DEAFULT_TARGET = 'element-plus'
 
 function getElementPlus(){
   return (window as any).ElementPlus
 }
 
-config.set('bootstrap', {
+function r(c: Config){
+  config.set(c.id, c)
+}
+
+r({
+  id: 'bootstrap',
+  name: 'Bootstrap',
   version: '4.6.0',
+  homepage: 'https://github.com/twbs/bootstrap',
   source: [
     [publicPath + '/libs/bootstrap/bootstrap.min.css', TYPE.STYLE],
     [publicPath + '/libs/bootstrap/jquery.slim.min.js', TYPE.SCRIPT],
@@ -123,8 +134,11 @@ config.set('bootstrap', {
   }
 })
 
-config.set('element-plus', {
+r({
+  id: 'element-plus',
+  name: 'Element Plus',
   version: 'v1.2.0-beta.2',
+  homepage: 'https://github.com/element-plus/element-plus',
   source: [
     [publicPath + '/libs/element-plus/index.css', TYPE.STYLE],
     [publicPath + '/libs/element-plus/index.js', TYPE.SCRIPT],
@@ -148,10 +162,10 @@ config.set('element-plus', {
           <el-checkbox v-model={state.isWide.value}>宽屏</el-checkbox>
         </div>
         <div class="example-designer-tool-right">
-          <el-button size="small" onClick={state.validateSchema} type="text">验证</el-button>
-          <el-button size="small" onClick={state.reset} type="text">重置</el-button>
-          <el-button size="small" onClick={state.clear} type="text">清空</el-button>
-          <el-button size="small" onClick={state.viewJson} type="text">查看JSON</el-button>
+          <el-button size="small" auto-insert-space={false} onClick={state.validateSchema} type="text">验证</el-button>
+          <el-button size="small" auto-insert-space={false} onClick={state.reset} type="text">重置</el-button>
+          <el-button size="small" auto-insert-space={false} onClick={state.clear} type="text">清空</el-button>
+          <el-button size="small" auto-insert-space={false} onClick={state.viewJson} type="text">查看JSON</el-button>
         </div>
       </div>
     )
@@ -206,8 +220,12 @@ config.set('element-plus', {
   }
 })
 
-config.set('antdv', {
+r({
+  IS_DEV: true,
+  id: 'antdv',
+  name: 'Ant Design Vue',
   version: '2.1.2',
+  homepage: 'https://github.com/vueComponent/ant-design-vue',
   source: [
     [publicPath + '/libs/antdv/antd.min.css', TYPE.STYLE],
     [publicPath + '/libs/antdv/antd.min.js', TYPE.SCRIPT],

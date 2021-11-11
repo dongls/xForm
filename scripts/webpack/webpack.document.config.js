@@ -57,7 +57,9 @@ const development = {
     })
   ],
   experiments: {
-    lazyCompilation: true
+    lazyCompilation: {
+      entries: false,
+    }
   }
 }
 

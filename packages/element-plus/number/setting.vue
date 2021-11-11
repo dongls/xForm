@@ -3,7 +3,7 @@
     <section :class="['xform-el-field-setting-prop', classes.propDefaultValue]">
       <header>
         <span>默认值：</span>
-        <el-button @click="clearDefaultValue" size="small" type="text">清除</el-button>
+        <el-button @click="clearDefaultValue" size="small" type="text" :auto-insert-space="false">清除</el-button>
       </header>
       <el-input-number
         :model-value="compatValue"

@@ -6,7 +6,9 @@ import { Serializable } from './Serializable'
 type FieldOrIndex = FormScope | number
 
 export abstract class FormScope extends Serializable{
+  // eslint-disable-next-line no-use-before-define
   parent?: FormScope
+  // eslint-disable-next-line no-use-before-define
   fields: FormScope[] = []
 
   constructor(){

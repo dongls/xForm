@@ -35,6 +35,7 @@ function useHeader(){
             title={collasped.value ? '展开' : '收起'} 
             onClick={toggle} 
             size="small"
+            auto-insert-space={false}
           >{collasped.value ? '展开' : '收起'}</el-button>
         )
         : null

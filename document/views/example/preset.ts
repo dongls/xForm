@@ -1,8 +1,8 @@
-import { getCurrentInstance, inject, provide, Ref, ref } from 'vue'
+import { getCurrentInstance, inject, provide, Ref } from 'vue'
 import { useNotification } from '@document/component'
-import { TYPE, config, DEAFULT_TARGET, ConfirmFunc, NotifyFunc } from './config'
+import { TYPE, config, DEAFULT_TARGET, ConfirmFunc, NotifyFunc, Config } from './config'
 
-const LOCAL_PRESET_NAME_KEY = '__xform_preset_name__'
+const LOCAL_PRESET_NAME_KEY = 'preset_name'
 const UI_LIBARY_PROVIDE_KEY = 'ui-libary-target'
 
 function findNode(link: string, type: number){
@@ -86,6 +86,17 @@ export function savePresetNameToLocal(value: string){
   localStorage.setItem(LOCAL_PRESET_NAME_KEY, value)
 }
 
+function createPresetInfo(config: Config){
+  return {
+    id: config.id,
+    name: config.name,
+    version: config.version,
+    homepage: config.homepage,
+    IS_DEV: config.IS_DEV === true,
+    show: config.IS_DEV != true || config.IS_DEV === true && __IS_DEV__ 
+  }
+}
+
 export function usePreset(loading: Ref<boolean>){
   const instance = getCurrentInstance()
   const target = getTarget()
@@ -105,9 +116,9 @@ export function usePreset(loading: Ref<boolean>){
   provide(UI_LIBARY_PROVIDE_KEY, target)
 
   return {
-    version: current.version,
-    name: ref(target),
-    use
+    use,
+    libs: [...config.values()].map(createPresetInfo),
+    ...createPresetInfo(current),
   }
 }
 

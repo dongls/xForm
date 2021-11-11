@@ -138,7 +138,7 @@ function calcOffset(event: WheelEvent, list: HTMLElement, scroll: HTMLElement){
 }
 
 const build = defineComponent({
-  name: 'tabs',
+  name: 'xform-bs-tabs',
   props: {
     field: {
       type: FormField,

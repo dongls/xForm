@@ -52,6 +52,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: default;
+    font-size: var(--xform-font-size);
+    color: var(--xform-text-color);
   }
 }
 
