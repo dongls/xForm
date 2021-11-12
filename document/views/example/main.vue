@@ -1,11 +1,11 @@
 <template>
   <div v-if="!loading" class="example">
-    <div class="header">
+    <header class="header">
       <div class="header-left">
         <div class="logo">
           <strong>xForm</strong>
-          <span>v{{ version }}@{{ TIMESTAMP }}</span>
-          <a :href="preset.homepage" target="_blank">{{ preset.name }}@{{ preset.version }}</a>
+          <span class="example-with-slash">v{{ version }}-{{ TIMESTAMP }}</span>
+          <preset-picker :preset="preset"/>
         </div>
       </div>
       
@@ -17,35 +17,30 @@
 
       <div class="header-right">
         <router-link v-if="IS_DEV" to="/doc">文档</router-link>
-        <div class="libs" :title="`${preset.name}@${preset.version}`">
-          <label>UI库：</label>
-          <div class="lib-picker">
-            <select :value="preset.id" @input="handlePreset">
-              <template v-for="lib in preset.libs">
-                <option v-if="lib.show" :key="lib.id" :value="lib.id" :class="{'is-dev': lib.IS_DEV}">{{ lib.name }}</option>
-              </template>
-            </select>
-          </div>
-        </div>
+        <a href="https://github.com/dongls/xForm" target="_blank" class="example-icon-github">
+          <img src="../../assets/svg/github.svg">
+          <span>GitHub</span>
+        </a>
       </div>
-    </div>
-    <div class="main xform-is-scroll" :class="{'is-wide': isWide}">
-      <router-view @view="viewJson"/>
-    </div>
+    </header>
 
-    <modal v-model:show="show" :title="title">
-      <textarea class="example-value" :value="json" readonly/>
+    <main class="main xform-is-scroll" :class="{'is-wide': isWide}">
+      <router-view @view="viewJson"/>
+    </main>
+
+    <modal v-model:show="modalState.show" :title="modalState.title">
+      <textarea class="example-value" :value="modalState.json" readonly/>
     </modal>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeUnmount, ref } from 'vue'
+<script lang="tsx">
+import { defineComponent, onBeforeUnmount, reactive, ref } from 'vue'
 import { version } from '@dongls/xform'
-import { savePresetNameToLocal, usePreset } from './preset'
+import { usePreset } from './preset'
 import { useIsWide, IS_DEV, TIMESTAMP } from '../../util/common'
 
-function toggleClass(){
+function useToggleClass(){
   document.documentElement.classList.add('is-example')
 
   onBeforeUnmount(() => {
@@ -57,36 +52,28 @@ export default defineComponent({
   name: 'example-view',
   setup(){
     const loading = ref(false)
-    const show = ref(false)
-    const json = ref<string>()
-    const title = ref<string>()
     const preset = usePreset(loading)
+    const modalState = reactive({
+      show: false,
+      json: null,
+      title: null
+    })
 
-    preset.use()
-    toggleClass()
+    preset.install()
+    useToggleClass()
 
     return {
       TIMESTAMP,
       IS_DEV,
       isWide: useIsWide(),
-      json,
       loading,
+      modalState,
       preset,
-      show,
-      title,
-      version: version,
+      version,
       viewJson(event: any){
-        title.value = event.title
-        json.value = event.json
-        show.value = true
-      },
-      handlePreset(event: Event){
-        const target = event.target as HTMLSelectElement
-        const option = target.options[target.selectedIndex]
-        const value = option.value
-
-        savePresetNameToLocal(value)
-        window.location.reload()
+        modalState.title = event.title
+        modalState.json = event.json
+        modalState.show = true
       }
     }
   }
@@ -118,15 +105,6 @@ textarea.example-value{
   }
 }
 
-.icon-outbound{
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin-right: 2px;
-
-  background: url('../../assets/svg/outbound.svg') no-repeat;
-}
-
 html.is-example{
   overflow: hidden;
 }
@@ -155,6 +133,18 @@ html.is-example{
   box-shadow: 0 1px 8px rgba($--xform-color-primary, .5);
   user-select: none;
   font-size: 15px;
+
+  a:not(.example-nav-link) {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color ease .3s;
+  }
+
+  a:not(.example-nav-link):hover {
+    text-decoration: none;
+    border-bottom-color: #fff;
+  }
 }
 
 .example-nav{
@@ -162,53 +152,6 @@ html.is-example{
   flex-flow: row nowrap;
   margin: 0 auto;
   background-color: #fff;
-}
-
-.example .libs{
-  font-size: 15px;
-  color: #fff;
-  margin-left: 20px;
-  display: flex;
-  flex-flow: row nowrap;
-
-  label{
-    margin: 0;
-  }
-
-  select{
-    border: none;
-    outline: none;
-    background-color: transparent;
-    color: #fff;
-    width: 120px;
-    appearance: none;
-    font-weight: 700;
-    padding-right: 12px;
-    font-size: 14px;
-
-    option{
-      color: var(--doc-text-color-primary);
-
-      &.is-dev{
-        color: red;
-      }
-    }
-  }
-}
-
-.lib-picker{
-  position: relative;
-
-  &::after{
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 9px;
-    border-top: 5px solid;
-    border-right: 5px solid transparent;
-    border-bottom: 0;
-    border-left: 5px solid transparent;
-  }
 }
 
 .header-left{
@@ -247,21 +190,41 @@ html.is-example{
     font-size: 13px;
     margin-left: 4px;
     white-space: pre;
-
-    &::after{
-      content: "/";
-      margin: 0 5px;
-    }
   }
 
   a{
-    color: #fff !important;
-    text-decoration: none;
     font-size: 13px;
+  }
+}
 
-    &:hover{
-      text-decoration: underline;
-    }
+.example-with-slash{
+  display: inline-block;
+  position: relative;
+  line-height: 20px;
+  margin-right: 15px;
+
+  &::after{
+    content: '/';
+    position: absolute;
+    right: -15px;
+    top: 0;
+    line-height: 20px;
+    width: 15px;
+    text-align: center;
+  }
+}
+
+.example-icon-github{
+  margin-left: 40px;
+  position: relative;
+
+  img{
+    position: absolute;
+    top: 4px;
+    left: -20px;
+    width: 16px;
+    height: 16px;
+    z-index: 0;
   }
 }
 

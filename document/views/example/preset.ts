@@ -102,7 +102,7 @@ export function usePreset(loading: Ref<boolean>){
   const target = getTarget()
   const current = config.get(target)
   
-  async function use(){
+  async function install(){
     loading.value = true
 
     await loadSource(current.source)
@@ -116,8 +116,8 @@ export function usePreset(loading: Ref<boolean>){
   provide(UI_LIBARY_PROVIDE_KEY, target)
 
   return {
-    use,
-    libs: [...config.values()].map(createPresetInfo),
+    install,
+    infos: [...config.values()].map(createPresetInfo),
     ...createPresetInfo(current),
   }
 }

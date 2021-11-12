@@ -5,8 +5,11 @@ import DEFAULT_SCHEMA from './schema.data'
 const SCHEMA_KEY = 'schema'
 const MODEL_KEY = 'model'
 const IS_WIDE_KEY = 'is_wide'
-
 const isWide = ref(getLocalIsWide())
+
+export const IS_DEV = __IS_DEV__
+export const VUE_VERSION = __VUE_VERSION__
+export const TIMESTAMP = __TIMESTAMP__
 
 watch(isWide, v => saveToLocalStorage(IS_WIDE_KEY, v))
 
@@ -78,9 +81,6 @@ export function useLocalSchema(withModel = true){
     resetSchema: () => schema.value = createSchema(createDefaultSchema())
   }
 }
-
-export const IS_DEV = __IS_DEV__
-export const TIMESTAMP = __TIMESTAMP__
 
 export function toFalse(){
   return false
