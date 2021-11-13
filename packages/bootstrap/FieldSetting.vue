@@ -88,8 +88,8 @@ export default defineComponent({
   margin-bottom: 10px;
 }
 
-.xform-bs-field-setting-prop{
-  margin-bottom: 15px;
+.xform-bs-field-setting-prop + .xform-bs-field-setting-prop{
+  margin-top: 15px;
 }
 
 .xform-bs-field-setting-prop > header{

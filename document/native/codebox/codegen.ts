@@ -1,6 +1,6 @@
 const libs = {
-  '@dongls/xform': 'XForm',
-  '@dongls/xform.bootstrap': 'XForm.bootstrap',
+  '@dongls/xform': 'xForm',
+  '@dongls/xform.bootstrap': 'xForm.bootstrap',
   'vue': 'Vue'
 } as { [prop: string]: string }
 
@@ -43,9 +43,9 @@ function genScript(code: string){
   return [
     script,
     '',
-    'const option = { preset: XForm.bootstrap };',
+    'const option = { preset: xForm.bootstrap };',
     'const app = Vue.createApp(component);',
-    'app.use(XForm, option);',
+    'app.use(xForm, option);',
     'app.mount("#app")'
   ].join('\n')
 }

@@ -1,31 +1,20 @@
 <template>
   <field-setting :field="field" :placeholder="false">
-    <section class="xform-bs-field-setting-prop">
+    <section class="xform-el-field-setting-prop">
       <header>表单布局：</header>
-      <div class="btn-group" role="group">
-        <button
-          type="button" 
-          :class="['btn', 'btn-sm', 'btn-primary', field.attributes.layout == 'modal' ? 'active' : null]"
-          @click="update('layout', 'modal', 'attributes')"
-          title="选中则表单在弹出模态框中编辑"
-        >窗口</button>
-        <button 
-          type="button" 
-          :class="['btn', 'btn-sm', 'btn-primary', field.attributes.layout == 'inline' ? 'active' : null]"
-          @click="update('layout', 'inline', 'attributes')"
-          title="选中则表单在表格中直接编辑"
-        >行内</button>
-      </div>
+      <el-radio-group v-model="layout" size="small">
+        <el-radio-button label="modal" title="选中则表单在弹出模态框中编辑">窗口</el-radio-button>
+        <el-radio-button label="inline" title="选中则表单在表格中直接编辑">行内</el-radio-button>
+      </el-radio-group>
     </section>
-    <section class="xform-bs-field-setting-prop">
+    <section class="xform-el-field-setting-prop">
       <header>列宽：</header>
-      <div class="xform-bs-datatable-column" v-for="column in field.fields" :key="column.uid">
-        <div class="xform-bs-datatable-column-bar" :style="{ width: `${getColumnWidth(column.name) ?? DEF_COLUMN_WIDTH}px` }"/>
+      <div class="xform-el-datatable-column" v-for="column in field.fields" :key="column.uid">
+        <div class="xform-el-datatable-column-width" :style="{ width: `${getColumnWidth(column.name) ?? DEF_COLUMN_WIDTH}px` }"/>
         <label>{{ column.title }}</label>
         <input 
           type="number" min="0"
           :placeholder="`默认宽度${DEF_COLUMN_WIDTH}`"
-          class="form-control form-control-sm"
           :value="getColumnWidth(column.name)"
           @input="updateColWidth($event, column.name)"
         >
@@ -39,12 +28,13 @@
 import { defineComponent } from 'vue'
 import { FormField, useConstant } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH } from './common'
+import { useFieldProp } from '@common/util'
 import FieldSetting from '../FieldSetting.vue'
 
 const { EVENTS } = useConstant()
 
 export default defineComponent({
-  name: 'xform-bs-datatable-setting',
+  name: 'xform-el-datatable-setting',
   props: {
     field: {
       type: FormField,
@@ -61,15 +51,16 @@ export default defineComponent({
       emit(EVENTS.UPDATE_FIELD, { prop: 'colWidths', value: colWidths, scope: 'attributes' })
     }
 
-    function update(prop: string, value: string, scope?: string){
-      emit(EVENTS.UPDATE_FIELD, { value, prop, scope })
-    }
-
     function getColumnWidth(name: string){
       return props.field.attributes.colWidths[name]
     }
 
-    return { updateColWidth, update, DEF_COLUMN_WIDTH, getColumnWidth }
+    return { 
+      DEF_COLUMN_WIDTH,
+      updateColWidth, 
+      getColumnWidth,
+      layout: useFieldProp('layout', 'attributes')
+    }
   },
   components: {
     [FieldSetting.name]: FieldSetting
@@ -78,7 +69,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.xform-bs-datatable-column{
+.xform-el-datatable-column{
   position: relative;
   border: 1px solid #ced4da;
   line-height: 30px;
@@ -117,18 +108,20 @@ export default defineComponent({
     background-color: #e9ecef !important;
     appearance: textfield;
     box-shadow: none !important;
+    outline: none;
+    border-radius: 3px;
 
     &::-webkit-inner-spin-button{
       -webkit-appearance: none !important;
     }
   }
 
-  & + .xform-bs-datatable-column{
+  & + .xform-el-datatable-column{
     margin-top: 5px;
   }
 }
 
-.xform-bs-datatable-column-bar{
+.xform-el-datatable-column-width{
   position: absolute;
   left: 0;
   top: 0;

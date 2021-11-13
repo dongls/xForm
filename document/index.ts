@@ -2,7 +2,7 @@ import '../packages/core/index.css'
 
 import * as Vue from 'vue'
 
-import XForm from '@dongls/xform'
+import xForm from '@dongls/xform'
 import App from './app.vue'
 import router from './router'
 import component from './component/index'
@@ -10,7 +10,7 @@ import component from './component/index'
 const app = Vue.createApp(App)
 
 app.use(router)
-app.use(XForm)
+app.use(xForm)
 app.use(component)
 app.mount('#app')
 

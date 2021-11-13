@@ -4,6 +4,7 @@ import { FormPreset } from '@dongls/xform'
 import FormSetting from './FormSetting.vue'
 
 import Checkbox from './checkbox'
+import Datatable from './datatable'
 import Date from './date'
 import Divider from './divider'
 import Group from './group'
@@ -22,6 +23,7 @@ const ElementPlus: FormPreset = {
   },
   fieldConfs: [
     Checkbox,
+    Datatable,
     Date,
     Divider,
     Group,

@@ -2,7 +2,6 @@ import { h, Ref } from 'vue'
 import { useRenderContext, FormField } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH, Row } from './common'
 
-const DEF_INDEX_WIDTH = 60
 
 export function useInlineLayout(props: { field: FormField, disabled: boolean }, value: Ref<Row[]>){
   const rc = useRenderContext()
@@ -29,19 +28,6 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
     }
   }
 
-  function createTip(rows: number, disabled: boolean, width: number){
-    if(rows > 0) return null
-    if(disabled) return <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>暂无数据</div>
-  
-    return (
-      <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>
-        <span>点击</span>
-        <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>+ 添加</button>
-        <span>按钮插入数据</span>
-      </div>
-    )
-  }
-
   return function(){
     const columns = props.field.fields.filter(f => f.hidden !== true)
     if(columns.length == 0){
@@ -49,61 +35,60 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
     }
     
     const disabled = props.disabled || props.field.disabled
-    const colWidths = props.field.attributes.colWidths ?? {}
-    const { cols, total } = columns.reduce((acc, column) => {
-      const width = colWidths[column.name] ?? DEF_COLUMN_WIDTH
-      acc.total += width
-      acc.cols.push(<col style={{ width: `${width}px` }}/>)
-      return acc
-    }, { cols: [], total: DEF_INDEX_WIDTH })
-  
-    const rows = value.value.map((row, index) => {
-      const tds = columns.map(column => {
-        const cell = rc.renderField(row[column.name], {
-          parentProps: { disabled },
-          renderItem(component, props, children){
-            props.label = false
-            return h(component, props, children)
+    const slots = {
+      default(){
+        const indexSlots = {
+          default(scope: { $index: number, row: any }){
+            return [
+              <strong class="xform-el-datatable-row-index">{scope.$index + 1}</strong>,
+              disabled ? null : <el-button onClick={removeRow.bind(null, scope.row)} type="text" size="mini" class="xform-el-datatable-remove" auto-insert-space={false}>删除</el-button>
+            ]
+          },
+          header(){
+            return (
+              disabled ? '#' : <el-button onClick={addRow} type="text" size="mini" class="xform-el-datatable-add" auto-insert-space={false}>添加</el-button>
+            )
           }
-        })
-        return <td>{cell}</td>
-      })
+        }
 
-      return (
-        <tr class="xform-bs-datatable-row">
-          <td class="xform-bs-datatable-index">
-            <strong>{index + 1}</strong>
-            { disabled ? null : <button type="button" class="btn btn-link text-danger" onClick={removeRow.bind(null, row)}>删除</button> }
-          </td>
-          {tds}
-        </tr>
-      )
-    })
-
-    const button = disabled ? '#' : <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>添加</button>
-    return (
-      <div class="xform-bs-datatable" data-layout="inline">
-        <div class="table-responsive">
-          <table class="table table-hover" style={{ width: total + 'px' }}>
-            <colgroup>
-              <col style={`width: ${DEF_INDEX_WIDTH}px`}/>
-              {cols}
-            </colgroup>
-            <thead>
-              <th class="xform-bs-datatable-index">{button}</th>
-              {columns.map(column => {
-                const klass = {
-                  'xform-bs-datatable-cell': true,
-                  'xform-is-required': !disabled && !column.disabled && column.required
+        const colWidths = props.field.attributes.colWidths ?? {}
+        const cols = columns.map(column => {
+          const width = colWidths[column.name] ?? DEF_COLUMN_WIDTH
+          const slots = {
+            default(scope: { row: Row }){
+              return rc.renderField(scope.row[column.name], {
+                parentProps: { disabled },
+                renderItem(component, props, children){
+                  props.label = false
+                  return h(component, props, children)
                 }
-                return <th class={klass}><span>{column.title}</span></th>
-              })}
-            </thead>
-            <tbody>{rows}</tbody>
-          </table>
-          {createTip(rows.length, disabled, total)}
-        </div>
-      </div>
-    )
+              })
+            }
+          }
+    
+          return (
+            <el-table-column
+              prop={column.name}
+              label={column.title}
+              width={width}
+              label-class-name={column.required ? 'xform-is-required' : null}
+              v-slots={slots}
+            />
+          )
+        })
+
+        return [
+          <el-table-column type="index"  fixed="left" width="60px" v-slots={indexSlots}/>,
+          ...cols
+        ]
+      }
+    }
+
+    const klass = {
+      'xform-el-datatable': true,
+      'xform-el-datatable-is-empty': value.value.length == 0
+    }
+    
+    return <el-table data={value.value} v-slots={slots} size="mini" class={klass} data-layout="inline"/>
   }
 }

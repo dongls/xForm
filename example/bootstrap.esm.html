@@ -35,8 +35,8 @@
   
   <script type="module">
     import { createApp } from 'vue'
-    import XForm, { useApi } from '@dongls/xform'
-    import XFormBootstrap from '@dongls/xform.bootstrap'
+    import xForm, { useApi } from '@dongls/xform'
+    import xFormBootstrap from '@dongls/xform.bootstrap'
 
     const api = useApi()
     const App = {
@@ -48,10 +48,10 @@
       }
     }
 
-    const option = { preset: XFormBootstrap }
+    const option = { preset: xFormBootstrap }
     const app = createApp(App)
     
-    app.use(XForm, option)
+    app.use(xForm, option)
     app.mount('#app')
   </script>
 </body>

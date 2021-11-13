@@ -31,17 +31,17 @@
       template: '#template',
       setup(){
         return {
-          schema: XForm.createSchemaRef()
+          schema: xForm.createSchemaRef()
         }
       }
     }
 
     const option = {
-      preset: XForm.bootstrap
+      preset: xForm.bootstrap
     }
 
     const app = Vue.createApp(App)
-    app.use(XForm, option)
+    app.use(xForm, option)
     app.mount('#app')
   </script>
 </body>

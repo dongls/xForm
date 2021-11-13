@@ -44,7 +44,7 @@ const umd = {
       amd: 'vue'
     },
     '@dongls/xform': {
-      root: 'XForm',
+      root: 'xForm',
       commonjs: '@dongls/xform',
       commonjs2: '@dongls/xform',
       amd: '@dongls/xform'

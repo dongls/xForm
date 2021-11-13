@@ -54,7 +54,7 @@ interface Option {
 const PRIVATE_PROPS_KEY = Symbol()
 
 /** 
- * 描述字段数据的类，XForm就是用它与后端进行数据交换。
+ * 描述字段数据的类，xForm就是用它与后端进行数据交换。
  * 
  * 1. 保存用户对字段的配置数据
  * 2. 保存用户在表单中操作数据

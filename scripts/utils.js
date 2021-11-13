@@ -87,7 +87,7 @@ function genPackageProps(){
     ...packages[rp],
     packageName: `@dongls/xform${rp == 'core' ? '' : '.' + rp}`,
     outPath: path.resolve(OUTPUT_BASE_PATH, rp, 'dist'),
-    library: rp == 'core' ? 'XForm' : ['XForm', rp],
+    library: rp == 'core' ? 'xForm' : ['xForm', rp],
     libraryExport: rp == 'core' ? undefined : 'default'
   }
 }

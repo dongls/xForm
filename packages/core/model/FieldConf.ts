@@ -65,7 +65,7 @@ export class FieldComponent{
   }
 }
 
-/** 描述字段类型的类，XForm就是根据它决定每一个字段的行为 */
+/** 描述字段类型的类，xForm就是根据它决定每一个字段的行为 */
 export class FieldConf extends Hook{
   /** 字段类型 */
   type: string

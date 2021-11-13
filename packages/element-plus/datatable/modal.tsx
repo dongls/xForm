@@ -1,15 +1,13 @@
-import { getCurrentInstance, ref, Ref, onBeforeUnmount, h } from 'vue'
+import { getCurrentInstance, ref, Ref, onBeforeUnmount, h, Fragment } from 'vue'
 import {
   FormField,
   FormSchema,
   useSchema,
   useRenderContext,
+  FormBuilderApi
 } from '@dongls/xform'
 
 import { DEF_COLUMN_WIDTH, Row } from './common'
-
-const DEF_OPERATE_WIDTH = 100
-const DEF_INDEX_WIDTH = 60
 
 function createModel(fields: FormField[], row: Row){
   if(row == null) return {}
@@ -36,21 +34,9 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
     currentRow = null
   })
 
-  function showEditModal(row?: Row){
+  function showDialog(row?: Row){
     currentRow = row
-    showModal()
-  }
 
-  function showInsertModal(){
-    currentRow = null
-    showModal()
-  }
-
-  function updateShow(v: boolean){
-    show.value = v
-  }
-
-  function showModal(){
     const model = createModel(props.field.fields, currentRow)
     const fields = props.field.fields.map(f => f.clone(true))
     
@@ -58,19 +44,19 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
     show.value = true
   }
 
-  function closeModal(){
+  function closeDialog(){
     show.value = false
   }
 
   function submit(){
-    const form = instance.refs.form as any
-    if(form == null) return closeModal()
+    const form = instance.refs.form as FormBuilderApi
+    if(form == null) return closeDialog()
 
-    form.validate().then((r: { valid: boolean, model?: any }) => {
+    form.validate().then(r => {
       if(!r.valid) return
 
       currentRow == null ? addRow(r.model) : editRow(r.model)
-      closeModal()
+      closeDialog()
     })
   }
 
@@ -106,19 +92,6 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
     }
   }
 
-  function createTip(rows: number, disabled: boolean, width: number){
-    if(rows > 0) return null
-    if(disabled) return <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>暂无数据</div>
-  
-    return (
-      <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>
-        <span>点击</span>
-        <button type="button" class="btn btn-link btn-sm shadow-none" onClick={showInsertModal}>+ 添加</button>
-        <span>按钮插入数据</span>
-      </div>
-    )
-  }
-
   return function(){
     const columns = props.field.fields.filter(f => f.hidden !== true)
     if(columns.length == 0){
@@ -127,83 +100,124 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
 
     const disabled = props.disabled || props.field.disabled
     const colWidths = props.field.attributes.colWidths ?? {}
-    const { cols, total } = columns.reduce((acc, column) => {
-      const width = colWidths[column.name] ?? DEF_COLUMN_WIDTH
-      acc.total += width
-      acc.cols.push(<col style={{ width: `${width}px` }}/>)
-      return acc
-    }, { cols: [], total: DEF_INDEX_WIDTH })
-
-    const rows = value.value.map((row, index) => {
-      const tds = columns.map(column => {
-        const f = row[column.name]
-        const cell = rc.renderField(f, {
-          parentProps: { disabled },
-          renderItem(component, props){
-            props.custom = true
-            return h(component, props, () => f.value ?? rootSchema.value.viewerPlaceholder)
+    const tableSlots = {
+      default(){
+        const indexSlots = {
+          header(){
+            return (
+              disabled 
+                ? '#' 
+                : (
+                  <el-button 
+                    onClick={showDialog.bind(null, null)} 
+                    type="text" size="mini" 
+                    class="xform-el-datatable-add" 
+                    auto-insert-space={false}
+                  >添加</el-button>
+                )
+            )
           }
-        })
-        return <td>{cell}</td>
-      })
+        }
 
-      const operate = disabled ? null : (
-        <td class="xform-bs-datatable-operate">
-          <button type="button" class="btn btn-link shadow-none" onClick={showEditModal.bind(null, row)}>编辑</button>
-          <button type="button" class="btn btn-link text-danger shadow-none" onClick={removeRow.bind(null, row)}>删除</button>
-        </td>
-      )
-      
-      return (
-        <tr class="xform-bs-datatable-row">
-          <td class="xform-bs-datatable-index">{index + 1}</td>
-          {tds}
-          {operate}
-        </tr>
-      )
-    })
+        const operateSlots = {
+          default(scope: { row: Row }){
+            return [
+              (
+                <el-button 
+                  onClick={showDialog.bind(null, scope.row)}
+                  type="text" size="mini"
+                  auto-insert-space={false}
+                  class="xform-el-datatable-add"
+                >编辑</el-button>
+              ),
+              (
+                <el-button 
+                  onClick={removeRow.bind(null, scope.row)}
+                  type="text" size="mini"
+                  auto-insert-space={false}
+                  class="xform-el-datatable-remove"
+                >删除</el-button>
+              )
+            ]
+          }
+        }
 
-    const width = total + (disabled ? 0 : DEF_OPERATE_WIDTH)
-    const button = disabled ? '#' : <button type="button" class="btn btn-sm btn-link shadow-none" onClick={showInsertModal}>添加</button>
-    const table = (
-      <table class="table table-hover" style={`width: ${width}px`}>
-        <colgroup>
-          <col style={`width: ${DEF_INDEX_WIDTH}px`}/>
-          {cols}
-          {disabled ? null : <col style={`width: ${DEF_OPERATE_WIDTH}px`}/>}
-        </colgroup>
-        <thead>
-          <th class="xform-bs-datatable-index">{button}</th>
-          {columns.map(column => {
-            const klass = {
-              'xform-bs-datatable-cell': true,
-              'xform-is-required': !disabled && !column.disabled && column.required
+        const cols = columns.map(column => {
+          const width = colWidths[column.name] ?? DEF_COLUMN_WIDTH
+          const slots = {
+            default(scope: { row: Row }){
+              const f = scope.row[column.name]
+              return rc.renderField(f, {
+                parentProps: { disabled },
+                renderItem(component, props){
+                  props.custom = true
+                  return h(component, props, () => f.value ?? rootSchema.value.viewerPlaceholder)
+                }
+              })
             }
-            return <th class={klass}><span>{column.title}</span></th>
-          })}
-          {disabled ? null : <th class="xform-bs-datatable-operate">操作</th>}
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
-    )
+          }
+    
+          return (
+            <el-table-column
+              prop={column.name}
+              label={column.title}
+              width={width}
+              label-class-name={column.required ? 'xform-is-required' : null}
+              v-slots={slots}
+            />
+          )
+        })
 
-    return (
-      <div class="xform-bs-datatable" data-layout="modal">
-        <div class="table-responsive">
-          {table}
-          {createTip(rows.length, disabled, width)}
-        </div>
-        <modal
-          title={`${currentRow == null ? '添加' : '编辑'}数据`}
-          class="xform-bs-datatable-modal-layout"
-          onConfirm={submit}
-          {...{ visible: show.value, 'onUpdate:visible': updateShow }}
-        >
+        return [
+          <el-table-column type="index" fixed="left" width="60px" v-slots={indexSlots}/>,
+          ...cols,
+          disabled ? null : <el-table-column label="操作" fixed="right" width="100px" aligh="right" v-slots={operateSlots}/>
+        ]
+      }
+    }
+
+    const dialogSlots = {
+      default(){
+        if(!show.value) return null
+
+        return (
           <xform-builder schema={formSchema.value} ref="form" onSubmit={submit}>
             <button class="xform-is-hidden" type="submit"/>
           </xform-builder>
-        </modal>
-      </div>
+        )
+      },
+      footer(){
+        return (
+          <div>
+            <el-button onClick={closeDialog}>取消</el-button>
+            <el-button type="primary" onClick={submit}>确定</el-button>
+          </div>
+        )
+      }
+    }
+
+    const klass = {
+      'xform-el-datatable': true,
+      'xform-el-datatable-is-empty': value.value.length == 0
+    }
+    const title = `${currentRow == null ? '添加' : '编辑'}数据`
+  
+    return (
+      <Fragment>
+        <el-table 
+          v-slots={tableSlots} 
+          class={klass} size="mini" 
+          data-layout="modal"
+          data={value.value}
+        />
+        <el-dialog 
+          v-model={show.value} 
+          v-slots={dialogSlots} 
+          title={title}
+          custom-class="xform-el-datatable-dialog" 
+          append-to-body
+        />
+      </Fragment>
     )
   }
 }

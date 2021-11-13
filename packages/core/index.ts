@@ -17,7 +17,7 @@ const install = function(app: App, options: FormOption){
   app.component(FormItem.name, FormItem)
 }
 
-const XForm = {
+const xForm = {
   install,
   version,
 }
@@ -31,4 +31,4 @@ export {
 
 export * from './model/exports'
 export * from './api/Exports'
-export default XForm
+export default xForm

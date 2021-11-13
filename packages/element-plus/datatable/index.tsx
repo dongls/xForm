@@ -1,3 +1,5 @@
+import './index.scss'
+
 import { defineComponent } from 'vue'
 import { 
   FormField,
@@ -10,18 +12,18 @@ import {
 } from '@dongls/xform'
 
 import icon from '@common/svg/datatable.svg'
+import setting from './setting.vue'
+
 import { Row, DEF_COLUMN_WIDTH, BODY_CLASS } from './common'
 import { useInlineLayout } from './inline'
 import { useModalLayout } from './modal'
-import setting from './setting.vue'
-import Modal from '../Modal.vue'
 import { useValue } from '../util'
 
 const { CLASS, PROPS, EVENTS, EnumValidateMode } = useConstant()
 const DEF_INDEX_WIDTH = 60
 
 const preview = defineComponent({
-  name: 'xform-bs-datatable-preview',
+  name: 'xform-el-datatable-preview',
   props: {
     field: {
       type: FormField,
@@ -37,13 +39,13 @@ const preview = defineComponent({
       const colWidths = field.attributes.colWidths ?? {}
       const content = (
         fields.length == 0 
-          ? <p class={`${CLASS.IS_EMPTY_TIP} xform-bs-empty-tip`}>请将左侧控件拖动到此处</p>
+          ? <p class={`${CLASS.IS_EMPTY_TIP} xform-el-empty-tip`}>请将左侧控件拖动到此处</p>
           : (
             fields.map(f => {
               return rc.renderField(f, { 
                 renderItem(){
                   const klass = {
-                    'xform-bs-datatable-cell': true,
+                    'xform-el-datatable-cell': true,
                     'xform-is-required': f.required
                   }
 
@@ -65,7 +67,7 @@ const preview = defineComponent({
       }
       
       return (
-        <div class={`xform-bs-datatable ${CLASS.IS_VERTICAL_MARK} ${CLASS.IS_SCROLL}`}>
+        <div class={`xform-el-datatable ${CLASS.IS_VERTICAL_MARK} ${CLASS.IS_SCROLL}`}>
           <div {..._p}>{content}</div>
         </div>
       )
@@ -74,7 +76,7 @@ const preview = defineComponent({
 })
 
 const datatable = defineComponent({
-  name: 'xform-bs-datatable',
+  name: 'xform-el-datatable',
   props: {
     field: {
       type: FormField,
@@ -94,14 +96,11 @@ const datatable = defineComponent({
     return function(){
       return props.field.attributes.layout == 'inline' ? inlineLayout() : modalLayout()
     }
-  },
-  components: {
-    [Modal.name]: Modal
   }
 })
 
 const view = defineComponent({
-  name: 'xform-bs-datatable-view',
+  name: 'xform-el-datatable-view',
   props: {
     field: {
       type: FormField,
@@ -122,51 +121,35 @@ const view = defineComponent({
       if(!Array.isArray(value.value) || value.value.length == 0 || columns.length == 0){
         return <span class="xform-viewer-value">{schema.value.viewerPlaceholder}</span>
       }
-
+      
       const colWidths = props.field.attributes.colWidths ?? {}
-      const { cols, total } = columns.reduce((acc, column) => {
+      const data = value.value
+      const cols = columns.map(column => {
         const width = colWidths[column.name] ?? DEF_COLUMN_WIDTH
-        acc.total += width
-        acc.cols.push(<col style={`width: ${width}px`}/>)
-        return acc
-      }, { cols: [], total: DEF_INDEX_WIDTH })
-
-      const rows = value.value.map((row, index) => {
-        const cells = columns.map(column => {
-          return <td>{ 
-            rc.renderField(row[column.name], {
-              parentProps: { disabled: props.disabled },
+        const slots = {
+          default(scope: { row: Row }){
+            return rc.renderField(scope.row[column.name], {
               renderItem: (c: any, p: any, ch: any) => ch(), 
             }) 
-          }</td>
-        })
+          }
+        }
 
-        const opreate = <td class="xform-bs-datatable-operate"><strong>{index + 1}</strong></td>
-        return <tr>{opreate}{cells}</tr>
+        return (
+          <el-table-column 
+            prop={column.name}
+            label={column.title}
+            width={width}
+            label-class-name={column.required ? 'xform-is-required' : null}
+            v-slots={slots}
+          />
+        )
       })
 
       return (
-        <div class="xform-bs-datatable xform-bs-datatable-view">
-          <div class="table-responsive">
-            <table class="table table-hover" style={{ width: total + 'px' }}>
-              <colgroup>
-                <col style={`width: ${DEF_INDEX_WIDTH}px`}></col>
-                {cols}
-              </colgroup>
-              <thead>
-                <th class="xform-bs-datatable-operate">#</th>
-                {columns.map(column => {
-                  const klass = {
-                    'xform-bs-datatable-cell': true,
-                    'xform-is-required': !props.disabled && !column.disabled && column.required
-                  }
-                  return <th class={klass}><span>{column.title}</span></th>
-                })}
-              </thead>
-              <tbody>{rows}</tbody>
-            </table>
-          </div>
-        </div>
+        <el-table data={data} size="mini" class="xform-el-datatable">
+          <el-table-column type="index" width={DEF_INDEX_WIDTH} fixed="left"/>
+          {cols}
+        </el-table>
       )
     }
   }

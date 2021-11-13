@@ -79,8 +79,8 @@ export default defineComponent({
   margin-bottom: 10px;
 }
 
-.xform-el-field-setting-prop{
-  margin-bottom: 15px;
+.xform-el-field-setting-prop + .xform-el-field-setting-prop{
+  margin-top: 15px;
 }
 
 .xform-el-field-setting-prop > header{

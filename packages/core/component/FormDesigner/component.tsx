@@ -56,7 +56,7 @@ import { FormItemInternal } from '../FormItem/component'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
-import XFormTip from '../../assets/img/xform-tip.png'
+import FormTip from '../../assets/img/xform-tip.png'
 
 const IS_BASE64 = /^\s*data:(?:[a-z]+\/[a-z0-9-+.]+(?:;[a-z-]+=[a-z0-9-]+)?)?(?:;base64)?,([a-z0-9!$&',()*+;=\-._~:@/?%\s]*?)\s*$/i
 const IS_SVG = /<svg(\s[^>]*)?>[\s\S]*<\/svg>/
@@ -103,7 +103,7 @@ function renderUnknown(field: FormField){
 function renderEmptyTip(){
   return (
     <div class={[CLASS.IS_EMPTY_TIP, 'xform-preview-empty-tip']}>
-      <img src={XFormTip}/>
+      <img src={FormTip}/>
       <p>请将左侧控件拖动到此处</p>
     </div>
   )

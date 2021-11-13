@@ -10,7 +10,7 @@ import { isEmpty, isNull, genRandomStr } from '../util'
 export function createConfig(){
   return {
     modes: null,
-    logic: true,
+    logic: false,
     validation: {
       immediate: true
     },
