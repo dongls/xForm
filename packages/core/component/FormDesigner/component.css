@@ -8,7 +8,7 @@
 }
 
 .xform-designer-panel{
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--xform-border-color);
   background-color: #fff;
   overflow-y: auto;
   overflow-x: hidden;
@@ -378,7 +378,7 @@
 .xform-designer-setting{
   width: 360px;
   height: 100%;
-  border-left: 1px solid #eee;
+  border-left: 1px solid var(--xform-border-color);
   overflow: hidden;
   background-color: #fff;
   box-sizing: content-box;
@@ -407,7 +407,7 @@
   text-align: center;
   cursor: pointer;
   position: relative;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--xform-border-color);
 }
 
 .xform-tabs-main{

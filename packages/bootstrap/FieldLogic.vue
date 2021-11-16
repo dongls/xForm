@@ -397,7 +397,7 @@ export default defineComponent({
     }
 
     function save(){
-      if(!checkLogic(logic.value)) {
+      if(checkLogic(logic.value) === false) {
         let prevented = false
 
         rc.emit('message', {

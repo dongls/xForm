@@ -85,7 +85,7 @@ r({
     return import(/* webpackPrefetch: true */'./bootstrap/index').then(r => r.default)
   },
   install(preset){
-    reset({ preset, config: { modes: MODES } })
+    reset({ preset, config: { logic: true, modes: MODES } })
   },
   renderDesignerToolSlot(state){
     return (
@@ -137,7 +137,7 @@ r({
 r({
   id: 'element-plus',
   name: 'Element Plus',
-  version: 'v1.2.0-beta.2',
+  version: 'v1.2.0-beta.3',
   homepage: 'https://github.com/element-plus/element-plus',
   source: [
     [publicPath + '/libs/element-plus/index.css', TYPE.STYLE],
@@ -153,7 +153,7 @@ r({
       instance.appContext.app.use(ElementPlus, { locale: ElementPlus.zhCn })
     }
 
-    reset({ preset, config: { modes: MODES } })
+    reset({ preset, config: { logic: true, modes: MODES } })
   },
   renderDesignerToolSlot(state){
     return (

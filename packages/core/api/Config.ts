@@ -7,6 +7,10 @@ export function useConfig(config: FormConfig){
 
   const clone = clonePlainObject(config)
   mergePlainObject(store.config, clone)
+
+  if(store.config.logic === true){
+    console.warn('[xForm]: 字段逻辑目前为实验性功能，未来可能会发生变更，请谨慎使用！')
+  }
 }
 
 export function resetConfig(){
