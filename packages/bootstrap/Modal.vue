@@ -1,9 +1,9 @@
 <template>
   <teleport to="body">
     <div 
-      v-if="rendered" :id="id"
-      class="modal fade xform-bs-modal" v-bind="$attrs"
-      data-backdrop="static" data-keyboard="false" 
+      class="modal fade xform-bs-modal" :id="id" 
+      v-if="rendered"
+      v-bind="$attrs"
     >
       <div class="modal-dialog modal-dialog-centered" :style="{'width': width}" >
         <div class="modal-content">
@@ -11,14 +11,14 @@
             <slot name="header">
               <h5 class="modal-title" v-if="title">{{ title }}</h5>
             </slot>
-            <button type="button" class="close" @click="close"><span>&times;</span></button>
+            <button type="button" class="btn-close shadow-none" @click="close"/>
           </div>
           <div class="modal-body"><slot/></div>
           <div class="modal-footer">
             <div class="modal-footer-left" v-if="$slots['footer-left']">
               <slot name="footer-left"/>
             </div>
-            <button type="button" class="btn btn-sm btn-link" @click="close">关闭</button>
+            <button type="button" class="btn btn-sm btn-link btn-text" @click="close">关闭</button>
             <button type="button" class="btn btn-sm btn-primary" @click="confirm">保存</button>
           </div>
         </div>
@@ -28,11 +28,59 @@
 </template>
 
 <script lang="ts">
-import { genRandomStr } from '@dongls/xform'
 import { defineComponent, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
-function getJQuery(){
-  return (window as any).jQuery
+let seed = 10000
+function useModal(){
+  let modal: any = null
+  let id = `xbs-modal__${seed++}`
+
+  function createModal(){
+    const el = document.getElementById(id)
+    if(el == null) return null
+
+    return new (window as any).bootstrap.Modal(el, {
+      backdrop: 'static',
+      keyboard: false
+    })
+  }
+
+  function show(){
+    modal = createModal()
+    modal && modal.show()
+  }
+
+  function hide(callback?: Function){
+    if(modal == null) return
+
+    const element = modal._element as HTMLElement    
+    const handle = function(){
+      element.removeEventListener('hidden.bs.modal', handle)
+      typeof callback == 'function' && callback()
+    }
+
+    element.addEventListener('hidden.bs.modal', handle)
+    modal.hide()
+  }
+  
+  function destroy(){
+    const callback = function(){
+      modal.dispose()
+      modal = null
+    }
+
+    if(modal == null) return
+    if(modal._isShown) return hide(callback)
+
+    callback()
+  }
+
+  return {
+    id,
+    show,
+    hide,
+    destroy
+  }
 }
 
 export default defineComponent({
@@ -54,26 +102,21 @@ export default defineComponent({
   },
   emits: ['update:visible', 'confirm', 'closed'],
   setup(props, { emit }) {
-    const id = `xform-bs-modal-${genRandomStr()}`
     const rendered = ref(false)
+    const modal = useModal()
 
     function showModal(){
       rendered.value = true
-      nextTick(() => {
-        const $ = getJQuery()
-        $('#' + id).modal('show')
-      })
+      nextTick(() => modal.show())
     }
 
     function close(){
       emit('update:visible', false)
     }
 
-    function closeModal(callback?: Function){
-      const $ = getJQuery()
-      $('#' + id).modal('hide').one('hidden.bs.modal', function(){
+    function closeModal(){
+      modal.hide(() => {
         rendered.value = false
-        typeof callback == 'function' && callback()
         emit('closed')
       })
     }
@@ -81,18 +124,18 @@ export default defineComponent({
     function confirm(){
       emit('confirm')
     }
-    
-    watch(() => props.visible, () => {
-      props.visible ? showModal() : closeModal()
-    }) 
 
+    function toggle(){
+      props.visible ? showModal() : closeModal()
+    }
+
+    watch(() => props.visible, toggle)
     onBeforeUnmount(() => {
-      const $ = getJQuery()
-      $('#' + id).removeClass('fade').modal('hide').modal('dispose')
-      rendered.value = false
+      modal.destroy()
+      close()
     })
 
-    return { id, close, confirm, rendered }
+    return { id: modal.id, close, confirm, rendered }
   }
 })
 </script>
@@ -110,7 +153,7 @@ export default defineComponent({
   }
 
   .modal-header{
-    padding: 10px;
+    padding: 10px 18px 10px 10px;
     align-items: center;
   }
 

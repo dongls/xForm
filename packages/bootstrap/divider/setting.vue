@@ -2,14 +2,14 @@
   <field-setting :field="field" :placeholder="false" :attributes="false">
     <section class="xform-bs-field-setting-prop xform-divider-types">
       <header>样式：</header>
-      <div v-for="type in types" :key="type" class="custom-control custom-radio">
+      <div v-for="type in types" :key="type" class="form-check">
         <input 
           :id="`divider-${type}`" name="setting-divider-type" 
-          type="radio" :value="type" class="custom-control-input" 
+          type="radio" :value="type" class="form-check-input" 
           :checked="field.attributes.type == type"
           @change="update('type', type, 'attributes')"
         >
-        <label class="custom-control-label" :for="`divider-${type}`">
+        <label class="form-check-label" :for="`divider-${type}`">
           <xform-divider :type="type"/>
         </label>
       </div>
@@ -19,11 +19,11 @@
       <header>间距：</header>
       <div class="xform-bs-divider-range">
         <label>上间距：</label>
-        <input :value="field.attributes.top" type="range" class="custom-range" min="0" max="100" step="5" @input="updateField($event, 'top', 'attributes')">
+        <input :value="field.attributes.top" type="range" class="form-range" min="0" max="100" step="5" @input="updateField($event, 'top', 'attributes')">
       </div>
       <div class="xform-bs-divider-range">
         <label>下间距：</label>
-        <input :value="field.attributes.bottom" type="range" class="custom-range" min="0" max="100" step="5" @input="updateField($event, 'bottom', 'attributes')">    
+        <input :value="field.attributes.bottom" type="range" class="form-range" min="0" max="100" step="5" @input="updateField($event, 'bottom', 'attributes')">    
       </div>
     </section>
   </field-setting>
@@ -67,19 +67,13 @@ export default defineComponent({
 </script>
 
 <style>
-.xform-divider-types .custom-control{
-  display: flex;
-  align-items: center;
+.xform-divider-types .form-check-input{
+  margin-top: 9px;
 }
 
-.xform-divider-types .custom-control-label{
-  flex: 1;
-}
-
-.xform-divider-types .custom-control-label::before,
-.xform-divider-types .custom-control-label::after{
-  top: 50%;
-  transform: translateY(-50%);
+.xform-divider-types .form-check-label{
+  width: 100%;
+  display: block;
 }
 
 .xform-bs-divider-range{
@@ -88,8 +82,11 @@ export default defineComponent({
   margin-top: 10px;
 }
 
-
 .xform-bs-divider-range label{
-  width: 100px;
+  width: 64px;
+}
+
+.xform-bs-divider-range .form-range{
+  flex: 1;
 }
 </style>

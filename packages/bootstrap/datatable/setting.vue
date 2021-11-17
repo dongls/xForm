@@ -117,6 +117,7 @@ export default defineComponent({
     background-color: #e9ecef !important;
     appearance: textfield;
     box-shadow: none !important;
+    min-height: 0;
 
     &::-webkit-inner-spin-button{
       -webkit-appearance: none !important;

@@ -162,9 +162,8 @@ $--xform-color-primary: #409EFF !default;
   flex-flow: row nowrap;
 }
 
-.is-wide .xform-is-pc{
-  width: auto;
-  max-width: none;
+.is-wide{
+  --xform-designer-responsive-width:  100%;
 }
 
 .example-logic-tip{

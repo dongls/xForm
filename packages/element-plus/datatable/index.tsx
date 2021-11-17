@@ -138,7 +138,7 @@ const view = defineComponent({
           <el-table-column 
             prop={column.name}
             label={column.title}
-            width={width}
+            min-width={width}
             label-class-name={column.required ? 'xform-is-required' : null}
             v-slots={slots}
           />

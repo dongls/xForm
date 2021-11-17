@@ -1,16 +1,16 @@
 <template>
   <field-setting :field="field" :placeholder="false" :required="false">
     <template #attributes>
-      <div class="custom-control custom-checkbox custom-control-inline" title="勾选则支持展开/收起分组">
+      <div class="form-check form-check-inline" title="勾选则支持展开/收起分组">
         <input 
           :id="`${field.name}-collapsable`" 
           :name="`${field.name}-collapsable`" 
           :checked="field.attributes.collapsable" 
           type="checkbox" 
-          class="custom-control-input" 
+          class="form-check-input" 
           @input="updateField($event, 'collapsable', 'attributes')"
         >
-        <label class="custom-control-label" :for="`${field.name}-collapsable`">允许收起</label>
+        <label class="form-check-label" :for="`${field.name}-collapsable`">允许收起</label>
       </div>
     </template>
   </field-setting>

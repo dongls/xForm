@@ -60,6 +60,9 @@ const development = {
     lazyCompilation: {
       entries: false,
     }
+  },
+  watchOptions: {
+    aggregateTimeout: 500
   }
 }
 

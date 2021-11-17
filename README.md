@@ -5,7 +5,7 @@
 
 ## 更新计划 `v0.7.1`
 - [x] 支持[Element Plus][element]
-- [ ] Bootstrap升级至5.x
+- [x] Bootstrap升级至5.x
 
 ## 兼容性
 `xForm`使用了诸如`Proxy`、`Reflect`之类的新特性，因此需要浏览器至少实现了`ES2015`标准。需要注意的是，`xForm`**不支持IE浏览器，也没有相关的支持计划**。

@@ -23,6 +23,7 @@
   display: flex;
   flex-flow: column nowrap;
   user-select: none;
+  width: 0;
 }
 
 .xform-designer-responsive{
@@ -30,11 +31,8 @@
   padding: 5px;
   background-color: #fff;
   box-shadow: 0 0 4px rgba(0,0,0,.05);
-}
-
-.xform-is-pc{
-  max-width: 640px;
   margin: 0 auto;
+  max-width: var(--xform-designer-responsive-width);
 }
 
 .xform-designer-board{
@@ -285,6 +283,7 @@
   z-index: 10;
   box-sizing: content-box;
   border: none;
+  opacity: 1;
 }
 
 .xform-designer-mark > hr::after,
@@ -321,7 +320,7 @@
   width: 3px;
   padding: 0 5px;
   margin: 0;
-  background: linear-gradient(to right, transparent 5px, red 5px, red 8px, transparent 8px);
+  background: linear-gradient(to right, transparent 5px, var(--xform-designer-mark-color) 5px, var(--xform-designer-mark-color) 8px, transparent 8px);
 }
 
 .is-vertical-mark .xform-designer-mark > hr::after,

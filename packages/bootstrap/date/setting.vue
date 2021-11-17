@@ -6,7 +6,7 @@
       </header>
       <div :class="classes.defaultValue">
         <select
-          class="form-control form-control-sm"
+          class="form-select form-select-sm"
           v-model="compatType"
         >
           <option 

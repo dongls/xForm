@@ -32,7 +32,7 @@ function useHeader(){
           <button 
             type="button" 
             title={collasped.value ? '展开' : '收起'} 
-            class="btn btn-link xform-bs-group-toggle" 
+            class="btn btn-link btn-text xform-bs-group-toggle" 
             onClick={toggle} 
           >{collasped.value ? '展开' : '收起'}</button>
         )

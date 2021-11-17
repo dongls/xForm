@@ -23,7 +23,7 @@
   .xform-bs-group-list{
     position: relative;
     min-height: 200px;
-    padding: 10px 5px;
+    padding: 10px 10px 10px 5px;
   }
 }
 
@@ -55,6 +55,7 @@
     cursor: default;
     font-size: var(--xform-font-size);
     color: var(--xform-text-color);
+    line-height: 20px;
   }
 }
 

@@ -14,17 +14,17 @@
 
     <section class="xform-bs-field-setting-prop" v-if="attributes">
       <header>属性：</header>
-      <div v-if="required" class="custom-control custom-checkbox custom-control-inline">
-        <input :id="`${field.name}-required`" :name="`${field.name}-required`" type="checkbox" class="custom-control-input" v-model="fieldRef.required">
-        <label class="custom-control-label" :for="`${field.name}-required`" title="勾选则该字段在表单提交时必须填写">必填</label>
+      <div v-if="required" class="form-check form-check-inline">
+        <input :id="`${field.name}-required`" :name="`${field.name}-required`" type="checkbox" class="form-check-input" v-model="fieldRef.required">
+        <label class="form-check-label" :for="`${field.name}-required`" title="勾选则该字段在表单提交时必须填写">必填</label>
       </div>
-      <div class="custom-control custom-checkbox custom-control-inline">
-        <input :id="`${field.name}-disabled`" :name="`${field.name}-disabled`" type="checkbox" class="custom-control-input" v-model="fieldRef.disabled">
-        <label class="custom-control-label" :for="`${field.name}-disabled`" title="勾选则该字段在表单中无法编辑, 也不参与表单验证">禁用</label>
+      <div class="form-check form-check-inline">
+        <input :id="`${field.name}-disabled`" :name="`${field.name}-disabled`" type="checkbox" class="form-check-input" v-model="fieldRef.disabled">
+        <label class="form-check-label" :for="`${field.name}-disabled`" title="勾选则该字段在表单中无法编辑, 也不参与表单验证">禁用</label>
       </div>
-      <div class="custom-control custom-checkbox custom-control-inline">
-        <input :id="`${field.name}-hidden`" :name="`${field.name}-hidden`" type="checkbox" class="custom-control-input" v-model="fieldRef.hidden">
-        <label class="custom-control-label" :for="`${field.name}-hidden`" title="勾选则该字段将不会再表单中显示">隐藏</label>
+      <div class="form-check form-check-inline">
+        <input :id="`${field.name}-hidden`" :name="`${field.name}-hidden`" type="checkbox" class="form-check-input" v-model="fieldRef.hidden">
+        <label class="form-check-label" :for="`${field.name}-hidden`" title="勾选则该字段将不会再表单中显示">隐藏</label>
       </div>
       <slot name="attributes"/>
     </section>

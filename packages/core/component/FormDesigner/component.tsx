@@ -384,7 +384,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     }
 
     return (
-      <div class="xform-designer-responsive xform-is-pc xform-is-scroll" ref="scroll">
+      <div class="xform-designer-responsive  xform-is-scroll" ref="scroll">
         <div {...props}>{content}</div>
       </div>
     )

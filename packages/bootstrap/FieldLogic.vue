@@ -2,7 +2,7 @@
   <section class="xform-bs-field-setting-prop">
     <header>
       <span title="如果满足配置的条件则显示字段，否则隐藏字段">逻辑：</span>
-      <button type="button" class="btn btn-link is-logic-btn" @click="showModal">配置</button>
+      <button type="button" class="btn btn-link btn-text is-logic-btn" @click="showModal">配置</button>
     </header>
     <logic-rule-preview :rule="field.logic" :field="field"/>
     <modal title="配置逻辑" width="840px" class="xform-bs-logic-modal" v-model:visible="visible" @confirm="save">
@@ -17,7 +17,7 @@
               >
                 <strong>{{ operator.label }}</strong>
                 <small class="text-secondary" v-if="operator.code">{{ operator.code }}</small>
-                <button type="button" class="btn btn-link btn-sm" @click="add(operator.value)">添加</button>
+                <button type="button" class="btn btn-link btn-text btn-sm" @click="add(operator.value)">添加</button>
               </div>
             </div>
           </div>
@@ -25,7 +25,7 @@
           <div class="xform-bs-logic-field-rule">
             <h5>
               <strong>字段规则</strong>
-              <button type="button" class="btn btn-link" @click="selectedField = null" v-if="selectedField != null">返回</button>
+              <button type="button" class="btn btn-link btn-text" @click="selectedField = null" v-if="selectedField != null">返回</button>
             </h5>
             <div v-if="selectedField == null">
               <div 
@@ -43,7 +43,7 @@
               >
                 <strong>{{ operator.label }}</strong>
                 <small class="text-secondary" v-if="operator.code">{{ operator.code }}</small>
-                <button type="button" class="btn btn-link btn-sm" @click="add(operator.value)">添加</button>
+                <button type="button" class="btn btn-link btn-text btn-sm" @click="add(operator.value)">添加</button>
               </div>
             </div>
           </div>
@@ -670,8 +670,7 @@ export default defineComponent({
   h5{
     margin: 0;
     font-size: 14px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 4px 10px;
     border-top: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
     background-color: #f0f0f0;

@@ -141,7 +141,7 @@ const view = defineComponent({
           }</td>
         })
 
-        const opreate = <td class="xform-bs-datatable-operate"><strong>{index + 1}</strong></td>
+        const opreate = <td class="xform-bs-datatable-index"><strong>{index + 1}</strong></td>
         return <tr>{opreate}{cells}</tr>
       })
 
@@ -154,7 +154,7 @@ const view = defineComponent({
                 {cols}
               </colgroup>
               <thead>
-                <th class="xform-bs-datatable-operate">#</th>
+                <th class="xform-bs-datatable-index">#</th>
                 {columns.map(column => {
                   const klass = {
                     'xform-bs-datatable-cell': true,

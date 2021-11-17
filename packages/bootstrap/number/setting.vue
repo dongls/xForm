@@ -5,9 +5,9 @@
       <input type="text" class="form-control form-control-sm" v-model.number="compatValue" placeholder="[可选] 如果字段没有填写，默认为设定的值">
     </section>
     <template #attributes>
-      <div class="custom-control custom-checkbox custom-control-inline">
-        <input :id="`${field.name}-integer`" :name="`${field.name}-integer`" type="checkbox" class="custom-control-input" v-model="integer">
-        <label class="custom-control-label" :for="`${field.name}-integer`" title="勾选则只允许输入整数">整数</label>
+      <div class="form-check form-check-inline">
+        <input :id="`${field.name}-integer`" :name="`${field.name}-integer`" type="checkbox" class="form-check-input" v-model="integer">
+        <label class="form-check-label" :for="`${field.name}-integer`" title="勾选则只允许输入整数">整数</label>
       </div>
     </template>
   </field-setting>

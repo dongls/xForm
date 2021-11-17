@@ -51,12 +51,15 @@
     }
   }
 
-  tr td{
-    vertical-align: middle;
+  .xform-viewer-value{
+    padding-top: 0;
+    padding-bottom: 0;
+    display: inline;
+    line-height: 24px;
   }
 
-  .table-hover tbody tr:hover{
-    background-color: #ececec;
+  tr td{
+    vertical-align: middle;
   }
 
   th.xform-bs-datatable-index,
@@ -69,9 +72,13 @@
     background-color: #fff;
   }
 
-  tr:hover td.xform-bs-datatable-index,
-  tr:hover td.xform-bs-datatable-operate{
-    background-color: #ececec;
+  .table > thead{
+    border-top-color: #dee2e6;
+    border-top-width: 1px;
+  }
+
+  .table > tbody{
+    border-top-color: #dee2e6;
   }
 }
 
@@ -96,7 +103,6 @@
   tbody tr:hover td.xform-bs-datatable-index{
     strong{
       display: none;
-      
     }
 
     button{
@@ -107,6 +113,7 @@
 
 .xform-bs-datatable-cell span{
   position: relative;
+  padding: 0 !important;
 }
 
 .xform-bs-datatable-cell.xform-is-required{
@@ -135,6 +142,7 @@
 .xform-bs-datatable-operate > button{
   font-size: 14px;
   padding: 0;
+  line-height: 1;
 }
 .xform-bs-datatable-operate > button + button{
   margin-left: 10px;
@@ -144,7 +152,6 @@
   position: sticky;
   left: 0;
   z-index: 8;
-  font-weight: 700;
   font-size: 14px;
 }
 

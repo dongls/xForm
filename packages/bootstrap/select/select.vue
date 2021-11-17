@@ -40,8 +40,8 @@ export default defineComponent({
       value,
       className: computed(() => {
         return {
-          'custom-select': true,
-          'custom-select-sm': true,
+          'form-select': true,
+          'form-select-sm': true,
           'xform-bs-select': true,
           'xform-bs-is-empty': null == value || (typeof value.value == 'string' && value.value.length == 0)
         }

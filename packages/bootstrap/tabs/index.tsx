@@ -80,9 +80,9 @@ const setting = defineComponent({
               value={f.title}
               onInput={updateTitle.bind(null, f)}
             />
-            <button type="button" class="btn btn-link" onClick={up.bind(null, index)} disabled={index == 0}>上移</button>
-            <button type="button" class="btn btn-link" onClick={down.bind(null, index)} disabled={index == length - 1}>下移</button>
-            <button type="button" class="btn btn-link text-danger" onClick={removeTab.bind(null, f)} disabled={length <= 1}>删除</button>
+            <button type="button" class="btn btn-link btn-text" onClick={up.bind(null, index)} disabled={index == 0}>上移</button>
+            <button type="button" class="btn btn-link btn-text" onClick={down.bind(null, index)} disabled={index == length - 1}>下移</button>
+            <button type="button" class="btn btn-link btn-text text-danger" onClick={removeTab.bind(null, f)} disabled={length <= 1}>删除</button>
           </div>
         )
       })
@@ -92,20 +92,20 @@ const setting = defineComponent({
           <div class="xform-bs-field-setting-prop">
             <header>标签：</header>
             {tabs}
-            <button type="button" class="btn btn-link btn-sm bs-btn-text" onClick={addTab}>添加标签</button>
+            <button type="button" class="btn btn-link btn-sm btn-text p-0" onClick={addTab}>添加标签</button>
           </div>
         ),
         attributes: () => (
-          <div class="custom-control custom-checkbox custom-control-inline">
+          <div class="form-check form-check-inline">
             <input
               type="checkbox"
-              class="custom-control-input"
+              class="form-check-input"
               id={`${field.name}-show-title`}
               name={`${field.name}-show-title`}
               checked={field.attributes.showTitle}
               onInput={(e) => updateField(emit, e, 'showTitle', 'attributes')}
             />
-            <label class="custom-control-label" for={`${field.name}-show-title`}>显示标题</label>
+            <label class="form-check-label" for={`${field.name}-show-title`}>显示标题</label>
           </div>
         )
       }

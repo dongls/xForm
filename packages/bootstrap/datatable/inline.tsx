@@ -36,7 +36,7 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
     return (
       <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>
         <span>点击</span>
-        <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>+ 添加</button>
+        <button type="button" class="btn btn-link btn-text btn-sm shadow-none" onClick={addRow}>+ 添加</button>
         <span>按钮插入数据</span>
       </div>
     )
@@ -73,14 +73,14 @@ export function useInlineLayout(props: { field: FormField, disabled: boolean }, 
         <tr class="xform-bs-datatable-row">
           <td class="xform-bs-datatable-index">
             <strong>{index + 1}</strong>
-            { disabled ? null : <button type="button" class="btn btn-link text-danger" onClick={removeRow.bind(null, row)}>删除</button> }
+            { disabled ? null : <button type="button" class="btn btn-link btn-text text-danger" onClick={removeRow.bind(null, row)}>删除</button> }
           </td>
           {tds}
         </tr>
       )
     })
 
-    const button = disabled ? '#' : <button type="button" class="btn btn-link btn-sm shadow-none" onClick={addRow}>添加</button>
+    const button = disabled ? '#' : <button type="button" class="btn btn-link btn-text btn-sm shadow-none" onClick={addRow}>添加</button>
     return (
       <div class="xform-bs-datatable" data-layout="inline">
         <div class="table-responsive">

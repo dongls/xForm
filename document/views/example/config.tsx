@@ -73,13 +73,11 @@ function r(c: Config){
 r({
   id: 'bootstrap',
   name: 'Bootstrap',
-  version: '4.6.0',
+  version: '5.1.3',
   homepage: 'https://github.com/twbs/bootstrap',
   source: [
     [publicPath + '/libs/bootstrap/bootstrap.min.css', TYPE.STYLE],
-    [publicPath + '/libs/bootstrap/jquery.slim.min.js', TYPE.SCRIPT],
-    [publicPath + '/libs/bootstrap/popper.min.js', TYPE.SCRIPT],
-    [publicPath + '/libs/bootstrap/bootstrap.min.js', TYPE.SCRIPT]
+    [publicPath + '/libs/bootstrap/bootstrap.bundle.min.js', TYPE.SCRIPT],
   ],
   factory(){
     return import(/* webpackPrefetch: true */'./bootstrap/index').then(r => r.default)
@@ -91,9 +89,9 @@ r({
     return (
       <div class="example-designer-tool">
         <div class="example-designer-tool-left">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="prop-is-wide" v-model={state.isWide.value}/>
-            <label class="custom-control-label" for="prop-is-wide">宽屏</label>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="prop-is-wide" v-model={state.isWide.value}/>
+            <label class="form-check-label" for="prop-is-wide">宽屏</label>
           </div>
         </div>
         <div class="example-designer-tool-right">

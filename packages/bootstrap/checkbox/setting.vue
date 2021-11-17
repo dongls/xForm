@@ -15,16 +15,16 @@
         class="xform-bs-setting-option"
       >
         <input :value="option.value" class="form-control form-control-sm" placeholder="请输入选项内容" @input="updateOption($event, option)">
-        <button type="button" class="btn btn-link text-danger" @click="removeOption(option)" :disabled="field.options.length <= 1">删除</button>
+        <button type="button" class="btn btn-link btn-text text-danger" @click="removeOption(option)" :disabled="field.options.length <= 1">删除</button>
       </div>
-      <button type="button" class="btn btn-link btn-sm bs-btn-text" @click="addOption">添加选项</button>
+      <button type="button" class="btn btn-link btn-text btn-sm p-0" @click="addOption">添加选项</button>
     </section>
 
     <section class="xform-bs-field-setting-prop">
       <header>默认值：</header>
       <div :class="classes.defaultValue">
         <select 
-          class="form-control form-control-sm"
+          class="form-select form-select-sm"
           v-model="compatType"
         >
           <option 
@@ -35,7 +35,7 @@
         <select 
           v-if="isManual"
           v-model="compatValue"
-          class="form-control form-control-sm"
+          class="form-select form-select-sm"
           multiple 
         >
           <option 

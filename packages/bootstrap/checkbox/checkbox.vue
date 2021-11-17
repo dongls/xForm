@@ -7,10 +7,10 @@
         :name="field.name" 
         :value="option.value"  
         type="checkbox" 
-        class="custom-control-input"
+        class="form-check-input"
         :disabled="disabled || field.disabled"
       >
-      <label class="custom-control-label" :for="field.uid + '_' + i">{{ option.value }}</label>
+      <label class="form-check-label" :for="field.uid + '_' + i">{{ option.value }}</label>
     </div>
   </div>
 </template>
@@ -36,8 +36,8 @@ export default defineComponent({
     return {
       value: useValue<string[]>([]),
       className: computed(() => {
-        const className = ['custom-control', 'custom-checkbox']
-        if(props.field.attributes.layout == 'inline') className.push('custom-control-inline')
+        const className = ['form-check']
+        if(props.field.attributes.layout == 'inline') className.push('form-check-inline')
         return className
       })
     }
@@ -48,13 +48,23 @@ export default defineComponent({
 <style lang="scss">
 .xform-bs-checkbox {
   padding: 5px 0;
-}
 
-.xform-bs-checkbox .custom-checkbox{
-  line-height: 24px;
+  .form-check{
+    font-size: 16px;
+    margin-bottom: 0;
+    line-height: 24px;
 
-  & + .custom-checkbox{
-    margin-top: 5px;
+    & + .form-check{
+      margin-top: 5px;
+    }
+  }
+
+  .form-check-label{
+    font-size: var(--xform-font-size);
+  }
+
+  .form-check-inline{
+    margin-top: 0 !important;
   }
 }
 </style>

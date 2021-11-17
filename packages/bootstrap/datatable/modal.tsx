@@ -113,7 +113,7 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
     return (
       <div class="xform-bs-datatable-tip" style={`width: ${width}px`}>
         <span>点击</span>
-        <button type="button" class="btn btn-link btn-sm shadow-none" onClick={showInsertModal}>+ 添加</button>
+        <button type="button" class="btn btn-link btn-text btn-sm shadow-none" onClick={showInsertModal}>+ 添加</button>
         <span>按钮插入数据</span>
       </div>
     )
@@ -149,8 +149,8 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
 
       const operate = disabled ? null : (
         <td class="xform-bs-datatable-operate">
-          <button type="button" class="btn btn-link shadow-none" onClick={showEditModal.bind(null, row)}>编辑</button>
-          <button type="button" class="btn btn-link text-danger shadow-none" onClick={removeRow.bind(null, row)}>删除</button>
+          <button type="button" class="btn btn-link btn-text shadow-none" onClick={showEditModal.bind(null, row)}>编辑</button>
+          <button type="button" class="btn btn-link btn-text text-danger shadow-none" onClick={removeRow.bind(null, row)}>删除</button>
         </td>
       )
       
@@ -164,7 +164,7 @@ export function useModalLayout(props: { field: FormField, disabled: boolean }, v
     })
 
     const width = total + (disabled ? 0 : DEF_OPERATE_WIDTH)
-    const button = disabled ? '#' : <button type="button" class="btn btn-sm btn-link shadow-none" onClick={showInsertModal}>添加</button>
+    const button = disabled ? '#' : <button type="button" class="btn btn-sm btn-link btn-text shadow-none" onClick={showInsertModal}>添加</button>
     const table = (
       <table class="table table-hover" style={`width: ${width}px`}>
         <colgroup>
