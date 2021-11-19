@@ -13,8 +13,10 @@ export function registerField(...fcs: Array<FieldConf | FieldConf[]>){
   })
 }
 
-export function removeField(type: string){
-  if(store.fields.has(type)) store.fields.delete(type)
+export function removeField(field: FieldConf){
+  const type = field.type
+  const exist = store.fields.get(type)
+  if(exist === field) store.fields.delete(type)
 }
 
 /** 删除所有已注册字段 */

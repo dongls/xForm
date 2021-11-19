@@ -15,8 +15,9 @@ import { isString } from './lang'
 export function isHidden(el: HTMLElement, container: HTMLElement){
   const tRect = el.getBoundingClientRect()
   const cRect = container.getBoundingClientRect()
+  const half = tRect.height / 2
 
-  return tRect.bottom < cRect.top || tRect.top > cRect.bottom
+  return tRect.bottom - half < cRect.top || tRect.top + half > cRect.bottom
 }
 
 /**

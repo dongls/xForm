@@ -44,13 +44,7 @@ export type FormConfig = DeepPartial<BaseFormConfig>
 export interface FormPreset {
   name: string;
   version?: string;
-  slots?: {
-    [prop: string]: ComponentOptions;
-    'setting_form'?: ComponentOptions;
-  };
-  fieldConfs: FieldConf[];
-  config?: FormConfig;
-  install?: () => void
+  install?: (options: any) => void | (() => void)
 }
 
 export type RenderOptions = {
@@ -90,7 +84,7 @@ export interface FormViewerContext{
 
 export type FormRenderContext = FormBuilderContext | FormDesignerContext | FormViewerContext;
 
-export interface FormOption {
+export interface FormOption extends AnyProps {
   /** 组件配置 */
   preset?: FormPreset;
   /** 表单默认设置 */

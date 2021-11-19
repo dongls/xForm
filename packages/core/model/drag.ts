@@ -95,6 +95,7 @@ export class InternalDragContext{
   mode: EnumDragMode // 拖拽模式
   directionY: number
   directionX: number
+  timeStamp: number
 
   constructor(event: MouseEvent, dragElement: Element) {
     const field = getProperty<FormField>(dragElement, PROPS.FIELD)
@@ -115,6 +116,7 @@ export class InternalDragContext{
     this.mode = mode == EnumDragMode.INSERT ? EnumDragMode.INSERT : EnumDragMode.SORT
     this.deltaX = isFieldEl ? event.clientX - rect.left : rect ? rect.width / 2 : DELTA_X
     this.deltaY = isFieldEl ? event.clientY - rect.top : rect ? rect.height / 2 : DELTA_Y
+    this.timeStamp = event.timeStamp
   }
 
   get isInsert(){

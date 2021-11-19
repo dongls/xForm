@@ -1,6 +1,6 @@
 import './index.scss'
 
-import { FormPreset } from '@dongls/xform'
+import { FormPreset, useApi } from '@dongls/xform'
 import FormSetting from './FormSetting.vue'
 
 import Checkbox from './checkbox'
@@ -13,27 +13,35 @@ import Radio from './radio'
 import Select from './select'
 import Tabs from './tabs'
 import Text from './text'
-import Textare from './textarea'
+import Textarea from './textarea'
 
 const ElementPlus: FormPreset = {
   name: 'element-plus',
   version: __VERSION__,
-  slots: {
-    'setting_form': FormSetting
-  },
-  fieldConfs: [
-    Checkbox,
-    Datatable,
-    Date,
-    Divider,
-    Group,
-    Number,
-    Radio,
-    Select,
-    Tabs,
-    Text,
-    Textare,
-  ]
+  install(){
+    const api = useApi()
+    const fields = [
+      Checkbox,
+      Datatable,
+      Date,
+      Divider,
+      Group,
+      Number,
+      Radio,
+      Select,
+      Tabs,
+      Text,
+      Textarea,
+    ]
+    
+    api.registerSlot('setting_form', FormSetting)
+    api.registerField(fields)
+
+    return function(){
+      api.removeSlot('setting_form')
+      fields.forEach(api.removeField)
+    }
+  }
 }
 
 export default ElementPlus

@@ -62,7 +62,7 @@ const development = {
     }
   },
   watchOptions: {
-    aggregateTimeout: 500
+    aggregateTimeout: 300
   }
 }
 

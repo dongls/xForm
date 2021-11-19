@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import { isEmpty } from '../../util'
-import { FieldConf, FormField, FormOption } from '../../model'
+import { FieldConf, FormField } from '../../model'
+import { useApi } from '../../api/Exports'
 
 export function mockFieldConfs(){
   return [
@@ -46,10 +47,18 @@ export function mockFieldConfs(){
 }
 
 export function mockOption(){
+  const fields = mockFieldConfs()
   return {
+    fields,
     preset: {
       name: 'test',
-      fieldConfs: mockFieldConfs()
+      install(){
+        const api = useApi()
+        api.registerField(fields)
+        return function(){
+          fields.forEach(api.removeField)
+        }
+      }
     },
     config: {
       modes: {
@@ -60,7 +69,7 @@ export function mockOption(){
         ]
       }
     }
-  } as FormOption
+  }
 }
 
 export function mockSchema(){

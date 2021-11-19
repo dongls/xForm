@@ -1,33 +1,21 @@
 import { FormPreset } from '../model'
 import { store } from './Store'
-import { useConfig } from './Config'
-import { registerField, removeField } from './Field'
-import { registerSlots, removeSlot } from './Slots'
-import { isObject } from '../util'
+import { isFunction } from '../util'
 
-export function usePreset(preset: FormPreset){
-  if(null == preset) return
+export function usePreset(preset: FormPreset, options?: any){
+  if(null == preset || !isFunction(preset.install)) return
 
-  store.preset = preset
-  
-  useConfig(preset.config)
-  registerField(preset.fieldConfs)
-  registerSlots(preset.slots)
+  store.preset = {
+    name: preset.name,
+    version: preset.version,
+    cleanup: preset.install(options)
+  }
 }
 
 export function resetPreset(){
-  const preset = store.preset
+  if(store.preset == null) return
+  if(isFunction(store.preset.cleanup)) store.preset.cleanup()
 
-  // 删除字段配置
-  const fieldConfs = preset?.fieldConfs ?? []
-  for(const fc of fieldConfs) removeField(fc.type)
-
-  // 删除slot
-  const slots = preset?.slots
-  if(isObject(slots)){
-    for(const key in slots) removeSlot(key)
-  }
-  
   store.preset = null
 }
 

@@ -1,16 +1,18 @@
 import { reset, isImmediateValidate } from '..'
 import { FormPreset } from '../../model'
-import { usePreset } from '../Preset'
+import { useApi, usePreset } from '../Exports'
 
 describe('usePreset', () => {
   test('with config', () => {
     const preset: FormPreset = {
-      name: 'demo',
-      fieldConfs: [],
-      config: {
-        validation: {
-          immediate: false
-        }
+      name: 'test',
+      install(){
+        const api = useApi()
+        api.useConfig({
+          validation: {
+            immediate: false
+          }
+        })
       }
     }
 

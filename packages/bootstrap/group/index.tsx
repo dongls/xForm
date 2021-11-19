@@ -190,7 +190,7 @@ export default FieldConf.create({
 
     return field.fields.reduce((acc, f) => {
       const newField = f.clone(true)
-      newField.setValue(v[f.name] ?? null)
+      newField.setValue(v[f.name])
       newField.setParent(field)
       acc[f.name] = newField
       return acc
@@ -198,7 +198,7 @@ export default FieldConf.create({
   },
   onValueSubmit(field){
     const value = field.value
-    if(value == null || typeof value != 'object' || Object.keys(value).length == 0) return null
+    if(value == null || typeof value != 'object' || Object.keys(value).length == 0) return undefined
 
     return field.fields.map(f => f.name).reduce((acc, key) => {
       const f = Reflect.get(value, key, value) as FormField

@@ -31,7 +31,7 @@ const setting = defineComponent({
   },
   emits: [ EVENTS.UPDATE_FIELD ],
   setup(props) {
-    const showTitleRef = useFieldProp('showTitle', 'attributes')
+    const hideTitleRef = useFieldProp('hideTitle', 'attributes')
 
     function addTab() {
       const field = props.field
@@ -83,7 +83,7 @@ const setting = defineComponent({
             <el-button type="primary" size="small" onClick={addTab} plain>添加标签</el-button>
           </div>
         ),
-        attributes: () => <el-checkbox name={`${field.name}-show-title`} v-model={showTitleRef.value}>显示标题</el-checkbox>
+        attributes: () => <el-checkbox name={`${field.name}-hide-title`} v-model={hideTitleRef.value} title="勾选则不显示标题">隐藏标题</el-checkbox>
       }
 
       return <field-setting field={field} placeholder={false} required={false} v-slots={slots}/>
@@ -130,7 +130,7 @@ const build = defineComponent({
       const field = props.field
       const value = field.value ?? {}
       const disabled = props.disabled
-      const showTitle = field.attributes.showTitle === true
+      const showTitle = field.attributes.hideTitle !== true
       const panes = field.fields.map(f => {
         return (
           <el-tab-pane label={f.title} name={f.name} lazy>{
@@ -180,7 +180,6 @@ export default FieldConf.create({
       const tab = new FormField(pane)
       tab.title = `标签${field.fields.length + 1}`
       field.push(tab)
-      field.attributes.showTitle = true
     }
   },
   onValueInit(field, _value){

@@ -384,7 +384,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     }
 
     return (
-      <div class="xform-designer-responsive  xform-is-scroll" ref="scroll">
+      <div class="xform-designer-responsive xform-is-scroll" ref="scroll">
         <div {...props}>{content}</div>
       </div>
     )
@@ -430,7 +430,7 @@ export default defineComponent({
     const modeRef = toRef(props, 'mode') as Ref<string>
     const instance = getCurrentInstance()
     const rc = useRenderContext(instance, schemaRef, modeRef)
-    const { dragstart } = useDragging()
+    const { dragstart, cancelAutoScrollIfNeed } = useDragging()
 
     if(getConfig().logic === true) {
       useLogic(schemaRef, (data: any) => emit(EVENTS.MESSAGE, data))
@@ -440,6 +440,8 @@ export default defineComponent({
     provide<FormDesignerContext>(XFORM_CONTEXT_PROVIDE_KEY, rc.context)
 
     const doScroll = function(event: WheelEvent){
+      cancelAutoScrollIfNeed()
+
       const { pixelY } = normalizeWheel(event)
       const scroll = instance.refs.scroll as HTMLElement
   

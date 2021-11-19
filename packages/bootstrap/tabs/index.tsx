@@ -17,7 +17,7 @@ import {
   useConstant,
 } from '@dongls/xform'
 
-import { updateField } from '../util'
+import { useFieldProp } from '../util'
 import icon from '@common/svg/tabs.svg'
 import pane from './pane'
 import FieldSetting from '../FieldSetting.vue'
@@ -34,7 +34,9 @@ const setting = defineComponent({
     },
   },
   emits: [ EVENTS.UPDATE_FIELD ],
-  setup(props, { emit }) {
+  setup(props) {
+    const hideTitleRef = useFieldProp('hideTitle', 'attributes')
+
     function addTab() {
       const field = props.field
       const tab = new FormField(pane)
@@ -100,12 +102,11 @@ const setting = defineComponent({
             <input
               type="checkbox"
               class="form-check-input"
-              id={`${field.name}-show-title`}
-              name={`${field.name}-show-title`}
-              checked={field.attributes.showTitle}
-              onInput={(e) => updateField(emit, e, 'showTitle', 'attributes')}
+              id={`${field.name}-hide-title`}
+              name={`${field.name}-hide-title`}
+              v-model={hideTitleRef.value}
             />
-            <label class="form-check-label" for={`${field.name}-show-title`}>显示标题</label>
+            <label class="form-check-label" for={`${field.name}-hide-title`} title="勾选则不显示标题">隐藏标题</label>
           </div>
         )
       }
@@ -186,7 +187,7 @@ const build = defineComponent({
       const rc = useRenderContext()
       const field = props.field
       const value = field.value ?? {}
-      const title = field.attributes.showTitle === true ? <strong class="nav-tabs-title">{field.title}</strong> : null
+      const title = field.attributes.hideTitle === true ? null : <strong class="nav-tabs-title">{field.title}</strong>
       const disabled = props.disabled
 
       const tabs = field.fields.map((f) => {
@@ -247,7 +248,6 @@ export default FieldConf.create({
       const tab = new FormField(pane)
       tab.title = `标签${field.fields.length + 1}`
       field.push(tab)
-      field.attributes.showTitle = true
     }
   },
   onValueInit(field, _value){

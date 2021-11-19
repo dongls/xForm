@@ -14,11 +14,79 @@ import {
 import { 
   findElementsFromPoint,
   getHtmlElement,
-  getScope
+  getScope,
 } from '../../util'
 
 import { findField } from '../../api'
 import { FormDesignerApi } from './component'
+
+function useScroll(){
+  let requestID = null as number
+
+  function doScroll(scroll: HTMLElement, c: number){
+    const r = scroll.scrollTop + c * 4
+    scroll.scrollTop = r
+
+    if(r < 0 || r > scroll.scrollHeight - scroll.offsetHeight){
+      requestID = null
+      return
+    }
+
+    requestID = window.requestAnimationFrame(doScroll.bind(null, scroll, c))
+  }
+
+  function doHorizontalScroll(scroll: HTMLElement, c: number){
+    const r = scroll.scrollLeft + c * 4
+    scroll.scrollLeft = r
+
+    if(r < 0 || r > scroll.scrollWidth - scroll.offsetWidth){
+      requestID = null
+      return
+    }
+
+    requestID = window.requestAnimationFrame(doHorizontalScroll.bind(null, scroll, c))
+  }
+
+  function horizontalScroll(event: MouseEvent, scroll: HTMLElement){
+    const rect = scroll.getBoundingClientRect()
+    if(event.clientX < rect.left){
+      return requestID == null && doHorizontalScroll(scroll, -1) 
+    }
+
+    if(event.clientX > rect.right){
+      return requestID == null && doHorizontalScroll(scroll, 1) 
+    }
+
+    cancelAutoScrollIfNeed()
+  }
+
+  function autoScrollIfNeed(event: MouseEvent, scroll: HTMLElement){
+    if(scroll == null) return
+    if(scroll.matches(SELECTOR.IS_HORIZONTAL_SCROLL)) return horizontalScroll(event, scroll)
+
+    const rect = scroll.getBoundingClientRect()    
+    if(event.clientX < rect.left || event.clientX > rect.right) return cancelAutoScrollIfNeed()
+
+    if(event.clientY < rect.top){
+      return requestID == null && doScroll(scroll, -1) 
+    }
+
+    if(event.clientY > rect.bottom){
+      return requestID == null && doScroll(scroll, 1) 
+    }
+
+    cancelAutoScrollIfNeed()
+  }
+ 
+  function cancelAutoScrollIfNeed(){
+    if(requestID == null) return
+
+    window.cancelAnimationFrame(requestID)
+    requestID = null
+  }
+
+  return { autoScrollIfNeed, cancelAutoScrollIfNeed }
+}
 
 export default function useDragging(){
   const utils = {
@@ -34,6 +102,11 @@ export default function useDragging(){
     instance: getCurrentInstance(),
     context: null as InternalDragContext,
   }
+
+  const {
+    autoScrollIfNeed,
+    cancelAutoScrollIfNeed
+  } = useScroll()
 
   function getInternalInstance(){
     return GLOBAL.instance
@@ -119,6 +192,9 @@ export default function useDragging(){
 
   function dragging(event: MouseEvent){
     const { context, instance } = GLOBAL
+
+    // 按住150ms后触发移动
+    if(event.timeStamp - context.timeStamp < 150) return
     context.move(event, instance)
 
     // 判断是否有可插入的节点
@@ -130,9 +206,10 @@ export default function useDragging(){
     if(null == path || path.length == 0){
       root.appendChild(mark)
       ghost.classList.add(CLASS.GHOST_NOT_ALLOW)
-      return
+      return autoScrollIfNeed(event, context.dragElement.closest(SELECTOR.IS_SCROLL))
     }
 
+    cancelAutoScrollIfNeed()
     ghost.classList.remove(CLASS.GHOST_NOT_ALLOW)
 
     // 触发dragover事件
@@ -144,8 +221,9 @@ export default function useDragging(){
   }
 
   function dragend(event: MouseEvent){
-    const { instance, context } = GLOBAL
+    cancelAutoScrollIfNeed()
 
+    const { instance, context } = GLOBAL
     const mark = getHtmlElement(instance.refs, 'mark')
     const root = getHtmlElement(instance.refs, 'root')
     const path = findDropPath(mark, root)
@@ -201,5 +279,5 @@ export default function useDragging(){
     resetDragStatus()
   }
 
-  return { dragstart }
+  return { dragstart, cancelAutoScrollIfNeed }
 }

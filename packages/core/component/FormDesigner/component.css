@@ -266,7 +266,7 @@
   margin-top: 5px;
 }
 
-.is-vertical-mark .xform-designer-mark:not(:first-child) + .xform-preview{
+.xform-is-horizontal-scroll .xform-designer-mark:not(:first-child) + .xform-preview{
   margin-top: 0;
   margin-left: 5px;
 }
@@ -307,12 +307,12 @@
   border-right: 4px solid var(--xform-designer-mark-color);
 }
 
-.is-vertical-mark .xform-designer-mark{
+.xform-is-horizontal-scroll .xform-designer-mark{
   width: 0;
   height: 100%;
 }
 
-.is-vertical-mark .xform-designer-mark > hr{
+.xform-is-horizontal-scroll .xform-designer-mark > hr{
   left: -4px;
   top: 0;
   bottom: 0;
@@ -323,19 +323,19 @@
   background: linear-gradient(to right, transparent 5px, var(--xform-designer-mark-color) 5px, var(--xform-designer-mark-color) 8px, transparent 8px);
 }
 
-.is-vertical-mark .xform-designer-mark > hr::after,
-.is-vertical-mark .xform-designer-mark > hr::before{
+.xform-is-horizontal-scroll .xform-designer-mark > hr::after,
+.xform-is-horizontal-scroll .xform-designer-mark > hr::before{
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
   left: 0;
 }
 
-.is-vertical-mark .xform-designer-mark > hr::before{
+.xform-is-horizontal-scroll .xform-designer-mark > hr::before{
   top: 0;
   border-top: 4px solid red;
 }
 
-.is-vertical-mark .xform-designer-mark > hr::after{
+.xform-is-horizontal-scroll .xform-designer-mark > hr::after{
   bottom: 0;
   border-bottom: 4px solid red;
 }

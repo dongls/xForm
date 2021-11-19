@@ -67,7 +67,7 @@ const preview = defineComponent({
       }
       
       return (
-        <div class={`xform-el-datatable ${CLASS.IS_VERTICAL_MARK} ${CLASS.IS_SCROLL}`}>
+        <div class={`xform-el-datatable ${CLASS.IS_SCROLL} ${CLASS.IS_HORIZONTAL_SCROLL}`}>
           <div {..._p}>{content}</div>
         </div>
       )
@@ -201,7 +201,7 @@ export default FieldConf.create({
     return value.map((v: any) => {
       return columns.reduce((row, item: FormField) => {
         const newField = item.clone(true)
-        newField.setValue(v[item.name] ?? null)
+        newField.setValue(v[item.name])
         newField.setParent(field)
         row[item.name] = newField
         return row
@@ -209,7 +209,7 @@ export default FieldConf.create({
     })
   },
   onValueSubmit(field){
-    if(!Array.isArray(field.value)) return null
+    if(!Array.isArray(field.value)) return undefined
 
     const columns = field.fields
     return field.value.map((row: any) => {

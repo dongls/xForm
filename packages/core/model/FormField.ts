@@ -51,6 +51,12 @@ interface Option {
   color?: string;
 }
 
+interface Attributes{
+  [prop: string]: any 
+  // 是否隐藏标题
+  hideTitle?: boolean
+}
+
 const PRIVATE_PROPS_KEY = Symbol()
 
 /** 
@@ -88,7 +94,7 @@ export class FormField extends FormScope{
   hidden?: boolean
 
   /** 各字段类型的私有属性都存储在此 */
-  attributes?: { [prop: string]: any }
+  attributes?: Attributes
   /** 是否允许字段被删除 */
   allowRemove?: boolean
   /** 是否允许复制字段 */

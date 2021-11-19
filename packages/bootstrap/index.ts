@@ -1,6 +1,6 @@
 import './index.scss'
 
-import { FormPreset } from '@dongls/xform'
+import { FormPreset, useApi } from '@dongls/xform'
 import FormSetting from './FormSetting.vue'
 
 import Text from './text'
@@ -18,22 +18,30 @@ import Datatable from './datatable'
 const bootstrap: FormPreset = {
   name: 'bootstrap',
   version: __VERSION__,
-  slots: {
-    'setting_form': FormSetting
-  },
-  fieldConfs: [
-    Text,
-    Textarea,
-    Number,
-    Select,
-    Radio,
-    Checkbox,
-    Date,
-    Divider,
-    Group,
-    Tabs,
-    Datatable
-  ]
+  install(){
+    const api = useApi()
+    const fields = [
+      Checkbox,
+      Datatable,
+      Date,
+      Divider,
+      Group,
+      Number,
+      Radio,
+      Select,
+      Tabs,
+      Text,
+      Textarea,
+    ]
+    
+    api.registerSlot('setting_form', FormSetting)
+    api.registerField(fields)
+
+    return function(){
+      api.removeSlot('setting_form')
+      fields.forEach(api.removeField)
+    }
+  }
 }
 
 export default bootstrap

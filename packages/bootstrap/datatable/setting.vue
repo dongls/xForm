@@ -1,5 +1,12 @@
 <template>
   <field-setting :field="field" :placeholder="false">
+    <template #attributes>
+      <div class="form-check form-check-inline">
+        <input :id="`${field.name}-hide-title`" :name="`${field.name}-hide-title`" type="checkbox" class="form-check-input" v-model="hideTitle">
+        <label class="form-check-label" :for="`${field.name}-hide-title`" title="勾选则不显示标题">隐藏标题</label>
+      </div>
+    </template>
+
     <section class="xform-bs-field-setting-prop">
       <header>表单布局：</header>
       <div class="btn-group" role="group">
@@ -36,10 +43,12 @@
 </template>
 
 <script lang="ts">
+import FieldSetting from '../FieldSetting.vue'
+
 import { defineComponent } from 'vue'
 import { FormField, useConstant } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH } from './common'
-import FieldSetting from '../FieldSetting.vue'
+import { useFieldProp } from '../util'
 
 const { EVENTS } = useConstant()
 
@@ -69,7 +78,13 @@ export default defineComponent({
       return props.field.attributes.colWidths[name]
     }
 
-    return { updateColWidth, update, DEF_COLUMN_WIDTH, getColumnWidth }
+    return { 
+      updateColWidth, 
+      update, 
+      DEF_COLUMN_WIDTH, 
+      getColumnWidth,
+      hideTitle: useFieldProp('hideTitle', 'attributes')
+    }
   },
   components: {
     [FieldSetting.name]: FieldSetting

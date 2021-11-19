@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { mockOption, mockSchema } from './mock/index'
-import { createSchemaRef, findField, reset } from '../api'
+import { createSchemaRef, findField, registerSlot, reset } from '../api'
 import { ModeGroup } from '../model'
 import { h } from 'vue'
 
@@ -25,7 +25,7 @@ describe('FormDesigner props: mode', () => {
     })
 
     const renderFieldText = wrapper.findAll('.xform-designer-field').map(f => f.text())
-    const fieldText = option.preset.fieldConfs.map(f => f.title)
+    const fieldText = option.fields.map(f => f.title)
     expect(renderFieldText).toEqual(fieldText)
   })
 
@@ -104,12 +104,8 @@ describe('FormDesigner slots: setting_form', () => {
 
   test('use preset slot', () => {
     const slotText = 'mock preset setting_form slot'
-    const option = mockOption()
-    option.preset.slots = {
-      'setting_form': h('div', slotText)
-    }
-    
-    reset(option)
+    reset(mockOption())
+    registerSlot('setting_form', h('div', slotText))
 
     const app = {
       template: `
@@ -142,12 +138,9 @@ describe('FormDesigner slots: setting_form', () => {
   test('use custom slot', () => {
     const slotText = 'mock preset setting_form slot'
     const customText = 'mock custom setting_form slot'
-    const option = mockOption()
-    option.preset.slots = {
-      'setting_form': h('div', slotText)
-    }
-    
-    reset(option)
+
+    reset(mockOption())
+    registerSlot('setting_form', h('div', slotText))
 
     const app = {
       template: `

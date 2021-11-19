@@ -87,7 +87,7 @@ export function useConstant(){
 export function use(option: FormOption){
   if(!isObject(option)) return
 
-  if(option.preset) usePreset(option.preset)
+  if(option.preset) usePreset(option.preset, option)
   if(option.config) useConfig(option.config)
 }
 

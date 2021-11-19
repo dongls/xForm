@@ -96,6 +96,18 @@ function normalizeField(props: Props): ComputedRef<FormField>{
   })
 }
 
+function createLabel(label: unknown, field: FormField, schema: Ref<FormSchema>){
+  const text = typeof label == 'string' ? label : field.title
+  const labelSuffix = schema?.value?.labelSuffix
+
+  return (
+    <label class="xform-item-label" for={field.uid}>
+      <span class="xform-item-title">{text}</span>
+      {renderLabelSuffix(labelSuffix)}
+    </label>
+  )
+}
+
 function createComponent(name: EnumComponentName): ComponentOptions{
   return {
     name,
@@ -175,10 +187,10 @@ function createComponent(name: EnumComponentName): ComponentOptions{
         if(props.custom || field?.conf?.custom === true) {
           return renderContent(slots, field, context, props.disabled)
         }
-  
-        const label = props.label === false ? false : props.label || field.title
+        
+        const showLabel = props.label !== false && field.attributes?.hideTitle !== true
+        const label = showLabel ? createLabel(props.label, field, schema): null
         const labelPosition = schema?.value?.labelPosition ?? LabelPosition.LEFT
-        const labelSuffix = schema?.value?.labelSuffix
         const required = (
           isBuilderContext(context) && props.validation === false || props.disabled || field.disabled 
             ? false
@@ -195,22 +207,11 @@ function createComponent(name: EnumComponentName): ComponentOptions{
           }
         } as AnyProps
 
-        if(__IS_TEST__ === true){
-          _props.name = field.name
-        }
-        
+        if(__IS_TEST__ === true) _props.name = field.name
+
         return (
           <div {..._props}>
-            {
-              label === false 
-                ? null
-                : (
-                  <label class="xform-item-label" for={field.uid}>
-                    <span class="xform-item-title">{label}</span>
-                    {renderLabelSuffix(labelSuffix)}
-                  </label>
-                )
-            }
+            {label}
             <div class="xform-item-content">
               {renderContent(slots, field, context, props.disabled)}
               {renderMessage(field)}       

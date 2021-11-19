@@ -1,11 +1,16 @@
 import { ComponentOptions } from 'vue'
 import { 
   BaseFormConfig,
-  FieldConf, 
-  FormPreset,
+  FieldConf,
 } from '../model'
 
 import { isEmpty, isNull, genRandomStr } from '../util'
+
+type Preset = {
+  name: string,
+  version?: string,
+  cleanup: void | (() => void)
+}
 
 export function createConfig(){
   return {
@@ -27,7 +32,7 @@ export function createConfig(){
 }
 
 export const store = {
-  preset: null as FormPreset,
+  preset: null as Preset,
   config: createConfig(),
   fields: new Map<string, FieldConf>(),
   slots: new Map<string, ComponentOptions>()

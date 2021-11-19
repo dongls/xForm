@@ -1,5 +1,8 @@
 <template>
   <field-setting :field="field" :placeholder="false">
+    <template #attributes>
+      <el-checkbox title="勾选则不显示标题" v-model="hideTitle">隐藏标题</el-checkbox>
+    </template>
     <section class="xform-el-field-setting-prop">
       <header>表单布局：</header>
       <el-radio-group v-model="layout" size="small">
@@ -59,7 +62,8 @@ export default defineComponent({
       DEF_COLUMN_WIDTH,
       updateColWidth, 
       getColumnWidth,
-      layout: useFieldProp('layout', 'attributes')
+      layout: useFieldProp('layout', 'attributes'),
+      hideTitle: useFieldProp('hideTitle', 'attributes')
     }
   },
   components: {
