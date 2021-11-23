@@ -48,6 +48,8 @@ function useScroll(){
   }
 
   function horizontalScroll(event: MouseEvent, scroll: HTMLElement){
+    if(scroll.scrollWidth <=  scroll.offsetWidth) return
+    
     const rect = scroll.getBoundingClientRect()
     if(event.clientX < rect.left){
       return requestID == null && doHorizontalScroll(scroll, -1) 
@@ -63,6 +65,8 @@ function useScroll(){
   function autoScrollIfNeed(event: MouseEvent, scroll: HTMLElement){
     if(scroll == null) return
     if(scroll.matches(SELECTOR.IS_HORIZONTAL_SCROLL)) return horizontalScroll(event, scroll)
+    
+    if(scroll.scrollHeight <= scroll.offsetHeight) return
 
     const rect = scroll.getBoundingClientRect()    
     if(event.clientX < rect.left || event.clientX > rect.right) return cancelAutoScrollIfNeed()

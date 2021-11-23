@@ -1,5 +1,5 @@
 # Bootstrap For xForm
-基于[Bootstrap@4.x][bootstrap]的[xForm][xForm]字段库。
+基于[Bootstrap@5.x][bootstrap]的[xForm][xForm]字段库。
 
 ## 已支持字段
 - checkbox - 多选
