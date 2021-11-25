@@ -5,7 +5,8 @@ import type {
   VNodeProps,
 } from 'vue'
 
-import { FieldConf } from './FieldConf'
+import { EnumRenderType } from './constant'
+import { Field } from './Field'
 import { FormField } from './FormField'
 
 export type DeepPartial<T, P = string | number | boolean | Function | Array<any>> = {
@@ -19,7 +20,7 @@ export type RawProps = VNodeProps & AnyProps
 export interface ModeGroup {
   title?: string;
   types: string[];
-  fieldConfs?: FieldConf[];
+  fields?: Field[];
 }
 
 export interface ModeConf {
@@ -59,13 +60,13 @@ export type RenderField = (field: FormField, options?: RenderOptions) => VNode
 export type UpdateField = (field: FormField, event: UpdateFieldEvent) => void
 
 export interface FormBuilderContext{
-  type: 'builder';
+  type: EnumRenderType.BUILDER;
   /** 渲染字段 */
   renderField: RenderField;
 }
 
 export interface FormDesignerContext{
-  type: 'designer';
+  type: EnumRenderType.DESIGNER;
   /** 渲染字段 */
   renderField: RenderField;
   /** 更新字段属性 */
@@ -76,7 +77,7 @@ export interface FormDesignerContext{
 }
 
 export interface FormViewerContext{
-  type: 'viewer';
+  type: EnumRenderType.VIEWER;
   /** 渲染字段 */
   renderField: RenderField;
   formatter: Formatter;
@@ -98,7 +99,6 @@ export type LogicRule = {
   name?: string;
   /** 目标值 */
   value?: any;
-  /* TODO: 比较的对象，例如字段的值、长度等 */
   target?: any;
   /** 子条件 */
   condition?: LogicRule[]

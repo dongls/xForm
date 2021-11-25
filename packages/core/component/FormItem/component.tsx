@@ -1,5 +1,4 @@
 import { 
-  ComputedRef,
   Ref,
   Slots,
   computed,
@@ -8,9 +7,10 @@ import {
   onBeforeUnmount,
   onMounted,
   provide,
-  reactive,
   useSlots,
   ComponentOptions,
+  watchEffect,
+  reactive
 } from 'vue'
 
 import { 
@@ -28,6 +28,7 @@ import {
   FormRenderContext,
   FormSchema,
   AnyProps,
+  EnumRenderType,
 } from '../../model'
 
 import { 
@@ -55,7 +56,7 @@ enum EnumComponentName {
 }
 
 function isBuilderContext(context: FormRenderContext): context is FormBuilderContext {
-  return null != context && context.type == 'builder'
+  return null != context && context.type == EnumRenderType.BUILDER
 }
 
 function renderLabelSuffix(suffix: string){
@@ -82,18 +83,20 @@ function renderContent(slots: Slots, field: FormField, context: FormRenderContex
   return createVNode(component, fillComponentProps(component, allProps, {}))
 }
 
-function normalizeField(props: Props): ComputedRef<FormField>{
+function normalizeField(props: Props){
   if(props.virtual !== true) return computed(() => props.field)
 
   // 为保证视图更新和数据格式一致性，这里使用reactive包裹虚拟字段
-  const virtualField = reactive(new FormField()) as FormField
-  return computed(() => {
+  const virtualField = reactive(FormField.create()) as FormField
+
+  onBeforeUnmount(watchEffect(() => {
     virtualField.type = props.type
     virtualField.name = props.name
     virtualField.title = props.title
     virtualField.required = props.required === true
-    return virtualField
-  })
+  }))
+
+  return computed(() => virtualField)
 }
 
 function createLabel(label: unknown, field: FormField, schema: Ref<FormSchema>){
@@ -182,6 +185,7 @@ function createComponent(name: EnumComponentName): ComponentOptions{
 
       return function(){
         const field = fieldRef.value
+        if(field == null) return null
   
         // 字段完全自定义时, 只显示用户自定义的内容
         if(props.custom || field?.conf?.custom === true) {
@@ -190,7 +194,7 @@ function createComponent(name: EnumComponentName): ComponentOptions{
         
         const showLabel = props.label !== false && field.attributes?.hideTitle !== true
         const label = showLabel ? createLabel(props.label, field, schema): null
-        const labelPosition = schema?.value?.labelPosition ?? LabelPosition.LEFT
+        const labelPosition = field.attributes?.labelPosition ?? schema?.value?.labelPosition ?? LabelPosition.LEFT
         const required = (
           isBuilderContext(context) && props.validation === false || props.disabled || field.disabled 
             ? false

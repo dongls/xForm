@@ -5,6 +5,7 @@
     <section class="xform-el-field-setting-prop">
       <header>标题：</header>
       <el-input size="small" placeholder="[必填] 请输入标题..." v-model="fieldRef.title"/>
+      <slot name="title"/>
     </section>
 
     <section class="xform-el-field-setting-prop" v-if="placeholder">

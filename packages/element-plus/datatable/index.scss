@@ -140,6 +140,12 @@
     }
   }
 
+  th.el-table__cell{
+    background-color: var(--el-background-color-base);
+    padding-top: 12px;
+      padding-bottom: 12px;
+  }
+
   .xform-el-datatable-add,
   .xform-el-datatable-edit{
     font-size: 14px;

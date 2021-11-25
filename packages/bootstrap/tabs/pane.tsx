@@ -2,18 +2,17 @@ import { defineComponent } from 'vue'
 
 import {
   FormField,
-  FieldConf,
+  Field,
   useRenderContext,
   useConstant,
 } from '@dongls/xform'
 
-const { SELECTOR, CLASS, PROPS, EnumValidateMode } = useConstant()
+const { SELECTOR, CLASS, PROPS, EnumValidateMode, EnumRenderType } = useConstant()
 
-export default FieldConf.create({
+export default Field.create({
   type: 'tabs.pane',
   title: '标签面板',
   custom: true,
-  scoped: true,
   build: defineComponent({
     name: 'xform-bs-tabs-pane',
     props: {
@@ -32,25 +31,24 @@ export default FieldConf.create({
     },
     setup(props) {
       return function () {
-        const context = useRenderContext()
+        const rc = useRenderContext()
         const fields = props.field.fields
         const value = props.field.value ?? {}
-        const inDesigner = props.behavior == 'designer'
+        const inDesigner = props.behavior == EnumRenderType.DESIGNER || rc.type == EnumRenderType.DESIGNER
 
         const content = (
-          props.behavior == 'designer' && fields.length == 0 
+          inDesigner && fields.length == 0 
             ? <p class={[CLASS.IS_EMPTY_TIP, 'xform-bs-empty-tip']}>请将左侧控件拖动到此处</p>
-            : fields.map((f) => context.renderField(inDesigner ? f : value[f.name], { parentProps: { disabled: props.disabled } }))
+            : fields.map((f) => rc.renderField(inDesigner ? f : value[f.name], { parentProps: { disabled: props.disabled } }))
         )
 
         const _p = {
           class: {
             'tab-pane': true,
-            [CLASS.DROPPABLE]: true,
-            [CLASS.SCOPE]: true
+            [CLASS.DROPPABLE]: inDesigner,
+            [CLASS.SCOPE]: inDesigner
           },
-          ['.' + PROPS.FIELD]: props.field,
-          ['.' + PROPS.SCOPE]: props.field
+          ['.' + PROPS.FIELD]: inDesigner ? props.field : undefined,
         }
 
         return <div {..._p}>{content}</div>

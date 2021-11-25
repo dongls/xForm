@@ -1,22 +1,41 @@
-import { FieldConf, ModeGroup } from '../model'
-import { flat, isEmpty, isNull } from '../util'
+import { Field, ModeGroup } from '../model'
+import { flat, isNull } from '../util'
 import { store } from './Store'
 
 const DELIMITER = '.'
 
 /** 注册字段 */
-export function registerField(...fcs: Array<FieldConf | FieldConf[]>){
+export function registerField(...fcs: Array<Field | Field[]>){
   flat(fcs).forEach(fc => {
-    if(fc instanceof FieldConf && fc.available){
-      store.fields.set(fc.type, fc)
-    }
+    if(!(fc instanceof Field) || fc.available !== true) return
+    store.fields.set(fc.type, fc)
   })
 }
 
-export function removeField(field: FieldConf){
-  const type = field.type
-  const exist = store.fields.get(type)
-  if(exist === field) store.fields.delete(type)
+/** 
+ * 根据传入的值删除指定字段
+ *  - 如果参数类型为`string`，强制删除对应的字段
+ *  - 如果参数类型为`Field`，只有已注册字段等于参数时才会删除
+ */
+export function removeField(field: string | Field){
+  if(field instanceof Field){
+    const type = field.type
+    const exist = store.fields.get(type)
+    if(exist === field) {
+      store.fields.delete(type)
+      return exist
+    }
+    
+    return null
+  }
+
+  if(typeof field === 'string') {
+    const exist = store.fields.get(field)
+    store.fields.delete(field)
+    return exist
+  }
+  
+  return null
 }
 
 /** 删除所有已注册字段 */
@@ -24,14 +43,27 @@ export function resetField(){
   store.fields.clear()
 }
 
-/** 检测是否已注册字段类型 */
-export function hasField(type: string){
-  return store.fields.has(type)
+/** 
+ * 检测是否已注册字段类型
+ *  - 如果参数类型为`string`，存在注册字段则返回`true`
+ *  - 如果参数类型为`Field`，只有已注册字段等于参数时才返回`true`
+ */
+export function hasField(field: string | Field){
+  if(field instanceof Field){
+    const exist = store.fields.get(field.type)
+    return exist === field
+  }
+
+  if(typeof field == 'string'){
+    return store.fields.has(field)
+  }
+
+  return false
 }
 
 /** 查找字段类型 */
 export function findField(path: string){
-  if(isNull(path) || isEmpty(path)) return null
+  if(typeof path != 'string' || path.length == 0) return null
 
   const index = path.indexOf(DELIMITER)
   const type = index >= 0 ? path.slice(0, index) : path
@@ -67,6 +99,6 @@ export function findModeGroup(mode?: string){
   if(data.length == 0) return []
 
   const groups = (typeof data[0] != 'object' ? [{ types: data }] : data) as ModeGroup[]
-  for(const g of groups) g.fieldConfs = g.types.map(findField).filter(f => f && f.available)
+  for(const g of groups) g.fields = g.types.map(findField).filter(f => f && f.available)
   return groups
 }

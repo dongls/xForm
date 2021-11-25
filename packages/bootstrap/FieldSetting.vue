@@ -5,6 +5,7 @@
     <section class="xform-bs-field-setting-prop">
       <header>标题：</header>
       <input type="text" class="form-control form-control-sm" placeholder="[必填] 请输入标题..." v-model="fieldRef.title">
+      <slot name="title"/>
     </section>
 
     <section class="xform-bs-field-setting-prop" v-if="placeholder">

@@ -1,7 +1,8 @@
 <template>
   <field-setting :field="field" :placeholder="false">
-    <template #attributes>
+    <template #title>
       <el-checkbox title="勾选则不显示标题" v-model="hideTitle">隐藏标题</el-checkbox>
+      <el-checkbox title="勾选则标题位于顶部" v-model="labelPosition">顶部对齐</el-checkbox>
     </template>
     <section class="xform-el-field-setting-prop">
       <header>表单布局：</header>
@@ -28,13 +29,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { FormField, useConstant } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH } from './common'
 import { useFieldProp } from '@common/util'
 import FieldSetting from '../FieldSetting.vue'
 
-const { EVENTS } = useConstant()
+const { EVENTS, LabelPosition } = useConstant()
 
 export default defineComponent({
   name: 'xform-el-datatable-setting',
@@ -63,7 +64,16 @@ export default defineComponent({
       updateColWidth, 
       getColumnWidth,
       layout: useFieldProp('layout', 'attributes'),
-      hideTitle: useFieldProp('hideTitle', 'attributes')
+      hideTitle: useFieldProp('hideTitle', 'attributes'),
+      labelPosition: computed({
+        get(){
+          return props.field.attributes?.labelPosition == LabelPosition.TOP
+        },
+        set(v: any){
+          const value = v === true ? LabelPosition.TOP : undefined
+          emit(EVENTS.UPDATE_FIELD, { prop: 'labelPosition', scope: 'attributes', value })
+        }
+      })
     }
   },
   components: {

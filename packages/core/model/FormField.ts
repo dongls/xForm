@@ -1,6 +1,6 @@
 import { isReactive, reactive } from 'vue'
 import { findField, getConfig } from '../api'
-import { ValidateFunc, FieldConf } from './FieldConf'
+import { ValidateFunc, Field } from './Field'
 import { Serializable } from './Serializable'
 import { LogicRule } from './common'
 import { FormScope } from './FormScope'
@@ -44,7 +44,6 @@ interface Validation {
   external: () => boolean | ValidateFunc;
 }
 
-// TODO: 支持显示颜色，标签
 interface Option { 
   value: string;
   label?: string;
@@ -55,6 +54,7 @@ interface Attributes{
   [prop: string]: any 
   // 是否隐藏标题
   hideTitle?: boolean
+  labelPosition?: string
 }
 
 const PRIVATE_PROPS_KEY = Symbol()
@@ -124,7 +124,7 @@ export class FormField extends FormScope{
 
   static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'value', 'state', 'parent', 'props']
 
-  static create(f: any){
+  static create(f?: unknown){
     return f instanceof FormField ? f : new FormField(f)
   }
 
@@ -132,7 +132,7 @@ export class FormField extends FormScope{
     super()
 
     const params = this.normalizeParams(o)
-    const init = o instanceof FieldConf
+    const init = o instanceof Field
     const fc = findField(params.type)
     const props: PrivateProps = { 
       value: undefined,
@@ -208,7 +208,7 @@ export class FormField extends FormScope{
   private normalizeParams(params: any): any{
     if(isNull(params)) return {}
 
-    return params instanceof FieldConf ? params.toParams() : params
+    return params instanceof Field ? params.toParams() : params
   }
 
   /**

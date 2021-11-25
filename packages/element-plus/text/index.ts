@@ -1,4 +1,4 @@
-import { FieldConf, isEmpty, useConstant } from '@dongls/xform'
+import { Field, isEmpty, useConstant } from '@dongls/xform'
 import icon from '@common/svg/text.svg'
 
 import text from './text.vue'
@@ -6,7 +6,7 @@ import setting from './setting.vue'
 
 const { BuiltInLogicOperator } = useConstant()
 
-export default FieldConf.create({
+export default Field.create({
   icon: icon,
   type: 'text',
   title: '单行文本',

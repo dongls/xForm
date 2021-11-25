@@ -10,7 +10,7 @@ import {
 import {
   useRenderContext,
   FormField,
-  FieldConf,
+  Field,
   normalizeClass,
   normalizeWheel,
   getHtmlElement,
@@ -22,7 +22,7 @@ import icon from '@common/svg/tabs.svg'
 import pane from './pane'
 import FieldSetting from '../FieldSetting.vue'
 
-const { CLASS, EnumValidityState, EVENTS } = useConstant()
+const { CLASS, EnumValidityState, EVENTS, EnumRenderType } = useConstant()
 const OFFSET_PROP = '__offset__'
 
 const setting = defineComponent({
@@ -157,6 +157,7 @@ const build = defineComponent({
   setup(props) {
     const current = ref(props.field.fields[0].name)
     const instance = getCurrentInstance()
+    const rc = useRenderContext()
 
     function chooseTab(field: FormField, event: Event) {
       event.preventDefault()
@@ -184,11 +185,11 @@ const build = defineComponent({
     onBeforeUnmount(stop)
 
     return function () {
-      const rc = useRenderContext()
       const field = props.field
       const value = field.value ?? {}
       const title = field.attributes.hideTitle === true ? null : <strong class="nav-tabs-title">{field.title}</strong>
       const disabled = props.disabled
+      const inDesigner = props.behavior == EnumRenderType.DESIGNER || rc.type == EnumRenderType.DESIGNER
 
       const tabs = field.fields.map((f) => {
         const className = {
@@ -200,7 +201,7 @@ const build = defineComponent({
       })
 
       const content = field.fields.map((f) => {
-        return rc.renderField(props.behavior == 'designer' ? f : value[f.name], {
+        return rc.renderField(inDesigner ? f : value[f.name], {
           parentProps: { disabled },
           renderContent(component, props){
             props.class = normalizeClass(props.class, {
@@ -234,7 +235,7 @@ const build = defineComponent({
   },
 })
 
-export default FieldConf.create({
+export default Field.create({
   type: 'tabs',
   title: '标签页',
   icon,

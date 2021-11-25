@@ -8,6 +8,6 @@ export {
   RawProps,
 } from './common'
 
-export { FieldConf } from './FieldConf'
+export { Field } from './Field'
 export { FormField } from './FormField'
 export { FormSchema } from './FormSchema'

@@ -112,19 +112,20 @@ export enum EnumComponent {
   VIEW = 'view'
 }
 
-export enum EnumDragEventType{
+export enum EnumDragEventType {
   DRAGOVER = 'dragover',
   DROP = 'drop'
 }
 
-export enum EnumDragHook{
+export enum EnumDragHook {
   DRAGOVER = 'onDragOver',
   DROP = 'onDrop',
 }
 
-export enum EnumBehavior{
+export enum EnumRenderType {
   DESIGNER = 'designer',
-  BUILDER = 'builder'
+  BUILDER = 'builder',
+  VIEWER = 'viewer'
 }
 
 export const BuiltInDefaultValueType = {

@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
 import { 
   FormField,
-  FieldConf,
+  Field,
   FormViewerContext,
   useRenderContext,
   useSchema,
@@ -61,7 +61,6 @@ const preview = defineComponent({
       const _p = {
         class: `${BODY_CLASS} ${CLASS.DROPPABLE} ${CLASS.SCOPE}`,
         ['.' + PROPS.FIELD]: props.field,
-        ['.' + PROPS.SCOPE]: props.field
       }
       
       return (
@@ -172,7 +171,7 @@ const view = defineComponent({
   }
 })
 
-export default FieldConf.create({
+export default Field.create({
   type: 'datatable',
   title: '数据表格',
   icon,

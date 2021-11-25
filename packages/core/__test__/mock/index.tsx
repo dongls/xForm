@@ -1,9 +1,9 @@
 import { defineComponent } from 'vue'
 import { isEmpty } from '../../util'
-import { FieldConf, FormField } from '../../model'
+import { Field, FormField } from '../../model'
 import { useApi } from '../../api/Exports'
 
-export function mockFieldConfs(){
+export function mockFields(){
   return [
     {
       type: 'text',
@@ -43,11 +43,11 @@ export function mockFieldConfs(){
       build: <div>build for select</div>,
       setting: <div>setting for select</div>,
     },
-  ].map(FieldConf.create)
+  ].map(Field.create)
 }
 
 export function mockOption(){
-  const fields = mockFieldConfs()
+  const fields = mockFields()
   return {
     fields,
     preset: {

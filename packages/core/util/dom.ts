@@ -79,5 +79,5 @@ export function getField(element: Element){
 
 /** 获取dom元素上绑定的scope */
 export function getScope(element: Element){
-  return getProperty<FormScope>(element, PROPS.SCOPE)
+  return getProperty<FormScope>(element, PROPS.SCOPE) ?? getProperty<FormScope>(element, PROPS.FIELD)
 }

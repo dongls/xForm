@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue'
-import { FieldConf, FormField, isEmpty, useConstant } from '@dongls/xform'
+import { Field, FormField, isEmpty, useConstant } from '@dongls/xform'
 
 import icon from '@common/svg/number.svg'
 import setting from './setting.vue'
@@ -36,7 +36,7 @@ const build = defineComponent({
   }
 })
 
-export default FieldConf.create({
+export default Field.create({
   icon,
   type: 'number',
   title: '数字',

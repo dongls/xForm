@@ -29,6 +29,6 @@ export {
   version,
 }
 
-export * from './model/exports'
+export * from './model/Exports'
 export * from './api/Exports'
 export default xForm

@@ -1,4 +1,4 @@
-import { FieldConf, isEmpty, useConstant } from '@dongls/xform'
+import { Field, isEmpty, useConstant } from '@dongls/xform'
 
 import icon from '@common/svg/number.svg'
 import setting from './setting.vue'
@@ -6,7 +6,7 @@ import number from './number.vue'
 
 const { BuiltInLogicOperator } = useConstant()
 
-export default FieldConf.create({
+export default Field.create({
   icon,
   type: 'number',
   title: '数字',

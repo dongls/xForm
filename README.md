@@ -7,7 +7,7 @@
 - [x] 支持[Element Plus][element]
 - [x] Bootstrap升级至5.x
 - [x] 设计器支持边缘滚动
-- [ ] `FieldConf`更名为`Field`
+- [x] `FieldConf`更名为`Field`
 
 ## 兼容性
 `xForm`使用了诸如`Proxy`、`Reflect`之类的新特性，因此需要浏览器至少实现了`ES2015`标准。需要注意的是，`xForm`**不支持IE浏览器，也没有相关的支持计划**。
@@ -21,7 +21,7 @@
 - 使用适合的UI库
 - 完全控制每一种字段，满足自身的需求
 
-当然这么做需要花费更多的时间，因此`xForm`提供了以下几个基础的字段库，可以自行参考或直接使用：
+当然这么做需要花费更多的时间，`xForm`提供了以下几个基础的字段库，可以自行参考或直接使用：
 - [Element Plus](packages/element-plus)
 - [Bootstrap](packages/bootstrap)
 

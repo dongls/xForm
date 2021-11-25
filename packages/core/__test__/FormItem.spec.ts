@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { mockOption } from './mock'
-import { FormField, FieldConf } from '../index'
+import { FormField, Field } from '../index'
 import { LabelPosition, XFORM_SCHEMA_PROVIDE_KEY } from '../model'
 import { createSchemaRef, registerField, reset } from '../api'
 
@@ -49,7 +49,7 @@ describe('FormItem slots: default', () => {
   test('slot is custom', () => {
     const content = '<div>slot is custom</div>'
     const text = 'build: slot is custom'
-    const conf = FieldConf.create({
+    const conf = Field.create({
       type: 'text',
       title: '单行文本',
       custom: true,

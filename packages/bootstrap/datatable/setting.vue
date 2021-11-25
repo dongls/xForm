@@ -1,9 +1,15 @@
 <template>
   <field-setting :field="field" :placeholder="false">
-    <template #attributes>
-      <div class="form-check form-check-inline">
-        <input :id="`${field.name}-hide-title`" :name="`${field.name}-hide-title`" type="checkbox" class="form-check-input" v-model="hideTitle">
-        <label class="form-check-label" :for="`${field.name}-hide-title`" title="勾选则不显示标题">隐藏标题</label>
+    <template #title>
+      <div :class="classes.titleProps">
+        <div class="form-check form-check-inline">
+          <input :id="`${field.name}-hide-title`" :name="`${field.name}-hide-title`" type="checkbox" class="form-check-input" v-model="hideTitle">
+          <label class="form-check-label" :for="`${field.name}-hide-title`" title="勾选则不显示标题">隐藏标题</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input :id="`${field.name}-label-position`" :name="`${field.name}-label-position`" type="checkbox" class="form-check-input" v-model="labelPosition">
+          <label class="form-check-label" :for="`${field.name}-label-position`" title="勾选则标题位于顶部">顶部对齐</label>
+        </div>
       </div>
     </template>
 
@@ -45,12 +51,12 @@
 <script lang="ts">
 import FieldSetting from '../FieldSetting.vue'
 
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { FormField, useConstant } from '@dongls/xform'
 import { DEF_COLUMN_WIDTH } from './common'
 import { useFieldProp } from '../util'
 
-const { EVENTS } = useConstant()
+const { EVENTS, LabelPosition } = useConstant()
 
 export default defineComponent({
   name: 'xform-bs-datatable-setting',
@@ -83,7 +89,16 @@ export default defineComponent({
       update, 
       DEF_COLUMN_WIDTH, 
       getColumnWidth,
-      hideTitle: useFieldProp('hideTitle', 'attributes')
+      hideTitle: useFieldProp('hideTitle', 'attributes'),
+      labelPosition: computed({
+        get(){
+          return props.field.attributes?.labelPosition == LabelPosition.TOP
+        },
+        set(v: any){
+          const value = v === true ? LabelPosition.TOP : undefined
+          emit(EVENTS.UPDATE_FIELD, { prop: 'labelPosition', scope: 'attributes', value })
+        }
+      })
     }
   },
   components: {
@@ -152,5 +167,11 @@ export default defineComponent({
   background-color: #f3f6f8;
   z-index: 1;
   border-right: 1px solid #ced4da;
+}
+</style>
+
+<style lang="scss" module="classes">
+.titleProps{
+  margin-top: 7px;
 }
 </style>

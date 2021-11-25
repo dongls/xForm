@@ -3,7 +3,7 @@ import './index.scss'
 import { defineComponent } from 'vue'
 import { 
   FormField,
-  FieldConf,
+  Field,
   FormViewerContext,
   useRenderContext,
   useSchema,
@@ -155,7 +155,7 @@ const view = defineComponent({
   }
 })
 
-export default FieldConf.create({
+export default Field.create({
   type: 'datatable',
   title: '数据表格',
   icon,

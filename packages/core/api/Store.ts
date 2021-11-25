@@ -1,7 +1,7 @@
 import { ComponentOptions } from 'vue'
 import { 
   BaseFormConfig,
-  FieldConf,
+  Field,
 } from '../model'
 
 import { isEmpty, isNull, genRandomStr } from '../util'
@@ -34,6 +34,6 @@ export function createConfig(){
 export const store = {
   preset: null as Preset,
   config: createConfig(),
-  fields: new Map<string, FieldConf>(),
+  fields: new Map<string, Field>(),
   slots: new Map<string, ComponentOptions>()
 }

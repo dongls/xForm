@@ -1,10 +1,11 @@
 import { ComponentInternalInstance, markRaw, VNode } from 'vue'
 import { VueComponent } from './common'
 import { PublicDragEvent } from './drag'
-import { isFunction, isNull, isPlainObject, toArray, toFunction } from '../util/lang'
+import { isFunction, isNull, isPlainObject, isString, toArray, toFunction } from '../util/lang'
 import { FormField } from './FormField'
 import { EnumDragHook, EnumValidateMode } from './constant'
 import { FormScope } from './FormScope'
+import { findField } from '../api'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Rule{}
@@ -66,19 +67,18 @@ export class FieldComponent{
 }
 
 /** 描述字段类型的类，xForm就是根据它决定每一个字段的行为 */
-export class FieldConf extends Hook{
-  /** 字段类型 */
+export class Field extends Hook{
+  /** 字段类型, 建议保证值唯一。`xForm`根据该属性存储和查找字段 */
   type: string
   /** 字段名称 */
   title: string
   /** 字段icon */
   icon?: string | Function
   // eslint-disable-next-line no-use-before-define
-  alias: FieldConf
+  alias: string | Field
 
   /** 可接受的子字段类型，为空则接受所有字段 */
   accept?: string[]
-  scoped?: boolean
   custom?: boolean
   /** 验证器，用于验证表单值 */
   validator?: Validator
@@ -90,21 +90,24 @@ export class FieldConf extends Hook{
 
   /** 依赖的子组件 */
   // eslint-disable-next-line no-use-before-define
-  dependencies: FieldConf[]
+  dependencies: Field[]
   operators: false | string[]
 
   constructor(options: any = {}, from?: Symbol){
-    if(from != CONSTRUCTOR_SIGN) console.warn('use `FieldConf.create` instead of `new FieldConf`')
+    if(from != CONSTRUCTOR_SIGN) console.warn('use `Field.create` instead of `new Field`')
 
     super(options)
 
     this.type = options.type
     this.title = options.title
     this.icon = options.icon
-    this.alias = options.alias instanceof FieldConf ? options.alias : null
+    this.alias = (
+      options.alias instanceof Field 
+        ? options.alias 
+        : isString(options.alias) ? options.alias : null
+    )
 
     this.accept = Array.isArray(options.accept) ? options.accept : null
-    this.scoped = options.scoped === true
     this.custom = options.custom === true
     this.validator = options.validator
 
@@ -122,7 +125,7 @@ export class FieldConf extends Hook{
    * - type 
    * @returns {boolean} 
    */
-  get available(): boolean{
+  get available() {
     return this.type != null
   }
 
@@ -134,21 +137,24 @@ export class FieldConf extends Hook{
   }
 
   /** 
-   * 建议统一使用该方法创建`FieldConf`实例, 
+   * 建议统一使用该方法创建`Field`实例, 
    * 
    * 通过该方法创建的实例会使用Proxy代理属性访问
    * 例如用于配置alias，可直接访问目标的属性
    */
-  static create(options: Partial<FieldConf>){
-    return new Proxy(new FieldConf(options, CONSTRUCTOR_SIGN), {
+  static create(options: Partial<Field>){
+    return new Proxy(new Field(options, CONSTRUCTOR_SIGN), {
       get(target, prop, receiver){
         const r = Reflect.get(target, prop, receiver)
+        if(r != null) return r
 
-        return (
-          r == null && target.alias instanceof FieldConf
-            ? Reflect.get(target.alias, prop, target.alias) 
-            : r
+        const alias = (
+          target.alias instanceof Field 
+            ? target.alias
+            : isString(target.alias) ? findField(target.alias) : null
         )
+
+        return alias == null ? r : Reflect.get(alias, prop, target.alias) 
       }
     })
   }

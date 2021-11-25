@@ -1,4 +1,4 @@
-import { FieldConf, isEmpty, useConstant } from '@dongls/xform'
+import { Field, isEmpty, useConstant } from '@dongls/xform'
 import icon from '@common/svg/textarea.svg'
 
 import textarea from './textarea.vue'
@@ -6,7 +6,7 @@ import setting from './setting.vue'
 
 const { BuiltInLogicOperator } = useConstant()
 
-export default FieldConf.create({
+export default Field.create({
   icon: icon,
   type: 'textarea',
   title: '多行文本',

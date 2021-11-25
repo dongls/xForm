@@ -16,7 +16,7 @@ import {
 
 import { 
   CLASS,
-  EnumBehavior,
+  EnumRenderType,
   EnumComponent,
   EnumDragMode,
   ModeGroup,
@@ -26,7 +26,7 @@ import {
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_SCHEMA_PROVIDE_KEY,
   FormField, 
-  FieldConf,
+  Field,
   FormDesignerContext,
   FormSchema,
   RenderOptions,
@@ -85,7 +85,7 @@ function shwoSelectedField(instance: ComponentInternalInstance){
  * 3. svg
  * 4. css class
  */
-function renderIcon(fc: FieldConf){
+function renderIcon(fc: Field){
   const icon = typeof fc.icon == 'function' ? fc.icon(fc) : fc.icon
 
   if(isVNode(icon)) return icon
@@ -181,7 +181,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
   function renderFieldPanel(groups: ModeGroup[]){
     return groups.map((group, i) => {
       const title = group.title ? <h3>{group.title}</h3> : null
-      const fcs = group.fieldConfs
+      const fcs = group.fields
       const types = fcs.length == 0 ? <div class="xform-is-unknown">请先注册该分组下的字段类型</div> : fcs.map(fc => {
         const props = {
           'class': `${CLASS.FIELD} xform-template-${fc.type} ${CLASS.DRAGGABLE}`,
@@ -211,7 +211,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
    * 根据字段创建对应的设置组件，按以下顺序逐次匹配：
    * 1. 检索是否有名为`setting_name_[name]`的slot
    * 2. 检索是否有名为`setting_type_[type]`的slot
-   * 3. 检索字段对应的FieldConf中配置的组件
+   * 3. 检索字段对应的`Field`中配置的组件
    */
   function renderFieldSetting(field: FormField){
     if(null == field || null == field.conf) return <p class="xform-setting-tip">点击字段设置属性</p>
@@ -302,7 +302,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
    * 根据字段渲染对应的预览组件，按以下顺序逐次匹配：
    * 1. 检索是否有名为`preview_name_[name]`的slot
    * 2. 检索是否有名为`preview_type_[type]`的slot
-   * 3. 检索字段对应的`FieldConf`中配置的`preview`或`build`组件
+   * 3. 检索字段对应的`Field`中配置的`preview`或`build`组件
    */
   function renderContent(field: FormField, options: RenderOptions){
     const slots = instance.slots
@@ -318,7 +318,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     const component = getFieldComponent(field, EnumComponent.PREVIEW, mode) || getFieldComponent(field, EnumComponent.BUILD, mode)
     if(component == null) return null
 
-    const props = fillComponentProps(component, { field, behavior: EnumBehavior.DESIGNER, disabled })
+    const props = fillComponentProps(component, { field, disabled })
     const create = isFunction(options?.renderContent) ? options.renderContent : h
     return create(component, props)
   }
@@ -344,12 +344,10 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
         'xform-droppable': true,
         ['xform-preview-' + field.type]: true,
         'xform-is-selected': field == selectedField.value,
-        [CLASS.SCOPE]: field.conf?.scoped,
         'xform-is-preview-hidden': field.hidden
       },
       'key': field.uid,
       ['.' + PROPS.FIELD]: field,
-      ['.' + PROPS.SCOPE]: field.conf?.scoped === true ? field : undefined
     }
 
     if(__IS_TEST__ === true){
@@ -398,7 +396,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     updateSchema,
     chooseField,
     context: {
-      type: 'designer',
+      type: EnumRenderType.DESIGNER,
       renderField,
       updateField,
       chooseField,

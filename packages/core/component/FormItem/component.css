@@ -9,7 +9,7 @@
 
 .xform-builder .xform-item,
 .xform-viewer .xform-item{
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .xform-item.xform-is-required .xform-item-label{

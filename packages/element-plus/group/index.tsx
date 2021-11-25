@@ -3,7 +3,7 @@ import { defineComponent, ref } from 'vue'
 
 import { 
   FormField,
-  FieldConf, 
+  Field, 
   useRenderContext,
   useConstant,
 } from '@dongls/xform'
@@ -11,7 +11,7 @@ import {
 import icon from '@common/svg/group.svg'
 import setting from './setting.vue'
 
-const { SELECTOR, CLASS, EnumBehavior, PROPS, EnumValidateMode, EnumValidityState } = useConstant()
+const { SELECTOR, CLASS, EnumRenderType, PROPS, EnumValidateMode, EnumValidityState } = useConstant()
 const GROUP_LIST_CLASS = 'xform-el-group-list'
 const GROUP_LIST_SELECTOR = `.${GROUP_LIST_CLASS}`
 
@@ -65,12 +65,12 @@ const build = defineComponent({
   },
   setup(props){
     const { collasped, renderHeader } = useHeader()
-    const { renderField } = useRenderContext()
+    const rc = useRenderContext()
 
     return function(){
       const value = props.field.value
       const fields = props.field.fields
-      const inDesigner = props.behavior == EnumBehavior.DESIGNER
+      const inDesigner = props.behavior == EnumRenderType.DESIGNER || rc.type == EnumRenderType.DESIGNER
       const message = props.field.validation.message
       const disabled = props.disabled
 
@@ -88,17 +88,16 @@ const build = defineComponent({
       )
 
       const content = fields.map(f => {
-        return renderField(inDesigner ? f : value[f.name], { parentProps: { disabled } })
+        return rc.renderField(inDesigner ? f : value[f.name], { parentProps: { disabled } })
       })
 
       const _bp = {
         class: {
           [GROUP_LIST_CLASS]: true,
           [CLASS.DROPPABLE]: inDesigner,
-          [CLASS.SCOPE]: true
+          [CLASS.SCOPE]: inDesigner
         },
         ['.' + PROPS.FIELD]: inDesigner ? props.field : undefined,
-        ['.' + PROPS.SCOPE]: props.field
       }
 
       const slots = {
@@ -155,7 +154,7 @@ const view = defineComponent({
   }
 })
 
-export default FieldConf.create({
+export default Field.create({
   icon: icon,
   type: 'group',
   title: '分组',

@@ -10,13 +10,14 @@ import {
 
 import { 
   EnumComponent,
-  XFORM_CONTEXT_PROVIDE_KEY,
-  XFORM_SCHEMA_PROVIDE_KEY,
-  FormField, 
+  EnumRenderType,
+  FormField,
   FormSchema,
   FormViewerContext,
+  Formatter,
   RenderOptions,
-  Formatter
+  XFORM_CONTEXT_PROVIDE_KEY,
+  XFORM_SCHEMA_PROVIDE_KEY,
 } from '../../model'
 
 import { 
@@ -67,7 +68,7 @@ function useRenderContext(instance: ComponentInternalInstance, formatter: Format
   }
 
   return {
-    type: 'viewer',
+    type: EnumRenderType.VIEWER,
     renderField,
     formatter
   } as FormViewerContext

@@ -10,7 +10,7 @@ import {
 import {
   useRenderContext,
   FormField,
-  FieldConf,
+  Field,
   useConstant,
 } from '@dongls/xform'
 
@@ -19,7 +19,7 @@ import icon from '@common/svg/tabs.svg'
 import pane from './pane'
 import FieldSetting from '../FieldSetting.vue'
 
-const { CLASS, EnumValidityState, EVENTS } = useConstant()
+const { CLASS, EnumValidityState, EVENTS, EnumRenderType } = useConstant()
 
 const setting = defineComponent({
   name: 'xform-el-tabs-setting',
@@ -131,10 +131,12 @@ const build = defineComponent({
       const value = field.value ?? {}
       const disabled = props.disabled
       const showTitle = field.attributes.hideTitle !== true
+      const inDesigner = props.behavior == EnumRenderType.DESIGNER || rc.type == EnumRenderType.DESIGNER
+
       const panes = field.fields.map(f => {
         return (
           <el-tab-pane label={f.title} name={f.name} lazy>{
-            rc.renderField(props.behavior == 'designer' ? f : value[f.name], {
+            rc.renderField(inDesigner ? f : value[f.name], {
               parentProps: { disabled },
               renderPreivew: (c, p, ch, content) => content()
             })
@@ -166,7 +168,7 @@ const build = defineComponent({
   },
 })
 
-export default FieldConf.create({
+export default Field.create({
   type: 'tabs',
   title: '标签页',
   icon,

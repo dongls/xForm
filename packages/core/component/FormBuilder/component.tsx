@@ -23,6 +23,7 @@ import {
   FormBuilderContext,
   FormSchema,
   EVENTS,
+  EnumRenderType,
 } from '../../model'
 
 import {
@@ -108,7 +109,7 @@ function useRenderContext(instance: ComponentInternalInstance){
   }
 
   return {
-    type: 'builder',
+    type: EnumRenderType.BUILDER,
     renderField,
   } as FormBuilderContext
 }
