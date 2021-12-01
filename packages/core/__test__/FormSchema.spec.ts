@@ -1,4 +1,5 @@
 import { createSchema } from '../api'
+import { getPrivateProps } from '../util/lang'
 
 test('validate', async () => {
   const schema = createSchema({
@@ -19,7 +20,5 @@ test('validate', async () => {
 
 test('FormSchema: private props', () => {
   const schema = createSchema()
-  
-  expect((schema as any).props).toBeInstanceOf(Function)
-  expect(() => (schema as any).props()).toThrow()
+  expect(() => getPrivateProps(schema, Symbol())).toThrow()
 })

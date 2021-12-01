@@ -17,15 +17,15 @@
       <header>表单布局：</header>
       <div class="btn-group" role="group">
         <button
-          type="button" 
-          :class="['btn', 'btn-sm', 'btn-primary', field.attributes.layout == 'modal' ? 'active' : null]"
-          @click="update('layout', 'modal', 'attributes')"
+          type="button"
+          class="btn btn-sm btn-primary"
+          @click="layout = 'modal'" :class="{'active': layout == 'modal'}"
           title="选中则表单在弹出模态框中编辑"
         >窗口</button>
         <button 
-          type="button" 
-          :class="['btn', 'btn-sm', 'btn-primary', field.attributes.layout == 'inline' ? 'active' : null]"
-          @click="update('layout', 'inline', 'attributes')"
+          type="button"
+          class="btn btn-sm btn-primary"
+          @click="layout = 'inline'" :class="{'active': layout == 'inline'}"
           title="选中则表单在表格中直接编辑"
         >行内</button>
       </div>
@@ -33,7 +33,7 @@
     <section class="xform-bs-field-setting-prop">
       <header>列宽：</header>
       <div class="xform-bs-datatable-column" v-for="column in field.fields" :key="column.uid">
-        <div class="xform-bs-datatable-column-bar" :style="{ width: `${getColumnWidth(column.name) ?? DEF_COLUMN_WIDTH}px` }"/>
+        <div :class="classes.columnBg" :style="{ width: `${getColumnWidth(column.name) ?? DEF_COLUMN_WIDTH}px` }"/>
         <label>{{ column.title }}</label>
         <input 
           type="number" min="0"
@@ -57,6 +57,7 @@ import { DEF_COLUMN_WIDTH } from './common'
 import { useFieldProp } from '../util'
 
 const { EVENTS, LabelPosition } = useConstant()
+const PROP_SCOPE = 'attributes'
 
 export default defineComponent({
   name: 'xform-bs-datatable-setting',
@@ -73,11 +74,7 @@ export default defineComponent({
       const value = parseFloat(target.value)
       const colWidths = props.field.attributes.colWidths
       colWidths[key] = isNaN(value) ? null : value
-      emit(EVENTS.UPDATE_FIELD, { prop: 'colWidths', value: colWidths, scope: 'attributes' })
-    }
-
-    function update(prop: string, value: string, scope?: string){
-      emit(EVENTS.UPDATE_FIELD, { value, prop, scope })
+      emit(EVENTS.UPDATE_FIELD, { prop: 'colWidths', value: colWidths, scope: PROP_SCOPE })
     }
 
     function getColumnWidth(name: string){
@@ -85,18 +82,18 @@ export default defineComponent({
     }
 
     return { 
+      DEF_COLUMN_WIDTH,
       updateColWidth, 
-      update, 
-      DEF_COLUMN_WIDTH, 
       getColumnWidth,
-      hideTitle: useFieldProp('hideTitle', 'attributes'),
+      hideTitle: useFieldProp('hideTitle', PROP_SCOPE),
+      layout: useFieldProp('layout', PROP_SCOPE),
       labelPosition: computed({
         get(){
           return props.field.attributes?.labelPosition == LabelPosition.TOP
         },
         set(v: any){
           const value = v === true ? LabelPosition.TOP : undefined
-          emit(EVENTS.UPDATE_FIELD, { prop: 'labelPosition', scope: 'attributes', value })
+          emit(EVENTS.UPDATE_FIELD, { prop: 'labelPosition', scope: PROP_SCOPE, value })
         }
       })
     }
@@ -158,8 +155,10 @@ export default defineComponent({
     margin-top: 5px;
   }
 }
+</style>
 
-.xform-bs-datatable-column-bar{
+<style lang="scss" module="classes">
+.columnBg{
   position: absolute;
   left: 0;
   top: 0;
@@ -168,9 +167,7 @@ export default defineComponent({
   z-index: 1;
   border-right: 1px solid #ced4da;
 }
-</style>
 
-<style lang="scss" module="classes">
 .titleProps{
   margin-top: 7px;
 }

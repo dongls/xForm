@@ -184,7 +184,7 @@ const build = defineComponent({
 
     onBeforeUnmount(stop)
 
-    return function () {
+    return function() {
       const field = props.field
       const value = field.value ?? {}
       const title = field.attributes.hideTitle === true ? null : <strong class="nav-tabs-title">{field.title}</strong>

@@ -73,13 +73,13 @@ export class Field extends Hook{
   /** 字段名称 */
   title: string
   /** 字段icon */
-  icon?: string | Function
+  icon?: string | Function | VNode
   // eslint-disable-next-line no-use-before-define
-  alias: string | Field
+  alias?: string | Field
 
   /** 可接受的子字段类型，为空则接受所有字段 */
   accept?: string[]
-  custom?: boolean
+  custom: boolean
   /** 验证器，用于验证表单值 */
   validator?: Validator
 
@@ -91,7 +91,7 @@ export class Field extends Hook{
   /** 依赖的子组件 */
   // eslint-disable-next-line no-use-before-define
   dependencies: Field[]
-  operators: false | string[]
+  operators?: false | string[]
 
   constructor(options: any = {}, from?: Symbol){
     if(from != CONSTRUCTOR_SIGN) console.warn('use `Field.create` instead of `new Field`')

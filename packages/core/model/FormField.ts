@@ -67,7 +67,6 @@ const PRIVATE_PROPS_KEY = Symbol()
  */
 export class FormField extends FormScope{
   [prop: string]: any;
-  private props: (key: Symbol) => PrivateProps
 
   /** 创建时自动生成，全局唯一，不可修改 */
   uid: string
@@ -170,9 +169,9 @@ export class FormField extends FormScope{
       writable: false,
       configurable: false
     })
-    // 创建私有属性
-    this.props = createPrivateProps<PrivateProps>(PRIVATE_PROPS_KEY, props)
 
+    // 创建私有属性
+    createPrivateProps<PrivateProps>(this, PRIVATE_PROPS_KEY, props)
     // 调用onCreate hook, 可在此初始化字段
     isFunction(fc?.onCreate) && fc.onCreate(this, params, init)
   }

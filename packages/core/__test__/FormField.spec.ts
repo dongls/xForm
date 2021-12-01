@@ -1,4 +1,5 @@
 import { FormField } from '../model'
+import { getPrivateProps } from '../util/lang'
 
 test('FormField: rest params', () => {
   const o = {
@@ -48,13 +49,11 @@ test('FormField: clone', () => {
 })
 
 test('FormField: private props', () => {
-  const o = {
+  const field = new FormField({
     name: 'field_a',
     type: 'text',
-  }
-
-  const field = new FormField(o)
-  expect((field as any).props).toBeInstanceOf(Function)
-  expect(() => (field as any).props()).toThrow()
+  })
+  
+  expect(() => getPrivateProps(field, Symbol())).toThrow()
 })
 

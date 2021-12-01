@@ -139,10 +139,15 @@ export class InternalDragContext{
     const ghost = getHtmlElement(instance.refs, 'ghost')
     ghost.style.transform = `translate(${left}px, ${top}px)`
     
-    this.directionY = event.clientY < this.clientY ? EnumDragDirection.UP : EnumDragDirection.DOWN
-    this.directionX = event.clientX < this.clientX ? EnumDragDirection.LEFT : EnumDragDirection.RIGHT
-    this.clientY = event.clientY
-    this.clientX = event.clientX
+    if(this.clientY != event.clientY){
+      this.directionY = event.clientY < this.clientY ? EnumDragDirection.UP : EnumDragDirection.DOWN
+      this.clientY = event.clientY
+    }
+
+    if(this.clientX != event.clientX){
+      this.directionX = event.clientX < this.clientX ? EnumDragDirection.LEFT : EnumDragDirection.RIGHT
+      this.clientX = event.clientX
+    }
   }
 
   reset(instance: ComponentInternalInstance){

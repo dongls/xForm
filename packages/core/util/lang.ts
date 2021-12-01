@@ -249,17 +249,28 @@ export function isRaw(value: object){
   return (value as any)['__v_skip'] === true
 }
 
-export function createPrivateProps<T>(pkey: Symbol, props: T){
-  return function(this: object, key: Symbol){
-    if(key !== pkey) {
-      const name = this?.constructor?.name
-      const prefix = name ? `${name}.` : ''
-      
-      throw new Error(`\`${prefix}props\` is a private function.`)
+const PRIV_SYMBOL = __IS_DEV__ ? Symbol('private props') : Symbol()
+export function createPrivateProps<T>(instance: any, pkey: Symbol, props: T){
+  Reflect.defineProperty(instance, PRIV_SYMBOL, {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: function(this: object, key: Symbol){
+      if(key !== pkey) {
+        const name = this?.constructor?.name
+        const prefix = name ? `${name}.` : ''
+        
+        throw new Error(`\`${prefix}props\` is a private function.`)
+      }
+
+      return props
     }
-    
-    return props
-  }
+  })
+}
+
+export function getPrivateProps<T>(instance: any, pkey: Symbol){
+  const fn = Reflect.get(instance, PRIV_SYMBOL)
+  return isFunction(fn) ? fn(pkey) as T : null
 }
 
 export function freeze<T, P extends boolean>(object: T, deep?: P): P extends true ? DeepReadonly<T> : Readonly<T>{

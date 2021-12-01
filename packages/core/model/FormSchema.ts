@@ -1,6 +1,7 @@
 import {
   clonePlainObject,
   createPrivateProps,
+  getPrivateProps,
   isEmpty,
   isFunction,
   isNull,
@@ -78,7 +79,6 @@ function validateFields(fields: FormField[]): Promise<SchemaValidResult[]> {
 
 export class FormSchema extends FormScope {
   [prop: string]: any
-  private props: (key: Symbol) => PrivateProps
 
   parent: FormScope = null
   fields: FormField[] = []
@@ -88,7 +88,7 @@ export class FormSchema extends FormScope {
   labelPosition?: string
   viewerPlaceholder?: string
 
-  static [Serializable.EXCLUDE_PROPS_KEY] = ['external', 'parent', 'props']
+  static [Serializable.EXCLUDE_PROPS_KEY] = ['external', 'parent']
 
   static create(data?: any, model?: any){
     return new FormSchema(isObject(data) ? data : {}, model, CONSTRUCTOR_SIGN)
@@ -100,10 +100,6 @@ export class FormSchema extends FormScope {
     super()
     
     const withModel = model != null
-    const props: PrivateProps = { 
-      callbacks: [],
-      initModel: model
-    }
 
     this.labelSuffix = o.labelSuffix
     this.labelPosition = o.labelPosition
@@ -114,8 +110,11 @@ export class FormSchema extends FormScope {
       return field
     })
 
-    this.props = createPrivateProps(PRIVATE_PROPS_KEY, props)
     mixinRestParams(this, o)
+    createPrivateProps<PrivateProps>(this, PRIVATE_PROPS_KEY, { 
+      callbacks: [],
+      initModel: model
+    })
   }
 
   get model(): any {
@@ -132,7 +131,7 @@ export class FormSchema extends FormScope {
   registerExternalField(field: FormField) {
     const index = this.external.indexOf(field)
     if (index < 0) {
-      const props = this.props(PRIVATE_PROPS_KEY)
+      const props = getPrivateProps<PrivateProps>(this, PRIVATE_PROPS_KEY)    
       this.external.push(field)
       field.setParent(this)
       field.setValue(props.initModel?.[field.name])
@@ -175,7 +174,9 @@ export class FormSchema extends FormScope {
   }
 
   useEffect(callback: Callback) {
-    const callbacks = this.props(PRIVATE_PROPS_KEY).callbacks
+    const props = getPrivateProps<PrivateProps>(this, PRIVATE_PROPS_KEY)    
+    const callbacks = props.callbacks
+
     if(callbacks.indexOf(callback) < 0){
       callbacks.push(callback)
     }
@@ -196,7 +197,7 @@ export class FormSchema extends FormScope {
   }
 
   dispatch(action: Action) {
-    const callbacks = this.props(PRIVATE_PROPS_KEY).callbacks
-    callbacks.forEach(callback => callback(action))
+    const props = getPrivateProps<PrivateProps>(this, PRIVATE_PROPS_KEY)    
+    props.callbacks.forEach(callback => callback(action))
   }
 }
