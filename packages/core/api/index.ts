@@ -26,6 +26,7 @@ import { resetField } from './Field'
 export {
   findElementFromPoint,
   findElementsFromPoint,
+  genEventName,
   genRandomStr,
   getField,
   getHtmlElement,

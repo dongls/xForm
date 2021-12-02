@@ -9,6 +9,7 @@ import {
 } from '@dongls/xform'
 
 import icon from '@common/svg/group.svg'
+import { BUTTON_CLEAR } from '@common/button'
 import setting from './setting.vue'
 
 const { SELECTOR, CLASS, EnumRenderType, PROPS, EnumValidateMode, EnumValidityState } = useConstant()
@@ -159,6 +160,7 @@ export default Field.create({
   type: 'group',
   title: '分组',
   custom: true,
+  buttons: [BUTTON_CLEAR, Field.BUTTON_COPY, Field.BUTTON_REMOVE],
   preview: build,
   setting,
   build,

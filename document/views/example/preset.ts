@@ -156,8 +156,8 @@ export function useBuilderDefaultSlot(target: string, state: any){
 export function useConfirm(target: string): ConfirmFunc{
   const current = config.get(target)
   const fn = current.confirm
-  return typeof fn == 'function' ? fn : function(field){
-    return Promise.resolve(window.confirm(`确定要删除字段[${field.title}]?`))
+  return typeof fn == 'function' ? fn : function(message: string, title: string){
+    return Promise.resolve(window.confirm(title))
   }
 }
 

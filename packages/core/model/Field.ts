@@ -1,11 +1,12 @@
 import { ComponentInternalInstance, markRaw, VNode } from 'vue'
-import { VueComponent } from './common'
+import { Icon, Button, VueComponent } from './common'
 import { PublicDragEvent } from './drag'
 import { isFunction, isNull, isPlainObject, isString, toArray, toFunction } from '../util/lang'
 import { FormField } from './FormField'
 import { EnumDragHook, EnumValidateMode } from './constant'
 import { FormScope } from './FormScope'
 import { findField } from '../api'
+import { BUTTON_COPY, BUTTON_REMOVE } from './Button'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Rule{}
@@ -73,7 +74,9 @@ export class Field extends Hook{
   /** 字段名称 */
   title: string
   /** 字段icon */
-  icon?: string | Function | VNode
+  icon?: Icon
+  /** 字段按钮，用在设计器中 */
+  buttons?: Button[]
   // eslint-disable-next-line no-use-before-define
   alias?: string | Field
 
@@ -101,6 +104,8 @@ export class Field extends Hook{
     this.type = options.type
     this.title = options.title
     this.icon = options.icon
+    this.buttons = toArray(options.buttons, null)
+
     this.alias = (
       options.alias instanceof Field 
         ? options.alias 
@@ -129,13 +134,6 @@ export class Field extends Hook{
     return this.type != null
   }
 
-  toParams(){
-    return {
-      type: this.type,
-      title: this.title
-    }
-  }
-
   /** 
    * 建议统一使用该方法创建`Field`实例, 
    * 
@@ -161,5 +159,15 @@ export class Field extends Hook{
 
   static createFieldComponent(o: unknown){
     return new FieldComponent(o)
+  }
+
+  static BUTTON_COPY = BUTTON_COPY
+  static BUTTON_REMOVE = BUTTON_REMOVE
+
+  toParams(){
+    return {
+      type: this.type,
+      title: this.title
+    }
   }
 }

@@ -34,7 +34,7 @@ function getLocalSchema(withModel: boolean){
 
     return createSchemaRef(schema, withModel ? getLocalModel() : null)
   } catch (error) {
-    __IS_DEV__ && console.warn(error.message)
+    console.warn('[xForm]: ' + error.message)
     const schema = createSchemaRef(createDefaultSchema())
     saveToLocalSchema(schema.value)
     return schema

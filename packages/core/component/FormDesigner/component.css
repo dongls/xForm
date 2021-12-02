@@ -180,7 +180,12 @@
   z-index: 10;
 }
 
-.xform-preview-operate > button{
+.xform-preview-buttons{
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.xform-preview-buttons > button{
   width: 26px;
   height: 26px;
   padding: 0;
@@ -193,10 +198,16 @@
   cursor: pointer;
 }
 
-.xform-preview-operate > button > svg{
+.xform-preview-buttons .xform-icon-is-svg svg{
   width: 16px;
   height: 16px;
   fill: #fff;
+  margin: 0 auto;
+}
+
+.xform-preview-buttons .xform-icon-is-img{
+  width: 16px;
+  height: 16px;
 }
   
 .xform-designer-ghost{

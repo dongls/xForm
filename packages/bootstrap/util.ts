@@ -6,7 +6,7 @@ export {
   useFieldProp,
   useDefaultValueApi,
   useOptions
-} from '@common/util/index'
+} from '@common/util'
 
 const { EVENTS } = useConstant()
 

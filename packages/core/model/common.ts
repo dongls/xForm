@@ -1,5 +1,6 @@
 import type { 
   Component,
+  ComponentInternalInstance,
   ComponentOptions,
   VNode,
   VNodeProps,
@@ -8,6 +9,7 @@ import type {
 import { EnumRenderType } from './constant'
 import { Field } from './Field'
 import { FormField } from './FormField'
+import { FormSchema } from './FormSchema'
 
 export type DeepPartial<T, P = string | number | boolean | Function | Array<any>> = {
   [K in keyof T]?: T[K] extends P ? T[K] : DeepPartial<T[K]> ;
@@ -102,4 +104,27 @@ export type LogicRule = {
   target?: any;
   /** 子条件 */
   condition?: LogicRule[]
+}
+
+export interface FormDesignerApi {
+  chooseField: (field: FormField) => void;
+  updateSchema: (schema?: FormSchema) => void;
+  resetSelectedField: () => void
+}
+
+export interface FormBuilderApi {
+  validate: () => Promise<{valid: boolean, model?: any}>;
+  reset: () => void;
+  resetValidate: () => void
+}
+
+export interface FormViewerApi {
+  formatter: Formatter
+}
+
+export type Icon = string | VNode | ((conf: Field, field?: FormField) => any)
+export type Button = {
+  icon: Icon,
+  title: string,
+  handle: (field: FormField, api: FormDesignerApi, instance: ComponentInternalInstance) => void
 }

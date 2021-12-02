@@ -2,8 +2,8 @@ import { App } from 'vue'
 import { FormOption } from './model'
 import { use } from './api'
 
-import FormDesigner, { FormDesignerApi } from './component/FormDesigner/component'
-import FormBuilder, { FormBuilderApi } from './component/FormBuilder/component'
+import FormDesigner from './component/FormDesigner/component'
+import FormBuilder from './component/FormBuilder/component'
 import FormViewer from './component/FormViewer/component'
 import FormItem from './component/FormItem/component'
 
@@ -23,8 +23,6 @@ const xForm = {
 }
 
 export {
-  FormBuilderApi,
-  FormDesignerApi,
   install,
   version,
 }

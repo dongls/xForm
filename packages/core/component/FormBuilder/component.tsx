@@ -47,12 +47,6 @@ interface Props{
   disabled: boolean;
 }
 
-export interface FormBuilderApi{
-  validate: () => Promise<{valid: boolean, model?: any}>;
-  reset: () => void;
-  resetValidate: () => void
-}
-
 function renderUnknown(field: FormField){
   console.warn(`[xform] field not implement build component: ${field.title}(${field.name})`)
   return <p class="xform-is-unknown">暂不支持的字段类型</p>

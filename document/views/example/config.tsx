@@ -3,7 +3,7 @@ import { FormField, reset } from '@dongls/xform'
 import { toTrue } from '@document/util/common'
 import { Options as NotifyOptions } from '@document/component/Notification/index'
 
-export type ConfirmFunc = (field: FormField) => Promise<boolean>
+export type ConfirmFunc = (message: string, title: string) => Promise<boolean>
 export type NotifyFunc = (o: NotifyOptions) => void
 
 type DesignerSlotState = {
@@ -195,10 +195,10 @@ r({
       </div>
     )
   },
-  confirm(field){
+  confirm(message, title){
     return getElementPlus().ElMessageBox.confirm(
-      `点击<strong>确定</strong>将<strong danger>删除</strong>字段<strong info>${field.title}</strong>!`,
-      '确定要删除该字段?',
+      message,
+      title,
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

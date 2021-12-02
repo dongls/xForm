@@ -90,7 +90,7 @@ export default defineComponent({
       default: null
     }
   },
-  setup(props){
+  setup(props, { expose }){
     function formatter(field: FormField){
       const fmt = isFunction(props.formatter) ? props.formatter : getConfig().formatter
       return fmt(field, props)
@@ -101,6 +101,8 @@ export default defineComponent({
 
     provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))
     provide<FormViewerContext>(XFORM_CONTEXT_PROVIDE_KEY, context)
+
+    expose({ formatter })
 
     return function(){
       const slots = instance.slots

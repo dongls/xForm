@@ -19,8 +19,7 @@ import {
   isString,
 } from '../util'
 
-import { FormDesignerApi } from '../component/FormDesigner/component'
-import { AnyProps } from './common'
+import { AnyProps, FormDesignerApi } from './common'
 
 const DELTA_X = 72
 const DELTA_Y = 17

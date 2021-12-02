@@ -16,27 +16,27 @@ import {
 
 import { 
   CLASS,
-  EnumRenderType,
+  EVENTS,
   EnumComponent,
   EnumDragMode,
+  EnumRenderType,
+  Field,
+  FormDesignerContext,
+  FormField, 
+  FormSchema,
+  Icon,
   ModeGroup,
   PROPS,
   RawProps,
+  RenderOptions,
   SELECTOR,
+  UpdateFieldEvent,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_SCHEMA_PROVIDE_KEY,
-  FormField, 
-  Field,
-  FormDesignerContext,
-  FormSchema,
-  RenderOptions,
-  EVENTS,
-  UpdateFieldEvent
 } from '../../model'
 
 import {
   fillComponentProps,
-  genEventName,
   getFieldComponent,
   getHtmlElement,
   isFunction,
@@ -54,21 +54,13 @@ import {
 import { useLogic } from '../../logic'
 import { FormItemInternal } from '../FormItem/component'
 
-import IconClone from '!!raw-loader!@common/svg/clone.svg'
-import IconRemove from '!!raw-loader!@common/svg/remove.svg'
 import FormTip from '../../assets/img/xform-tip.png'
 
 const IS_BASE64 = /^\s*data:(?:[a-z]+\/[a-z0-9-+.]+(?:;[a-z-]+=[a-z0-9-]+)?)?(?:;base64)?,([a-z0-9!$&',()*+;=\-._~:@/?%\s]*?)\s*$/i
 const IS_SVG = /<svg(\s[^>]*)?>[\s\S]*<\/svg>/
 const SETTING_FORM_SLOT = 'setting_form'
 
-export interface FormDesignerApi {
-  chooseField: (field: FormField) => void;
-  updateSchema: (schema?: FormSchema) => void;
-  resetSelectedField: () => void
-} 
-
-function shwoSelectedField(instance: ComponentInternalInstance){
+function showSelectedField(instance: ComponentInternalInstance){
   return nextTick(() => {
     const scroll = getHtmlElement(instance.refs, 'scroll')
     const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED) 
@@ -85,12 +77,12 @@ function shwoSelectedField(instance: ComponentInternalInstance){
  * 3. svg
  * 4. css class
  */
-function renderIcon(fc: Field){
-  const icon = typeof fc.icon == 'function' ? fc.icon(fc) : fc.icon
+function renderIcon(raw: Icon, conf: Field, field?: FormField){
+  const icon = typeof raw == 'function' ? raw(conf, field) : raw
 
   if(isVNode(icon)) return icon
   if(IS_BASE64.test(icon)) return <img src={icon} class="xform-icon xform-icon-is-img"/>
-  if(IS_SVG.test(icon)) return h('i', { innerHTML: icon, className: 'xform-icon xform-icon-is-svg' })
+  if(IS_SVG.test(icon)) return <i class="xform-icon xform-icon-is-svg" innerHTML={icon}/>
 
   return <i class={icon}/>
 }
@@ -112,8 +104,11 @@ function renderEmptyTip(){
 function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<FormSchema>, modeRef: Ref<string>){
   const selectedField = ref(null) as Ref<FormField>
   const selectedTab = ref<string>('form')
-  
-  const icon = { clone: IconClone, remove: IconRemove }
+  const api = {
+    resetSelectedField,
+    updateSchema,
+    chooseField,
+  }
 
   function updateSchema(schema?: FormSchema){
     instance.emit(EVENTS.UPDATE_SCHEMA, schema ?? schemaRef.value)
@@ -128,41 +123,11 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     if(null == field) return
 
     chooseTab('field')
-    shwoSelectedField(instance)
+    showSelectedField(instance)
   }
 
   function resetSelectedField(){
     selectedField.value = null
-  } 
-
-  function clone(field: FormField){
-    if(field.allowClone === false) return
-
-    const scope = field.parent
-    const newField = field.clone()
-    scope.insert(scope.indexOf(field) + 1, newField)
-    updateSchema()
-    chooseField(newField)
-  }
-  
-  function remove(field: FormField){
-    if(field.allowRemove === false) return
-
-    const name = genEventName(EVENTS.REMOVE)
-    const listener = instance.vnode?.props?.[name]
-    const useDefault = function(){
-      const scope = field.parent
-      scope.remove(field)
-      chooseField(null)
-      updateSchema()
-
-      nextTick(() => {
-        const hook = field.conf?.onRemoved
-        isFunction(hook) && hook(field, scope, instance) 
-      })
-    }
-    
-    isFunction(listener) ? instance.emit(EVENTS.REMOVE, { field, useDefault }): useDefault()
   }
 
   function updateField(field: FormField, event: UpdateFieldEvent){
@@ -193,7 +158,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
         return (
           <div {...props}>
             <strong>{fc.title}</strong>
-            {renderIcon(fc)}
+            {renderIcon(fc.icon, fc)}
           </div>
         ) 
       })
@@ -281,19 +246,24 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
   }
 
   function renderOperate(field: FormField){
-    const buttons = []
-  
-    if(field.allowClone !== false){
-      buttons.push(<button type="button" title="复制" onClick={clone.bind(null, field)} innerHTML={icon.clone}/>)
-    }
-  
-    if(field.allowRemove !== false) {
-      buttons.push(<button type="button" title="删除" onClick={remove.bind(null, field)} innerHTML={icon.remove}/>)
-    }
+    const conf = field.conf
+    const defs = conf?.buttons == null ? [Field.BUTTON_COPY, Field.BUTTON_REMOVE] : conf.buttons
+    const buttons = defs.map(button => {
+      if(field.allowClone === false && button == Field.BUTTON_COPY) return null
+      if(field.allowRemove === false && button == Field.BUTTON_REMOVE) return null
+
+      const handle = button.handle.bind(null, field, api, instance)
+      const icon = renderIcon(button.icon, field.conf)
+      return <button type="button" title={button.title} onClick={handle}>{icon}</button>
+    }).filter(b => b != null)
   
     return (
       buttons.length > 0 
-        ? <div class="xform-preview-operate">{buttons}</div> 
+        ? (
+          <div class="xform-preview-operate">
+            <div class="xform-preview-buttons">{buttons}</div>
+          </div>
+        ) 
         : null
     )
   }
@@ -395,6 +365,7 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
     resetSelectedField,
     updateSchema,
     chooseField,
+    api,
     context: {
       type: EnumRenderType.DESIGNER,
       renderField,
@@ -446,11 +417,7 @@ export default defineComponent({
       scroll.scrollTop += pixelY
     }
 
-    expose({
-      resetSelectedField: rc.resetSelectedField,
-      updateSchema: rc.updateSchema,
-      chooseField: rc.chooseField
-    })
+    expose(rc.api)
  
     return function(){
       const slots = instance.slots
@@ -479,5 +446,4 @@ export default defineComponent({
       )
     }
   }
-
 })

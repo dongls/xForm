@@ -61,7 +61,18 @@ export default defineComponent({
     }
 
     async function onRemove(e: { field: FormField, useDefault: Function }){
-      const r = await confirm(e.field).catch(toFalse)
+      const message = `点击<strong>确定</strong>将<strong danger>删除</strong>字段<strong info>${e.field.title}</strong>!`
+      const title = `确定要删除字段[${e.field.title}]?`
+
+      const r = await confirm(message, title).catch(toFalse)
+      if(r === true) e.useDefault()
+    }
+
+    async function onClear(e: { field: FormField, useDefault: Function }){
+      const message = '点击<strong>确定</strong>将<strong danger>删除</strong>所有可删除的子字段!'
+      const title = `确定要清空字段[${e.field.title}]?`
+
+      const r = await confirm(message, title).catch(toFalse)
       if(r === true) e.useDefault()
     }
 
@@ -133,6 +144,7 @@ export default defineComponent({
           schema={schema.value}
           mode="example"
           onRemove={onRemove}
+          onClear={onClear}
           onMessage={showMessage}
         />
       )

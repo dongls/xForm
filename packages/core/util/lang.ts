@@ -136,8 +136,8 @@ export function toNumber(val: any){
   return isNaN(n) ? val : n
 }
 
-export function toArray<T>(value: unknown){
-  return (Array.isArray(value) ? value : []) as Array<T>
+export function toArray<T>(value: unknown, def: Array<T> = []): Array<T>{
+  return Array.isArray(value) ? value : def
 }
 
 export function isValidArray<T>(v: unknown): v is Array<T>{

@@ -18,6 +18,7 @@ import { Row, DEF_COLUMN_WIDTH, BODY_CLASS } from './common'
 import { useInlineLayout } from './inline'
 import { useModalLayout } from './modal'
 import { useValue } from '../util'
+import { BUTTON_CLEAR } from '@common/button'
 
 const { CLASS, PROPS, EVENTS, EnumValidateMode } = useConstant()
 const DEF_INDEX_WIDTH = 60
@@ -159,6 +160,7 @@ export default Field.create({
   type: 'datatable',
   title: '数据表格',
   icon,
+  buttons: [BUTTON_CLEAR, Field.BUTTON_COPY, Field.BUTTON_REMOVE],
   accept: ['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'date'],
   setting,
   preview,

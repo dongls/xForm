@@ -9,6 +9,7 @@ import {
   InternalDragUtils,
   SELECTOR, 
   FormField,
+  FormDesignerApi
 } from '../../model'
 
 import { 
@@ -18,7 +19,6 @@ import {
 } from '../../util'
 
 import { findField } from '../../api'
-import { FormDesignerApi } from './component'
 
 function useScroll(){
   let requestID = null as number
