@@ -1,6 +1,6 @@
 {
   "name": "@dongls/xform",
-  "version": "0.7.0",
+  "version": "0.8.1",
   "description": "Vue驱动的自定义表单套件。",
   "main": "dist/index.js",
   "style": "dist/index.css",
@@ -24,7 +24,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "vue": "^3.2.1"
+    "vue": "^3.2.21"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

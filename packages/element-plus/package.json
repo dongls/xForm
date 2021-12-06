@@ -1,6 +1,6 @@
 {
   "name": "@dongls/xform.element-plus",
-  "version": "0.7.0",
+  "version": "0.8.1",
   "description": "基于Element Plus的xForm字段库。",
   "main": "dist/index.js",
   "style": "dist/index.css",
@@ -23,7 +23,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "@dongls/xform": "0.7.0"
+    "@dongls/xform": "0.8.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

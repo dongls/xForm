@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkxform=self.webpackChunkxform||[]).push([[305],{8305:(n,e,s)=>{s.r(e),s.d(e,{default:()=>t});const t={name:"antdv",version:"0.7.0",install:function(){}}}}]);
