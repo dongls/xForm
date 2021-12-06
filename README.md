@@ -8,6 +8,7 @@
 - [x] Bootstrap升级至5.x
 - [x] 设计器支持边缘滚动
 - [x] `FieldConf`更名为`Field`
+- [x] 通过`Field.buttons`属性定制字段按钮 
 
 ## 兼容性
 `xForm`使用了诸如`Proxy`、`Reflect`之类的新特性，因此需要浏览器至少实现了`ES2015`标准。需要注意的是，`xForm`**不支持IE浏览器，也没有相关的支持计划**。

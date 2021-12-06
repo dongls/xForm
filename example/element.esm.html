@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>bootstrap example for esm</title>
-  <!-- bootstrap -->
-  <link rel="stylesheet" href="/libs/bootstrap/bootstrap.min.css" />
-  <script src="/libs/bootstrap/bootstrap.bundle.min.js"></script>
+  <title>element-plus example for esm</title>
+  <!-- element-plus -->
+  <link rel="stylesheet" href="/libs/element-plus/index.css" />
+  <script src="/libs/element-plus/zh-cn.js"></script>
   <!-- xform -->
   <link href="/example/packages/core/dist/index.css" rel="stylesheet">
-  <!-- xform.bootstrap -->
-  <link href="/example/packages/bootstrap/dist/index.css" rel="stylesheet">
+  <!-- xform.element -->
+  <link href="/example/packages/element-plus/dist/index.css" rel="stylesheet">
 </head>
 <body>
   <div id="app" style="height: 100vh;"></div>
@@ -25,16 +25,19 @@
     {
       "imports":{
         "vue": "https://unpkg.com/vue@3.2.1/dist/vue.esm-browser.prod.js",
+        "element-plus": "/libs/element-plus/index.mjs",
         "@dongls/xform": "/example/packages/core/dist/index.esm.js",
-        "@dongls/xform.bootstrap": "/example/packages/bootstrap/dist/index.esm.js"
+        "@dongls/xform.element": "/example/packages/element-plus/dist/index.esm.js"
       }
     }
   </script>
   
   <script type="module">
     import { createApp } from 'vue'
+
+    import ElementPlus from 'element-plus'
     import xForm, { useApi } from '@dongls/xform'
-    import xFormBootstrap from '@dongls/xform.bootstrap'
+    import xFormElement from '@dongls/xform.element'
 
     const api = useApi()
     const App = {
@@ -46,9 +49,10 @@
       }
     }
 
-    const option = { preset: xFormBootstrap }
+    const option = { preset: xFormElement }
     const app = createApp(App)
     
+    app.use(ElementPlus, { locale: zhCn })
     app.use(xForm, option)
     app.mount('#app')
   </script>

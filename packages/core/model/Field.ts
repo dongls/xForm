@@ -94,6 +94,7 @@ export class Field extends Hook{
   /** 依赖的子组件 */
   // eslint-disable-next-line no-use-before-define
   dependencies: Field[]
+  /** @deprecated */
   operators?: false | string[]
 
   constructor(options: any = {}, from?: Symbol){

@@ -122,4 +122,4 @@ var zhCn = {
   }
 };
 
-ElementPlus.zhCn = zhCn
+(window.ElementPlus ? window.ElementPlus : window).zhCn = zhCn

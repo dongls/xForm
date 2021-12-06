@@ -15,6 +15,9 @@ const packages = {
   },
   'bootstrap': {
     entry: ['./packages/bootstrap/index.ts']
+  },
+  'element-plus': {
+    entry: ['./packages/element-plus/index.ts']
   }
 }
 
@@ -80,6 +83,11 @@ function genLessLoader(IS_PRODUCTION, IS_MODULE = false){
   ]
 }
 
+function genName(name){
+  const keys = name.split('-')
+  return keys.map(key => key[0].toUpperCase() + key.slice(1)).join('')
+}
+
 function genPackageProps(){
   const rp = RELEASE_PACKAGE
 
@@ -87,7 +95,7 @@ function genPackageProps(){
     ...packages[rp],
     packageName: `@dongls/xform${rp == 'core' ? '' : '.' + rp}`,
     outPath: path.resolve(OUTPUT_BASE_PATH, rp, 'dist'),
-    library: rp == 'core' ? 'xForm' : ['xForm', rp],
+    library: rp == 'core' ? 'xForm' : ['xForm', genName(rp)],
     libraryExport: rp == 'core' ? undefined : 'default'
   }
 }

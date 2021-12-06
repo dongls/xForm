@@ -1,5 +1,4 @@
 import { isReactive, reactive } from 'vue'
-import { findField, getConfig } from '../api'
 import { ValidateFunc, Field } from './Field'
 import { Serializable } from './Serializable'
 import { LogicRule } from './common'
@@ -26,7 +25,9 @@ import {
   BuiltInDefaultValueType 
 } from './constant'
 
-import { genDefaultValue } from '../api/index'
+import { findField } from '../api/Field'
+import { getConfig } from '../api/Config'
+import { genDefaultValue } from '../api/DefaultValue'
 
 interface PrivateProps{
   value: any;
@@ -34,13 +35,13 @@ interface PrivateProps{
 }
 
 interface Validation {
-  // 验证信息
+  /** 验证信息 */
   message: string;
-  // 验证是否通过
+  /** 验证是否通过 */
   valid: EnumValidityState;
-  // 是否正在验证
+  /** 是否正在验证 */
   validating: boolean;
-  // 外部验证器
+  /** 外部验证器 */
   external: () => boolean | ValidateFunc;
 }
 
@@ -58,6 +59,12 @@ interface Attributes{
 }
 
 const PRIVATE_PROPS_KEY = Symbol()
+
+function normalizeParams(params: unknown): any{
+  if(isNull(params) || typeof params != 'object') return {}
+
+  return params instanceof Field ? params.toParams() : params
+}
 
 /** 
  * 描述字段数据的类，xForm就是用它与后端进行数据交换。
@@ -130,7 +137,7 @@ export class FormField extends FormScope{
   constructor(o: unknown = {}){
     super()
 
-    const params = this.normalizeParams(o)
+    const params = normalizeParams(o)
     const init = o instanceof Field
     const fc = findField(params.type)
     const props: PrivateProps = { 
@@ -202,12 +209,6 @@ export class FormField extends FormScope{
 
     const fc = this.conf
     return isFunction(fc?.onValueSubmit) ? fc.onValueSubmit(this) : this.value
-  }
-
-  private normalizeParams(params: any): any{
-    if(isNull(params)) return {}
-
-    return params instanceof Field ? params.toParams() : params
   }
 
   /**

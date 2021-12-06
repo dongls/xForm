@@ -2,9 +2,6 @@ import { toArray } from '../util'
 import { Action, FieldInsertAction, FieldMoveAction, FieldRemoveAction } from './action'
 import { Serializable } from './Serializable'
 
-// eslint-disable-next-line no-use-before-define
-type FieldOrIndex = FormScope | number
-
 export abstract class FormScope extends Serializable{
   // eslint-disable-next-line no-use-before-define
   parent?: FormScope
@@ -25,12 +22,6 @@ export abstract class FormScope extends Serializable{
   abstract previous(): FormScope[]
   abstract find(name: string): FormScope
   abstract dispatch(action: Action): void
-
-  private normalizeIndex(f: FieldOrIndex){
-    if(typeof f == 'number') return f < this.fields.length ? f : -1
-    if(f instanceof FormScope) return this.fields.indexOf(f)
-    return -1
-  }
 
   insert(index: number, field: FormScope){
     this.fields.splice(index, 0, field)
@@ -58,8 +49,8 @@ export abstract class FormScope extends Serializable{
     this.dispatch(action)
   }
 
-  remove(fieldOrIndex: FieldOrIndex){
-    const index = this.normalizeIndex(fieldOrIndex)
+  remove(fieldOrIndex: FormScope | number){
+    const index = normalizeIndex(this, fieldOrIndex)
     if(index < 0) return
 
     const field = this.fields.splice(index, 1)[0]
@@ -141,4 +132,10 @@ export abstract class FormScope extends Serializable{
     this.parent = null
     this.fields = null
   }
+}
+
+function normalizeIndex(scope: FormScope, fieldOrIndex: FormScope | number){
+  if(typeof fieldOrIndex == 'number') return fieldOrIndex < scope.fields.length ? fieldOrIndex : -1
+  if(fieldOrIndex instanceof FormScope) return scope.fields.indexOf(fieldOrIndex)
+  return -1
 }

@@ -4,18 +4,19 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>bootstrap example</title>
-  <!-- bootstrap -->
-  <link rel="stylesheet" href="/libs/bootstrap/bootstrap.min.css" />
-  <script src="/libs/bootstrap/bootstrap.bundle.min.js"></script>
+  <title>element-plus example</title>
   <!-- vue3.x -->
   <script src="https://unpkg.com/vue@3.2.1/dist/vue.global.prod.js"></script>
+  <!-- element-plus -->
+  <link rel="stylesheet" href="/libs/element-plus/index.css" />
+  <script src="/libs/element-plus/index.js"></script>
+  <script src="/libs/element-plus/zh-cn.js"></script>
   <!-- xform -->
   <link href="/example/packages/core/dist/index.css" rel="stylesheet">
   <script src="/example/packages/core/dist/index.js"></script>
-  <!-- xform.bootstrap -->
-  <link href="/example/packages/bootstrap/dist/index.css" rel="stylesheet">
-  <script src="/example/packages/bootstrap/dist/index.js"></script>
+  <!-- xform.element -->
+  <link href="/example/packages/element-plus/dist/index.css" rel="stylesheet">
+  <script src="/example/packages/element-plus/dist/index.js"></script>
 </head>
 <body>
   <div id="app" style="height: 100vh;"></div>
@@ -35,10 +36,11 @@
     }
 
     const option = {
-      preset: xForm.Bootstrap
+      preset: xForm.ElementPlus
     }
 
     const app = Vue.createApp(App)
+    app.use(ElementPlus, { locale: ElementPlus.zhCn })
     app.use(xForm, option)
     app.mount('#app')
   </script>
