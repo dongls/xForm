@@ -1,0 +1,175 @@
+.main{
+  display: flex;
+  flex-flow: row nowrap;
+  height: 500px;
+}
+
+.panel{
+  width: 200px;
+  border-right: 1px solid #dee2e6;
+  display: flex;
+  flex-flow: column nowrap;
+
+  h5{
+    margin: 0;
+    font-size: 14px;
+    padding: 4px 10px;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f0f0f0;
+    line-height: 20px;
+  }
+}
+
+.composedLogic{
+  max-height: 50%;
+  display: flex;
+  flex-flow: column nowrap;
+
+  h5{
+    border-top-color: transparent;
+  }
+}
+
+.fieldLogic{
+  flex: 1;
+  height: 0;
+
+  display: flex;
+  flex-flow: column nowrap;
+
+  h5 {
+    position: relative;
+    
+    button{
+      position: absolute;
+      right: 10px;
+      top: 4px;
+      margin: 0;
+    }
+  }
+}
+
+.composedLogicList, 
+.fieldLogicList{
+  flex: 1;
+  height: 0;
+}
+
+.graph{
+  width: 0;
+  flex: 1;
+  padding: 15px 10px;
+}
+
+.logicGraph{
+  padding: 15px;
+  border: 1px dashed #ccc;
+  position: relative;
+
+  &:global(.is-composed){
+    padding: 24px 20px;
+  }
+
+  &:global(.is-error){
+    border-color: var(--xform-color-danger) !important;
+  }
+
+  &:global(.is-selected){
+    border-color: #007bff;
+    border-style: solid;
+  }
+
+  :global(.is-logic-legend){
+    position: absolute;
+    left: 12px;
+    top: -10px;
+    z-index: 2;
+    background-color: #fff;
+    padding-left: 8px;
+    line-height: 20px;
+    
+    strong{
+      margin: 0 2px;
+    }
+  }
+
+  & + .logicGraph{
+    margin-top: 15px;
+  }
+
+  & > .logicGraph::after{
+    content: "";
+    position: absolute;
+    width: 20px;
+    left: -20px;
+    top: 50%;
+    border-bottom: 1px dashed #ccc;
+  }
+}
+
+.logicGraphButtons{
+  position: absolute;
+  right: 10px;
+  top: -10px;
+  background-color: #fff !important;
+}
+
+.textButton{
+  padding: 0;
+  margin: 0 5px;
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid transparent;
+  height: 20px;
+  line-height: 20px;
+  color: var(--xform-color-primary);
+  background-color: transparent;
+  transition: border-bottom-color ease .3s;
+  cursor: pointer;
+
+  &:hover{
+    border-bottom-color: currentColor;
+  }
+
+  &.danger{
+    color: var(--xform-color-danger);
+  }
+}
+
+.logicItem{
+  position: relative;
+  padding: 4px 10px;
+  line-height: 20px;
+  user-select: none;
+  cursor: pointer;
+
+  &:global(.xform-is-disabled){
+    cursor: not-allowed;
+    color: #6c757d;
+  }
+
+  &:hover{
+    background-color: #f0f0f0;
+  }
+}
+
+.logicEmpty{
+  color: var(--xform-text-color-secondary);
+  text-align: center;
+  padding-top: 120px;
+}
+
+.logicInlineEmpty{
+  color: var(--xform-text-color-secondary);
+  line-height: 20px;
+}
+
+.errorMessage{
+  color: var(--xform-color-danger);
+  position: absolute;
+  left: 20px;
+  bottom: 0;
+  line-height: 15px;
+  font-size: 12px;
+}

@@ -3,10 +3,13 @@
   --xform-color-primary-lighten: #e8f3ff;
 
   --xform-color-danger: #f56c6c;
+  --xform-color-warning: #e6a23c;
   
   --xform-border-color: #eee;
   
   --xform-text-color: #343a40;
+  --xform-text-color-secondary: #9a9a9a;
+
   --xform-font-size: 14px;
 
   --xform-label-width: 120px;

@@ -47,6 +47,10 @@ export function isNull(value: unknown): value is null{
   return value == null
 }
 
+export function notNull(value: unknown){
+  return value == null
+}
+
 /** 是否为对象 */
 export function isObject(value: unknown, withFunc = false){
   if(value == null) return false
@@ -99,6 +103,12 @@ export function clonePlainObject(target: any): any{
     acc[key] = clonePlainObject(target[key])
     return acc
   }, {} as any)
+}
+
+export function cloneJsonObject(target: any){
+  if(null == target) return null
+
+  return JSON.parse(JSON.stringify(target))
 }
 
 function merge(target: any, source: any){

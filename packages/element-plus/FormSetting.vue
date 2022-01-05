@@ -7,7 +7,7 @@ const { EVENTS, LabelPosition } = useConstant()
 const positions = Object.values(LabelPosition)
 
 export default defineComponent({
-  name: 'xform-el-setting',
+  name: 'form-setting',
   props: {
     schema: {
       type: FormSchema,
@@ -32,15 +32,15 @@ export default defineComponent({
 <template>
   <section class="xform-setting">
     <header>标题后缀：</header>
-    <el-input v-model="labelSuffix" size="small" placeholder="请输入标题后缀..."/>
+    <el-input v-model="labelSuffix" placeholder="请输入标题后缀..."/>
   </section>
   <section class="xform-setting">
     <header>空值显示为：</header>
-    <el-input v-model="viewerPlaceholder" size="small" placeholder="查看表单时如果值为空，则显示输入值"/>
+    <el-input v-model="viewerPlaceholder" placeholder="查看表单时如果值为空，则显示输入值"/>
   </section>
   <section class="xform-setting">
     <header>标题位置：</header>
-    <el-radio-group v-model="labelPosition" size="small">
+    <el-radio-group v-model="labelPosition">
       <el-radio-button :label="LabelPosition.LEFT">左对齐</el-radio-button>
       <el-radio-button :label="LabelPosition.TOP">顶部对齐</el-radio-button>
       <el-radio-button :label="LabelPosition.RIGHT">右对齐</el-radio-button>

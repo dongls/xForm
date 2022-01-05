@@ -43,7 +43,7 @@ module.exports = {
     'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
 
     // Variables
-    'no-use-before-define': ['error', { 'functions': false }],
+    'no-use-before-define': 'off',
 
     // Stylistic Issues
     'semi': ['warn', 'never'],
@@ -64,7 +64,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': 'h|event' }],
     '@typescript-eslint/ban-types': 'off',
-    '@typescript-eslint/no-use-before-define': ['error', { 'functions': false, 'classes': true, 'variables': true }],
+    '@typescript-eslint/no-use-before-define': ['error', { 'functions': false }],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/indent': ['error', 2],
     

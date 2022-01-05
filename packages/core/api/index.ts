@@ -35,6 +35,7 @@ export {
   isEmpty,
   normalizeClass,
   normalizeWheel,
+  toArray,
 } from '../util'
 
 export { 
@@ -59,10 +60,22 @@ export {
   resetField,
 } from './Field'
 
+export { 
+  BUILTIN_LOGIC_AND,
+  BUILTIN_LOGIC_NOT,
+  BUILTIN_LOGIC_OR,
+  getComposedLogic,
+  getLogic, 
+  getLogics,
+  registerLogic, 
+  removeLogic,
+  resetLogic, 
+  test,
+} from './Logic/index'
+
 export { getPreset, resetPreset, usePreset } from './Preset'
 export { registerSlots, registerSlot, removeSlot, getSlot } from './Slots'
 export { createConfig } from './Store'
-export { getOperator, getOperators } from '../logic'
 
 export function useRenderContext<T = FormRenderContext>(){
   return inject<T>(XFORM_CONTEXT_PROVIDE_KEY)

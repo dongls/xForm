@@ -8,9 +8,9 @@ import { isString } from './lang'
 
 /**
 * 判断元素是否不可见
-* @param {HTMLElement} el - 待判断的元素
-* @param {HTMLElement} container - 容器
-* @returns {boolean} 不可见返回true
+* @param el - 待判断的元素
+* @param container - 容器
+* @returns 不可见返回`true`
 */
 export function isHidden(el: HTMLElement, container: HTMLElement){
   const tRect = el.getBoundingClientRect()
@@ -22,10 +22,9 @@ export function isHidden(el: HTMLElement, container: HTMLElement){
 
 /**
  * 查找坐标点下第一个符合的元素
- * @param {number} x - 坐标点的水平坐标值
- * @param {number} y - 坐标点的垂向坐标值
- * @param {string[]} selector - 目标选择器
- * @returns {Element | null} 
+ * @param x - 坐标点的水平坐标值
+ * @param y - 坐标点的垂向坐标值
+ * @param selector - 目标选择器
  */
 export function findElementFromPoint(x: number, y: number, selector: string | string[], scope?: Element){
   const elementsFromPoint = document.elementsFromPoint || document.msElementsFromPoint
@@ -58,7 +57,7 @@ export function findElementsFromPoint(x: number, y: number, selector: string | s
 /**
  * 统一浏览器之间wheel事件的差异
  * @see https://github.com/basilfx/normalize-wheel
- * @param {Event} event - 事件对象
+ * @param event - 事件对象
  */
 export function normalizeWheel(event: WheelEvent){
   const { deltaX, deltaY } = event

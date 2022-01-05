@@ -43,33 +43,35 @@ module.exports = {
         exclude: /node_modules/
       },
       {
-        test: /\.css$/,
         oneOf: [
           {
-            resourceQuery: /module/,
-            use: utils.genCssLoader(IS_PRODUCTION, true)
+            test: /\.module\.scss$/,
+            use: utils.genScssLoader(IS_PRODUCTION, true)
           },
           {
-            use: utils.genCssLoader(IS_PRODUCTION, false)
-          }
-        ]
-      },
-      {
-        test: /\.scss$/,
-        oneOf: [
-          {
+            test: /\.scss$/,
             resourceQuery: /module/,
             use: utils.genScssLoader(IS_PRODUCTION, true)
           },
           {
+            test: /\.scss$/,
             use: utils.genScssLoader(IS_PRODUCTION, false)
+          },
+          {
+            test: /\.css$/,
+            resourceQuery: /module/,
+            use: utils.genCssLoader(IS_PRODUCTION, true)
+          },
+          {
+            test: /\.css$/,
+            use: utils.genCssLoader(IS_PRODUCTION, false)
           }
         ]
       },
-      {
-        test: /\.less$/,
-        use: utils.genLessLoader(IS_PRODUCTION)
-      },
+      // {
+      //   test: /\.less$/,
+      //   use: utils.genLessLoader(IS_PRODUCTION)
+      // },
       { // 处理字体
         test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
         loader: 'file-loader',
@@ -92,6 +94,8 @@ module.exports = {
     alias: {
       '@common': path.resolve(__dirname, '../../packages/common'),
       '@document': path.resolve(__dirname, '../../document'),
+      '@bootstrap': path.resolve(__dirname, '../../packages/bootstrap'),
+      '@element-plus': path.resolve(__dirname, '../../packages/element-plus'),
     },
     extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
   },
@@ -103,7 +107,7 @@ module.exports = {
       '__VUE_OPTIONS_API__': JSON.stringify(true),
       '__VUE_PROD_DEVTOOLS__': JSON.stringify(!IS_PRODUCTION),
       '__VUE_VERSION__': JSON.stringify(process.env.VUE_VERSION),
-      '__TIMESTAMP__': utils.getTimestamp()
+      '__TIMESTAMP__': JSON.stringify(utils.getTimestamp())
     }),
     new VueLoaderPlugin()
   ]

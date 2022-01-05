@@ -30,14 +30,12 @@ import {
   fillComponentProps,
   getFieldComponent,
   isFunction,
-  isNull,
   isString,
 } from '../../util'
 
 import { useValidator } from '../../validator'
 import { FormItemInternal } from '../FormItem/component'
-import { test } from '../../logic'
-import { getConfig } from '../../api'
+
 
 interface Props{
   mode: string;
@@ -62,16 +60,15 @@ function useRenderContext(instance: ComponentInternalInstance){
   function renderContent(field: FormField, options: RenderOptions){
     const slots = instance.slots
     const props = instance.props as any as Props
-    const value = field.value
     const disabled = props.disabled || field.disabled || options.parentProps?.disabled === true
 
     const nameSlot = slots[`name_${field.name}`]
-    if(isFunction(nameSlot)) return nameSlot({ field, value, disabled })
+    if(isFunction(nameSlot)) return nameSlot({ field, disabled })
 
     const typeSlot = slots[`type_${field.type}`]
-    if(isFunction(typeSlot)) return typeSlot({ field, value, disabled })
+    if(isFunction(typeSlot)) return typeSlot({ field, disabled })
 
-    const all = { field, value, disabled }
+    const all = { field, disabled }
     const component = getFieldComponent(field, EnumComponent.BUILD, props.mode)
     if(null == component) return null
 
@@ -81,12 +78,6 @@ function useRenderContext(instance: ComponentInternalInstance){
 
   function renderField(field: FormField, options: RenderOptions = {}){
     if(field.hidden === true) return null
-  
-    if(
-      getConfig().logic === true && 
-      !isNull(field.logic) && 
-      !test(field.logic, field.parent.model, field)
-    ) return null
 
     const props = instance.props as any as Props
     const disabled = props.disabled || field.disabled || options.parentProps?.disabled === true  

@@ -117,6 +117,7 @@ export class FormSchema extends FormScope {
     })
   }
 
+  /** 此处会导致组件收集所有子字段的`value`作为依赖，使用需谨慎 */
   get model(): any {
     return [...this.fields, ...this.external].reduce((acc, field) => {
       const model = field.model

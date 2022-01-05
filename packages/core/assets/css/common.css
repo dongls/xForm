@@ -24,3 +24,17 @@
 .xform-is-hidden{
   display: none !important;
 }
+
+.xform-is-unknown{
+  padding: 5px 0;
+  line-height: 20px;
+  margin: 0;
+  color: var(--xform-text-color-secondary);
+}
+
+.xform-is-warning{
+  padding: 5px 0;
+  line-height: 20px;
+  margin: 0;
+  color: var(--xform-color-warning);
+}

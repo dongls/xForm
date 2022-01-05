@@ -144,13 +144,8 @@ export default function useDragging(){
       reference == mark || 
       (null != reference && reference.previousElementSibling == mark)
     ) return
-  
-    if(null == reference) {
-      scope.appendChild(mark)
-      return
-    }
-  
-    scope.insertBefore(mark, reference)
+     
+    null == reference ? scope.appendChild(mark) : scope.insertBefore(mark, reference)
   }
 
   function resetDragStatus(){

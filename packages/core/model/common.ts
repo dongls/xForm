@@ -94,18 +94,6 @@ export interface FormOption extends AnyProps {
   config?: FormConfig;
 }
 
-export type LogicRule = {
-  /** 操作符 */
-  operator: string;
-  /** 字段`name` */
-  name?: string;
-  /** 目标值 */
-  value?: any;
-  target?: any;
-  /** 子条件 */
-  condition?: LogicRule[]
-}
-
 export interface FormDesignerApi {
   chooseField: (field: FormField) => void;
   updateSchema: (schema?: FormSchema) => void;

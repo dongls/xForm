@@ -2,6 +2,7 @@ import { FormConfig } from '../model'
 import { clonePlainObject, mergePlainObject } from '../util'
 import { store, createConfig } from './Store'
 
+// TODO: 使用Proxy重构
 export function useConfig(config: FormConfig){
   if(config == null) return
 

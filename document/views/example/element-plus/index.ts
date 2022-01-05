@@ -1,4 +1,4 @@
 import './index.scss'
-import ElementPlus from '../../../../packages/element-plus/index'
+import ElementPlus from '@element-plus/index'
 
 export default ElementPlus

@@ -63,7 +63,10 @@ export const config = new Map<string, Config>()
 export const DEAFULT_TARGET = 'element-plus'
 
 function getElementPlus(){
-  return (window as any).ElementPlus
+  const win = window as any
+  const ElementPlus = win.ElementPlus
+  ElementPlus.ElementPlusLocaleZhCn = win.ElementPlusLocaleZhCn
+  return ElementPlus
 }
 
 function r(c: Config){
@@ -135,12 +138,12 @@ r({
 r({
   id: 'element-plus',
   name: 'Element Plus',
-  version: 'v1.2.0-beta.3',
+  version: 'v2.2.2',
   homepage: 'https://github.com/element-plus/element-plus',
   source: [
-    [publicPath + '/libs/element-plus/index.css', TYPE.STYLE],
-    [publicPath + '/libs/element-plus/index.js', TYPE.SCRIPT],
-    [publicPath + '/libs/element-plus/zh-cn.js', TYPE.SCRIPT],
+    [publicPath + '/libs/element-plus/2.2.2/index.css', TYPE.STYLE],
+    [publicPath + '/libs/element-plus/2.2.2/index.full.min.js', TYPE.SCRIPT],
+    [publicPath + '/libs/element-plus/2.2.2/zh-cn.min.js', TYPE.SCRIPT],
   ],
   factory(){
     return import(/* webpackPrefetch: true */'./element-plus/index').then(r => r.default)
@@ -148,7 +151,9 @@ r({
   install(preset, instance: ComponentInternalInstance){
     const ElementPlus = getElementPlus()
     if(ElementPlus) {
-      instance.appContext.app.use(ElementPlus, { locale: ElementPlus.zhCn })
+      instance.appContext.app.use(ElementPlus, { 
+        locale: ElementPlus.ElementPlusLocaleZhCn
+      })
     }
 
     reset({ preset, config: { logic: true, modes: MODES } })
@@ -160,10 +165,10 @@ r({
           <el-checkbox v-model={state.isWide.value}>宽屏</el-checkbox>
         </div>
         <div class="example-designer-tool-right">
-          <el-button size="small" auto-insert-space={false} onClick={state.validateSchema} type="text">验证</el-button>
-          <el-button size="small" auto-insert-space={false} onClick={state.reset} type="text">重置</el-button>
-          <el-button size="small" auto-insert-space={false} onClick={state.clear} type="text">清空</el-button>
-          <el-button size="small" auto-insert-space={false} onClick={state.viewJson} type="text">查看JSON</el-button>
+          <el-button onClick={state.validateSchema} type="primary" link>验证</el-button>
+          <el-button onClick={state.reset} type="primary" link>重置</el-button>
+          <el-button onClick={state.clear} type="primary" link>清空</el-button>
+          <el-button onClick={state.viewJson} type="primary" link>查看JSON</el-button>
         </div>
       </div>
     )
@@ -173,7 +178,7 @@ r({
       default(ctx: { field: FormField, disabled: boolean }){
         const { field, disabled } = ctx
         return [
-          <el-input v-model={field.value} size="small" placeholder="详细地址" disabled={disabled}/>,
+          <el-input v-model={field.value} placeholder="详细地址" disabled={disabled}/>,
           <p class="example-builder-tip">该字段并非由设计器生成，而是页面单独添加的字段</p>
         ]
       }
@@ -188,10 +193,10 @@ r({
   renderBuilderFooterSlot(state){
     return (
       <div class="example-builder-footer">
-        <el-button type="text" size="small" disabled={state.pending.value} onClick={state.viewJSON}>查看JSON</el-button>
-        <el-button type="text" size="small" onClick={state.disableForm}>{ state.disabled.value ? '启用' : '禁用' }表单</el-button>
-        <el-button size="small" native-type="reset" disabled={state.pending.value || state.disabled.value}>重置</el-button>
-        <el-button type="primary" size="small" native-type="submit" disabled={state.pending.value || state.disabled.value}>提交</el-button>
+        <el-button type="primary" text disabled={state.pending.value} onClick={state.viewJSON}>查看JSON</el-button>
+        <el-button type="primary" text onClick={state.disableForm}>{ state.disabled.value ? '启用' : '禁用' }表单</el-button>
+        <el-button native-type="reset" disabled={state.pending.value || state.disabled.value}>重置</el-button>
+        <el-button type="primary" native-type="submit" disabled={state.pending.value || state.disabled.value}>提交</el-button>
       </div>
     )
   },

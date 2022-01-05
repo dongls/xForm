@@ -37,6 +37,9 @@ import {
   isFunction,
 } from '../../util'
 
+import { getConfig } from '../../api/Config'
+import { test } from '../../api/Logic'
+
 type Props = {
   field: FormField;
   validation: boolean | ValidateFunc;
@@ -168,6 +171,13 @@ function createComponent(name: EnumComponentName): ComponentOptions{
       const schema = inject<Ref<FormSchema>>(XFORM_SCHEMA_PROVIDE_KEY, null)
       const context = inject<FormRenderContext>(XFORM_CONTEXT_PROVIDE_KEY, null)
       const fieldRef = normalizeField(props)
+      const displayRef = computed(() => {
+        if(context == null) return true
+        if(context.type == EnumRenderType.DESIGNER || getConfig().logic !== true) return true
+
+        const field = fieldRef.value
+        return test(field.logic, field)
+      })
       
       // 组件为外部组件或者为外部组件的子组件
       const isExternal = name == EnumComponentName.EXTERNAL || inject(XFORM_ITEM_EXTERNAL_PROVIDE_KEY, false)
@@ -185,8 +195,8 @@ function createComponent(name: EnumComponentName): ComponentOptions{
 
       return function(){
         const field = fieldRef.value
-        if(field == null) return null
-  
+        if(field == null || !displayRef.value) return null
+
         // 字段完全自定义时, 只显示用户自定义的内容
         if(props.custom || field?.conf?.custom === true) {
           return renderContent(slots, field, context, props.disabled)

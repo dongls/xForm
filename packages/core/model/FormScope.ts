@@ -3,15 +3,13 @@ import { Action, FieldInsertAction, FieldMoveAction, FieldRemoveAction } from '.
 import { Serializable } from './Serializable'
 
 export abstract class FormScope extends Serializable{
-  // eslint-disable-next-line no-use-before-define
   parent?: FormScope
-  // eslint-disable-next-line no-use-before-define
   fields: FormScope[] = []
 
   constructor(){
     super()
 
-    Object.defineProperty(this, 'parent', {
+    Reflect.defineProperty(this, 'parent', {
       value: null,
       writable: true
     })

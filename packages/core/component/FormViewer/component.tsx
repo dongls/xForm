@@ -26,7 +26,7 @@ import {
   isFunction
 } from '../../util'
 
-import { getConfig } from '../../api'
+import { getConfig } from '../../api/Config'
 import { FormItemInternal } from '../FormItem/component'
 
 function useRenderContext(instance: ComponentInternalInstance, formatter: Formatter){

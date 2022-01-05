@@ -1,15 +1,8 @@
 <script lang="tsx">
 import { defineComponent, ref } from 'vue'
-import { FormField, LogicRule, getOperator, useConstant, FormDesignerApi } from '@dongls/xform'
+import { FormField, FormDesignerApi } from '@dongls/xform'
 import { useLocalSchema, useIsWide, toFalse } from '@document/util/common'
 import { useTarget, useDesignerToolSlot, useConfirm, useNotify } from './preset'
-
-const { BuiltInLogicOperator } = useConstant()
-
-function fmtOperatorText(operator: string){
-  const o = getOperator(operator)
-  return o == null ? 'N/A' : o.description ?? o.label
-}
 
 function createSchemaErrorContent(arr: any[]): any{
   if(!Array.isArray(arr) || arr.length == 0) return null
@@ -48,14 +41,10 @@ export default defineComponent({
       designer.value.chooseField(field)
     }
   
-    function fmtRule(rule: LogicRule & { label: string }){
+    function fmtLogicTip(field: FormField){
       return (
         <div class="example-logic-message">
-          <span>如果</span>
-          <strong>{rule.label}</strong>
-          <span>的值</span>
-          <strong>{fmtOperatorText(rule.operator)}</strong>
-          {rule.operator == BuiltInLogicOperator.EMPTY ? null : <strong>{rule.value ?? 'N/A'}</strong>}
+          <strong onClick={chooseField.bind(null, field)}>{field.title}</strong>
         </div>
       )
     }
@@ -79,27 +68,22 @@ export default defineComponent({
     function showMessage(event: any){
       switch(event.type){
         case 'logic.change': {
-          const field = event.field as FormField
-          const data = event.data as any[]
-          const anchor = <a href="javascript:;" onClick={chooseField.bind(null, field)}>{field.title}</a>
+          const field = event.target as FormField
+          const fields = event.fields as FormField[]
+          const prefix = (
+            event.action.type == 'field.remove'
+              ? <span>字段<strong class="example-logic-target-remove">{field.title}</strong>被删除</span>
+              : <span>字段<strong class="example-logic-target-move" onClick={chooseField.bind(null, field)}>{field.title}</strong>位置变化</span>
+          )
+
           const content = (
             <div class="example-logic-tip">
-              <p>字段{anchor}的逻辑发生变更，以下条件被<strong>删除</strong>：</p>
-              {data.map(fmtRule)}
+              <p class="example-logic-head">因{prefix}<span>，以下字段受到影响：</span></p>
+              {fields.map(fmtLogicTip)}
             </div>
           )
       
-          notify({ title: event.title, content, delay: 0 })
-          break
-        }
-        case 'logic.validate': {
-          event.preventDefault()
-          notify({
-            title: event.title,
-            content: event.content,
-            type: 'error',
-            delay: 0
-          })
+          notify({ title: '字段逻辑变更', content, delay: 0 })
           break
         }
       }
@@ -178,20 +162,26 @@ $--xform-color-primary: #409EFF !default;
   --xform-designer-responsive-width:  100%;
 }
 
-.example-logic-tip{
-  a{
-    font-weight: 700;
-    margin: 0 2px;
-  }
+.example-logic-head{
+  margin: 0;
+}
 
-  p{
-    font-size: 14px;
-    margin: 0;
+.example-logic-target-remove{
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--xform-color-danger);
+  margin: 0 5px;
+}
 
-    strong{
-      color: #dc3545;
-      margin: 0 2px;
-    }
+.example-logic-target-move{
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--xform-color-primary);
+  margin: 0 4px;
+  cursor: pointer;
+
+  &:hover{
+    border-bottom: 1px solid currentColor;
   }
 }
 
@@ -202,7 +192,14 @@ $--xform-color-primary: #409EFF !default;
   margin-top: 5px;
 
   strong{
-    margin: 0 2px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--xform-color-primary);
+    cursor: pointer;
+
+    &:hover{
+      border-bottom: 1px solid currentColor;
+    }
   }
 
   &::before{

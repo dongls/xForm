@@ -1,0 +1,162 @@
+.logicForm{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  height: 30px;
+  line-height: 30px;
+
+  strong{
+    margin: 0 4px;
+  }
+
+  :global(.form-control){
+    width: 150px;
+    margin-left: 10px;
+    line-height: 24px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    min-height: auto;
+  }
+
+  :global(select.form-control){
+    height: 30px;
+    appearance: auto;
+  }
+}
+
+.logicOperator{
+  width: 100px !important;
+}
+
+.multipleSelect{
+  position: relative;
+  width: 150px;
+  margin-left: 10px;
+
+  &.isOpen .multipleSelectPanel{
+    display: block;
+  }
+}
+
+.multipleSelectInput{
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: .2rem;
+  font-size: 14px;
+}
+
+.multipleSelectContent{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: 3px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.multipleSelectTags{
+  flex: 1;
+  width: 0;
+  overflow: hidden;
+  height: 22px;
+}
+
+.multipleSelectTag{
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 22px;
+  background-color: #f0f0f0;
+  padding-left: 4px;
+  line-height: 22px;
+  border-radius: .2rem;
+
+  button{
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    width: 10px;
+    height: 10px;
+
+    &:hover{
+      opacity: 1;
+    }
+  }
+
+  &.isSingle{
+    padding-right: 4px;
+  }
+}
+
+.multipleSelectCount{
+  margin-left: 8px;
+}
+
+.multipleSelectPanel{
+  display: none;
+  position: absolute;
+  left: 0;
+  
+  background-color: #fff;
+  z-index: 9;
+  visibility: hidden;
+}
+
+.isBottom .multipleSelectPanel{
+  top: 100%;
+  bottom: auto;
+  visibility: visible;
+  padding-top: 2px;
+}
+
+.isTop .multipleSelectPanel{
+  top: auto;
+  bottom: 100%;
+  visibility: visible;
+  padding-bottom: 2px;
+}
+
+.multipleSelectOptions{
+  border: 1px solid #ced4da;
+  border-radius: .2rem;
+  min-width: 100%;
+  max-height: 150px;
+}
+
+.multipleSelectOption{
+  max-width: 320px;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+  color: var(--xform-text-color);
+  
+  &:hover{
+    background-color: var(--xform-color-primary-lighten);
+  }
+
+  &.isSelected{
+    color: var(--xform-color-primary);
+    font-weight: 700;
+  }
+}
+
+.multipleSelectPlaceholder{
+  color: #6c757d;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  cursor: pointer;
+}
+
+.warnFieldTitle{
+  margin: 0 4px;
+}

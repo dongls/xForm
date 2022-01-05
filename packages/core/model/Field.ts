@@ -2,19 +2,40 @@ import { ComponentInternalInstance, markRaw, VNode } from 'vue'
 import { Icon, Button, VueComponent } from './common'
 import { PublicDragEvent } from './drag'
 import { isFunction, isNull, isPlainObject, isString, toArray, toFunction } from '../util/lang'
-import { FormField } from './FormField'
+import { FormField, FormFieldLogic } from './FormField'
 import { EnumDragHook, EnumValidateMode } from './constant'
 import { FormScope } from './FormScope'
-import { findField } from '../api'
+import { findField } from '../api/Field'
 import { BUTTON_COPY, BUTTON_REMOVE } from './Button'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Rule{}
 
-export type ValidateFunc = (field: FormField, value: any, options?: { mode: EnumValidateMode }) => Promise<string | void>;
+// TODO: 重构，返回值只有在需要异步时才返回Promise, 如不需要则直接返回验证结果
+type ValidateResult = void | null | string
+export type ValidateFunc = (field: FormField, value: any, options?: { mode: EnumValidateMode }) => Promise<ValidateResult>;
 export type ValidateObj = { mode: EnumValidateMode, validator: ValidateFunc }
 type Validator = ValidateFunc | ValidateObj | Rule | Rule[] | false
 type DragHookFn = (e: PublicDragEvent) => void | boolean;
+
+export interface FieldLogic {
+  /** 类型，建议值唯一 */
+  type: string
+  /** 标题 */
+  title: string
+  /** 用于判断当前字段是否满足条件 */
+  test: (logic: FormFieldLogic, field: FormField) => boolean
+  /** 当前逻辑的渲染器，用在表单设计中 */
+  render: (logic: FormFieldLogic, field: FormField) => any
+  /** 验证当前逻辑是否填写所有必要条件 */
+  validator?: (logic: FormFieldLogic, rootField: FormField) => string | null | undefined | void | boolean
+  /** 组合式逻辑，自身依赖于其他逻辑运行 */
+  composed?: boolean
+  /** 顺序 */
+  order?: number
+  /** 创建字段逻辑对象后调用，可以在此自行添加属性 */
+  onCreated?: (logic: FormFieldLogic, rootField: FormField) => void
+}
 
 const CONSTRUCTOR_SIGN = Symbol()
 
@@ -77,11 +98,11 @@ export class Field extends Hook{
   icon?: Icon
   /** 字段按钮，用在设计器中 */
   buttons?: Button[]
-  // eslint-disable-next-line no-use-before-define
   alias?: string | Field
 
   /** 可接受的子字段类型，为空则接受所有字段 */
   accept?: string[]
+  /** 标识当前字段是否完全自定义渲染 */
   custom: boolean
   /** 验证器，用于验证表单值 */
   validator?: Validator
@@ -92,12 +113,11 @@ export class Field extends Hook{
   view?: VueComponent | FieldComponent
 
   /** 依赖的子组件 */
-  // eslint-disable-next-line no-use-before-define
   dependencies: Field[]
-  /** @deprecated */
-  operators?: false | string[]
+  /** 该字段支持的逻辑 */
+  logic: FieldLogic[]
 
-  constructor(options: any = {}, from?: Symbol){
+  constructor(options: Partial<Field> = {}, from?: Symbol){
     if(from != CONSTRUCTOR_SIGN) console.warn('use `Field.create` instead of `new Field`')
 
     super(options)
@@ -123,13 +143,12 @@ export class Field extends Hook{
     this.view = isNull(options.view) ? null : markRaw(options.view)
     
     this.dependencies = toArray(options.dependencies)
-    this.operators = options.operators
+    this.logic = toArray(options.logic)
   }
 
   /** 
    * 检测自身是否具备最可用的条件, 以下属性是必须的属性：
    * - type 
-   * @returns {boolean} 
    */
   get available() {
     return this.type != null
@@ -162,9 +181,14 @@ export class Field extends Hook{
     return new FieldComponent(o)
   }
 
+  static createFieldLogic(options: FieldLogic){
+    return Object.freeze<FieldLogic>(options)
+  }
+
   static BUTTON_COPY = BUTTON_COPY
   static BUTTON_REMOVE = BUTTON_REMOVE
 
+  /** 生成用于创建`FormField`的参数 */
   toParams(){
     return {
       type: this.type,

@@ -84,7 +84,7 @@ export default defineComponent({
 
 <style>
 .example-builder{
-  padding: 15px 0;
+  padding: 15px 0 65px 0;
   max-width: 640px;
 }
 

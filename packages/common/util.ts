@@ -148,3 +148,15 @@ export function useSchemaProp<T extends string | boolean | object | any[]>(prop:
     }
   })
 }
+
+export function toPrimitive(value: unknown): number | string{
+  if(value == null) return null
+
+  const v = typeof value.valueOf == 'function' ? value.valueOf() : value
+
+  if(typeof v == 'string') return v.trim() == '' ? null : v
+  if(typeof v == 'number') return v
+  if(typeof v == 'boolean') return String(v)
+
+  return null
+}

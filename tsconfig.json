@@ -12,6 +12,8 @@
     "paths": {
       "@common/*": ["packages/common/*"],
       "@document/*": ["document/*"],
+      "@bootstrap/*": ["packages/bootstrap/*"],
+      "@element-plus/*": ["packages/element-plus/*"],
       "@dongls/xform": ["packages/core/index"]
     },
     "target": "ESNext"
@@ -20,6 +22,7 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "packages/**.d.ts",
+    "packages/**/*.vue",
     "document/**/*.ts",
     "document/**/*.tsx"
   ]

@@ -3,9 +3,6 @@ module.exports = {
   globals: {
     "ts-jest": {
       babelConfig: true,
-      tsconfig: {
-        module: 'commonjs'
-      }
     }
   },
   transform: {
@@ -15,7 +12,8 @@ module.exports = {
   },
   moduleFileExtensions: ["vue", "js", "jsx", "ts", "tsx"],
   moduleNameMapper: {
-    "@common/(.*)": "<rootDir>/packages/common/$1"
+    "@common/(.*)": "<rootDir>/packages/common/$1",
+    "@dongls/xform": "<rootDir>/packages/core/index.ts"
   },
   setupFiles: [
     '<rootDir>/scripts/jest/setup.js'

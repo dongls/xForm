@@ -48,10 +48,10 @@ import {
 import { 
   findModeGroup, 
   getConfig, 
-  getSlot
+  getSlot,
 } from '../../api'
 
-import { useLogic } from '../../logic'
+import { useCleanLogicIfNeed } from '../../api/Logic'
 import { FormItemInternal } from '../FormItem/component'
 
 import FormTip from '../../assets/img/xform-tip.png'
@@ -402,7 +402,7 @@ export default defineComponent({
     const { dragstart, cancelAutoScrollIfNeed } = useDragging()
 
     if(getConfig().logic === true) {
-      useLogic(schemaRef, (data: any) => emit(EVENTS.MESSAGE, data))
+      useCleanLogicIfNeed(schemaRef, event => emit(EVENTS.MESSAGE, event))
     }
     
     provide(XFORM_SCHEMA_PROVIDE_KEY, toRef(props, 'schema'))

@@ -41,6 +41,9 @@ const development = {
     },
     open: true,
     port: 8801,
+    client: {
+      overlay: false
+    }
   },
   output: {
     publicPath: '/',

@@ -3,12 +3,9 @@
 
 > `xForm`使用了诸如`expose`、`.prop`之类的api, **请确保你的`Vue`版本不低于3.2.0**。
 
-## 更新计划 `v0.8.0`
-- [x] 支持[Element Plus][element]
-- [x] Bootstrap升级至5.x
-- [x] 设计器支持边缘滚动
-- [x] `FieldConf`更名为`Field`
-- [x] 通过`Field.buttons`属性定制字段按钮 
+## `v0.9.0`
+- [ ] 重构字段逻辑
+- [x] 适配`Element Plus@2.2.2`
 
 ## 兼容性
 `xForm`使用了诸如`Proxy`、`Reflect`之类的新特性，因此需要浏览器至少实现了`ES2015`标准。需要注意的是，`xForm`**不支持IE浏览器，也没有相关的支持计划**。

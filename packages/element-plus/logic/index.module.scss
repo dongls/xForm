@@ -1,0 +1,30 @@
+.logicForm{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  height: 30px;
+  line-height: 30px;
+
+  strong{
+    margin: 0 4px;
+  }
+
+  & > :global(.el-select){
+    width: 100px;
+    margin-left: 10px;
+  }
+
+  & > :global(.el-input){
+    width: 150px;
+    margin-left: 10px;
+  }
+
+  & > :global(.el-input-number){
+    width: 150px;
+    margin-left: 10px;
+  }
+
+  & > .valueSelect{
+    width: 150px;
+  }
+}

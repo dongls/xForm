@@ -1,4 +1,4 @@
 import './index.scss'
-import Bootstrap from '../../../../packages/bootstrap/index'
+import Bootstrap from '@bootstrap/index'
 
 export default Bootstrap

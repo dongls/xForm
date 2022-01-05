@@ -1,18 +1,15 @@
 import { ComponentOptions } from 'vue'
-import { 
-  BaseFormConfig,
-  Field,
-} from '../model'
-
+import { Field, FieldLogic } from '../model/Field'
+import { BaseFormConfig } from '../model/common'
 import { isEmpty, isNull, genRandomStr } from '../util'
 
-type Preset = {
-  name: string,
-  version?: string,
+export interface Preset{
+  name: string
+  version?: string
   cleanup: void | (() => void)
 }
 
-export function createConfig(){
+export function createConfig(): BaseFormConfig {
   return {
     modes: null,
     logic: false,
@@ -28,12 +25,13 @@ export function createConfig(){
       if(isNull(value) || isEmpty(value)) return props.schema.viewerPlaceholder ?? ''
       return Array.isArray(value) ? value.join('，') : value
     }
-  } as BaseFormConfig
+  }
 }
 
 export const store = {
   preset: null as Preset,
   config: createConfig(),
   fields: new Map<string, Field>(),
-  slots: new Map<string, ComponentOptions>()
+  slots: new Map<string, ComponentOptions>(),
+  logic: new Map<string, FieldLogic>()
 }

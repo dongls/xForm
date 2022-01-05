@@ -32,7 +32,7 @@
 
     <slot/>
 
-    <field-logic v-model:field="fieldRef" v-if="allowLogic"/>
+    <FieldLogic v-model:field="fieldRef" v-if="allowLogic"/>
   </div>
 </template>
 
@@ -69,11 +69,11 @@ export default defineComponent({
   setup(props) {
     const fieldRef = toRef(props, 'field')
     const allowLogic = computed(() => getConfig().logic === true)
-
+    
     return { fieldRef, allowLogic }
   },
   components: {
-    [FieldLogic.name]: FieldLogic
+    FieldLogic
   }
 })
 </script>

@@ -11,7 +11,7 @@ const { RELEASE_PACKAGE, OUTPUT_BASE_PATH } = require('./args')
 const packages = {
   'core': {
     entry: ['./packages/core/index.css', './packages/core/index.ts'],
-    ts: ['./packages/core/index.ts']
+    // ts: ['./packages/core/index.ts']
   },
   'bootstrap': {
     entry: ['./packages/bootstrap/index.ts']

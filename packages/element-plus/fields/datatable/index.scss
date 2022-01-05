@@ -1,0 +1,160 @@
+.xform-preview-datatable{
+  &.xform-is-selected > .xform-preview-cover,
+  &:hover > .xform-preview-cover{
+    background-color: rgb(253, 213, 138);
+  }
+
+  .xform-el-datatable{
+    border: 1px solid #ccc;
+    position: relative;
+    z-index: 9;
+  }
+
+  .xform-preview{
+    margin-top: 0;
+
+    & + .xform-preview{
+      margin-left: 5px;
+    }
+  }
+
+  .xform-el-empty-tip{
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .xform-el-datatable-cell{
+    text-align: center;
+    line-height: 26px;
+    height: 26px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .xform-el-datatable-columns{
+    padding: 5px;
+    height: 50px;
+    display: flex;
+    flex-flow: row nowrap;
+    float: left;
+    min-width: 100%;
+  }
+}
+
+.xform-el-datatable-cell span{
+  position: relative;
+}
+
+.xform-el-datatable-cell.xform-is-required{
+  font-weight: 700;
+}
+
+.xform-el-datatable-cell.xform-is-required span:before{
+  content: "*";
+  position: absolute;
+  top: 0;
+  left: -8px;
+  color: var(--xform-color-danger);
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.xform-el-datatable{
+  &.xform-el-datatable-is-empty{
+    .el-table__empty-block{
+      min-height: 1px;
+    }
+
+    .el-table__empty-text{
+      display: none;
+    }
+
+    .el-table__body-wrapper{
+      z-index: 9;
+      &::after{
+        content: "点击添加按钮插入数据";
+        display: block;
+        position: sticky;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        font-size: 14px;
+      }
+    }
+  }
+
+  &[data-layout="inline"]{
+    .xform-el-datatable-remove{
+      display: none;
+    }
+
+    .hover-row{
+      .xform-el-datatable-row-index{
+        display: none;
+      }
+  
+      .xform-el-datatable-remove{
+        display: block;
+      }
+    }
+  }
+
+  .el-table__header .cell{
+    font-size: 14px;
+
+    &.xform-is-required{
+      color: var(--el-text-color-primary);
+
+      &:before{
+        content: "*";
+        position: absolute;
+        top: 3px;
+        left: 0;
+        color: var(--xform-color-danger);
+        font-size: 18px;
+        line-height: 1;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .el-table__body .el-table__cell{
+    padding-top: 0;
+    padding-bottom: 0;
+
+    .cell{
+      padding-top: 12px;
+      padding-bottom: 12px;
+
+      .xform-item{
+        margin: 0;
+      }
+      
+      .xform-item-message{
+        bottom: -13px;
+        line-height: 14px;
+      }
+    }
+  }
+
+  th.el-table__cell{
+    background-color: var(--el-background-color-base);
+    padding-top: 12px;
+      padding-bottom: 12px;
+  }
+
+  textarea{
+    resize: none;
+  }
+}
+
+.xform-el-datatable-dialog{
+  --el-dialog-width: 640px;
+  
+  .el-dialog__body{
+    padding: 20px 10px 20px 10px;
+  }
+}

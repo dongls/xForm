@@ -262,7 +262,7 @@
 .xform-preview-empty-tip > p{
   margin: 10px 0 0 0;
   text-align: center;
-  color: #9a9a9a;
+  color: var(--xform-text-color-secondary);
   font-size: 15px;
   font-weight: 600;
 }
@@ -399,7 +399,7 @@
   font-size: 14px;
   text-align: center;
   font-weight: 700;
-  color: #9a9a9a;
+  color: var(--xform-text-color-secondary);
 }
 
 .xform-tabs{

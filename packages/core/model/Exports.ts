@@ -6,12 +6,11 @@ export {
   FormPreset,
   FormRenderContext,
   FormViewerContext,
-  LogicRule,
   RawProps,
   Button,
   Icon
 } from './common'
 
-export { Field } from './Field'
-export { FormField } from './FormField'
+export { Field, FieldLogic } from './Field'
+export { FormField, FormFieldLogic } from './FormField'
 export { FormSchema } from './FormSchema'

@@ -6,7 +6,7 @@ const { EVENTS, LabelPosition } = useConstant()
 const positions = Object.values(LabelPosition)
 
 export default defineComponent({
-  name: 'xform-bs-setting',
+  name: 'form-setting',
   props: {
     schema: {
       type: Object,

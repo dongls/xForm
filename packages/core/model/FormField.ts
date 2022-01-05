@@ -1,15 +1,22 @@
 import { isReactive, reactive } from 'vue'
 import { ValidateFunc, Field } from './Field'
 import { Serializable } from './Serializable'
-import { LogicRule } from './common'
 import { FormScope } from './FormScope'
 import { FormSchema } from './FormSchema'
+import { AnyProps } from './common'
+import { findField } from '../api/Field'
+import { getConfig } from '../api/Config'
+import { genDefaultValue } from '../api/DefaultValue'
+import { getLogic } from '../api/Logic'
+
 import { 
   createPrivateProps, 
   getIncNum, 
   isFunction, 
   isNull, 
-  mixinRestParams 
+  isObject, 
+  mixinRestParams,
+  isEmpty
 } from '../util/lang'
 
 import { 
@@ -24,10 +31,6 @@ import {
   EnumValidityState,
   BuiltInDefaultValueType 
 } from './constant'
-
-import { findField } from '../api/Field'
-import { getConfig } from '../api/Config'
-import { genDefaultValue } from '../api/DefaultValue'
 
 interface PrivateProps{
   value: any;
@@ -46,7 +49,7 @@ interface Validation {
 }
 
 interface Option { 
-  value: string;
+  value: any;
   label?: string;
   color?: string;
 }
@@ -64,6 +67,55 @@ function normalizeParams(params: unknown): any{
   if(isNull(params) || typeof params != 'object') return {}
 
   return params instanceof Field ? params.toParams() : params
+}
+
+export class FormFieldLogic{
+  [prop: string]: any;
+  /** 类型 */
+  type: string
+  /** 目标字段的`name`, 与`conditions`互斥 */
+  field?: string
+  /** 目标值 */
+  value?: any
+  /** 子条件, 与`field`互斥 */
+  conditions?: FormFieldLogic[]
+  /** 验证消息 */
+  message?: string | boolean
+
+  constructor(o: Partial<FormFieldLogic>, rootField?: any){
+    if(o.type == null) throw new Error('`FormFieldLogic.type` is required.')
+    
+    this.type = o.type
+    this.field = o.field
+    this.value = o.value
+
+    Reflect.defineProperty(this, 'message', {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: null
+    })
+
+    const conditions = Array.isArray(o.conditions) ? o.conditions : undefined
+    this.conditions = conditions == undefined ? undefined : conditions.map(c => new FormFieldLogic(c, rootField))
+    
+    mixinRestParams(this, o)
+
+    if(rootField != null){
+      const fl = getLogic(o.type)
+      if(fl && isFunction(fl.onCreated)) fl.onCreated(this, rootField)
+    }
+  }
+  
+  get hasCondition(){
+    return Array.isArray(this.conditions) && this.conditions.length > 0
+  }
+
+  static create(o: unknown, rootField?: any){
+    if(!isObject(o)) return
+
+    return o instanceof FormFieldLogic ? o : new FormFieldLogic(o, rootField)
+  }
 }
 
 /** 
@@ -105,10 +157,8 @@ export class FormField extends FormScope{
   allowRemove?: boolean
   /** 是否允许复制字段 */
   allowClone?: boolean
-  // eslint-disable-next-line no-use-before-define
   parent?: FormField | FormSchema = null
   /** 子类型, 避免直接修改 */
-  // eslint-disable-next-line no-use-before-define
   fields: FormField[] = []
   /** 表单项的值 */
   value: any
@@ -117,8 +167,8 @@ export class FormField extends FormScope{
     type: string,
     value?: any
   }
-  /** 逻辑 */
-  logic: LogicRule
+  /** 字段逻辑 */
+  logic: FormFieldLogic
   /** 表单验证相关属性 */
   validation: Validation
 
@@ -130,11 +180,11 @@ export class FormField extends FormScope{
 
   static [Serializable.EXCLUDE_PROPS_KEY] = ['validation', 'value', 'state', 'parent', 'props']
 
-  static create(f?: unknown){
+  static create(f?: Partial<FormField> & AnyProps | Field){
     return f instanceof FormField ? f : new FormField(f)
   }
 
-  constructor(o: unknown = {}){
+  constructor(o?: Partial<FormField> & AnyProps | Field){
     super()
 
     const params = normalizeParams(o)
@@ -160,7 +210,7 @@ export class FormField extends FormScope{
     this.allowClone = params.allowClone
     
     this.defaultValue = createDefaultValue(params.defaultValue)
-    this.logic = params.logic
+    this.logic = FormFieldLogic.create(params.logic)
 
     this.createFields(params.fields, p => FormField.create(p))
     // 创建验证相关值
@@ -170,7 +220,7 @@ export class FormField extends FormScope{
     // 混入用户自定义属性
     mixinRestParams(this, params)
     // 生成uid
-    Object.defineProperty(this, 'uid', { 
+    Reflect.defineProperty(this, 'uid', { 
       value: 'field__' + getIncNum(),
       enumerable: false,
       writable: false,
@@ -261,6 +311,16 @@ export class FormField extends FormScope{
 
     const index = parent.indexOf(this)
     return parent.fields.filter((f, i) => i < index)
+  }
+
+  previousField(name?: string): FormField{
+    const parent = this.parent
+    if(null == parent) return null
+
+    const index = parent.indexOf(this)
+    if(isEmpty(name)) return parent.fields[index - 1]
+    
+    return parent.fields.find((f, i) => i < index && f.name == name)
   }
 
   dispatch(action: Action){

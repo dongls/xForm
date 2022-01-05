@@ -8,13 +8,16 @@ export const CLASS = {
   FIELD: 'xform-designer-field',
   FORM_ITEM: 'xform-item',
   GHOST_NOT_ALLOW: 'xform-is-not-allowed',
+  IS_DISABLED: 'xform-is-disabled',
   IS_DRAGGING: 'xform-is-dragging',
   IS_EMPTY_TIP: 'xform-is-empty-tip',
   IS_ERROR: 'xform-is-error',
-  IS_SCROLL: 'xform-is-scroll',
   IS_HORIZONTAL_SCROLL: 'xform-is-horizontal-scroll',
+  IS_SCROLL: 'xform-is-scroll',
   IS_SELECTED: 'xform-is-selected',
   IS_SHOW: 'xform-is-show',
+  IS_UNKNOWN: 'xform-is-unknown',
+  IS_WARNING: 'xform-is-warning',
   LIST_SILENCE: 'xform-is-silence',
   PREVIEW: 'xform-preview',
   SCOPE: 'xform-is-scope',
@@ -55,20 +58,6 @@ export const LabelPosition = {
   LEFT: 'left',
   RIGHT: 'right',
   TOP: 'top'
-}
-
-export const BuiltInLogicOperator = {
-  AND: 'and',
-  OR: 'or',
-  NOT: 'not',
-  LT: 'lt',
-  LTE: 'lte',
-  GT: 'gt',
-  GTE: 'gte',
-  EQ: 'eq',
-  NE: 'ne',
-  EMPTY: 'empty',
-  CONTAINS: 'contains',
 }
 
 export enum EnumDragMode {

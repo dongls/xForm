@@ -15,18 +15,6 @@ function findNode(link: string, type: number){
   return document.querySelector(selector)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function removeSource(source: any){
-  if(!Array.isArray(source)) return
-
-  for(const arr of source){
-    const [link, type]= arr
-    const node = findNode(link, type)
-
-    if(node != null) node.remove()
-  }
-}
-
 function loadSource(source: any){
   if(!Array.isArray(source)) return Promise.resolve()
 
