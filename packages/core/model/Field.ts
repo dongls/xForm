@@ -6,7 +6,7 @@ import { FormField, FormFieldLogic } from './FormField'
 import { EnumDragHook, EnumValidateMode } from './constant'
 import { FormScope } from './FormScope'
 import { findField } from '../api/Field'
-import { BUTTON_COPY, BUTTON_REMOVE } from './Button'
+import { BUTTON_COPY, BUTTON_PICK_UP, BUTTON_REMOVE } from './Button'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Rule{}
@@ -187,6 +187,7 @@ export class Field extends Hook{
 
   static BUTTON_COPY = BUTTON_COPY
   static BUTTON_REMOVE = BUTTON_REMOVE
+  static BUTTON_PICK_UP = BUTTON_PICK_UP
 
   /** 生成用于创建`FormField`的参数 */
   toParams(){

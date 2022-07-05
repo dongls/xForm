@@ -1,0 +1,47 @@
+.fieldOperate{
+  display: none;
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  z-index: 10;
+}
+
+:global(.xform-is-selected) > .fieldOperate{
+  display: block;
+}
+
+:global(.xform-is-silence) .fieldOperate{
+  display: none !important;
+}
+
+
+.fieldOperateButtons{
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.fieldOperateButtons > button{
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+
+  border: none;
+  background-color: var(--xform-color-primary);
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+
+.fieldOperateButtons :global(.xform-icon-is-svg) svg{
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+  margin: 0 auto;
+}
+
+.fieldOperateButtons :global(.xform-icon-is-img){
+  width: 16px;
+  height: 16px;
+}
+  

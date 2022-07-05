@@ -24,6 +24,7 @@
     "packages/**.d.ts",
     "packages/**/*.vue",
     "document/**/*.ts",
-    "document/**/*.tsx"
+    "document/**/*.tsx",
+    "document/**/*.vue"
   ]
 }

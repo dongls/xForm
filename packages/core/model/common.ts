@@ -114,5 +114,5 @@ export type Icon = string | VNode | ((conf: Field, field?: FormField) => any)
 export type Button = {
   icon: Icon,
   title: string,
-  handle: (field: FormField, api: FormDesignerApi, instance: ComponentInternalInstance) => void
+  handle: (field: FormField, api: FormDesignerApi, instance: ComponentInternalInstance, event: Event) => void
 }

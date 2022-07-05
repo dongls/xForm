@@ -1,12 +1,15 @@
 import { nextTick } from 'vue'
 
-import { EVENTS } from './constant'
+import { EVENTS, SELECTOR } from './constant'
 import { genEventName } from '../util/component'
 import { isFunction } from '../util/lang'
+import { getField } from '../util/dom'
+
 import { Button } from './common'
 
 import IconClone from '!!raw-loader!@common/svg/clone.svg'
 import IconRemove from '!!raw-loader!@common/svg/remove.svg'
+import IconPickUp from '!!raw-loader!@common/svg/pickup.svg'
 
 export const BUTTON_COPY: Button = {
   icon: IconClone,
@@ -37,11 +40,30 @@ export const BUTTON_REMOVE: Button = {
       api.updateSchema()
 
       nextTick(() => {
+        // TODO: 是否从`scope.remove`方法中触发
         const hook = field.conf?.onRemoved
         isFunction(hook) && hook(field, scope, instance) 
       })
     }
     
     isFunction(listener) ? instance.emit(EVENTS.REMOVE, { field, useDefault }): useDefault()
+  }
+}
+
+export const BUTTON_PICK_UP: Button = {
+  icon: IconPickUp,
+  title: '选中上一级',
+  handle(field, api, instance, event){
+    const target = event.target as HTMLElement
+    const draggableEl = target.closest(SELECTOR.DRAGGABLE)
+    if(draggableEl == null) return
+
+    const parentEl = draggableEl.parentElement?.closest(SELECTOR.DRAGGABLE)
+    if(parentEl == null) return
+
+    const parent = getField(parentEl)
+    if(parent == null) return
+
+    api.chooseField(parent)
   }
 }

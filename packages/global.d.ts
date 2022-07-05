@@ -16,6 +16,21 @@ interface Document {
   msElementsFromPoint(x: number, y: number): Element[];
 }
 
+declare module '*.module.css' {
+  const classes: { readonly [key: string]: string }
+  export default classes
+}
+
+declare module '*.module.scss' {
+  const classes: { readonly [key: string]: string }
+  export default classes
+}
+
+declare module '*.module.sass' {
+  const classes: { readonly [key: string]: string }
+  export default classes
+}
+
 declare module '*.bmp' {
   const src: string
   export default src
@@ -59,21 +74,6 @@ declare module '*.md' {
 declare module '*.css' {
   const src: string
   export default src
-}
-
-declare module '*.module.css' {
-  const classes: { readonly [key: string]: string }
-  export default classes
-}
-
-declare module '*.module.scss' {
-  const classes: { readonly [key: string]: string }
-  export default classes
-}
-
-declare module '*.module.sass' {
-  const classes: { readonly [key: string]: string }
-  export default classes
 }
 
 declare module '*.vue' {

@@ -1,5 +1,6 @@
-import { ComponentOptions, VNode } from 'vue'
-import { RawProps, FormField, EnumComponent, FieldComponent } from '../model'
+import { ComponentInternalInstance, ComponentOptions, nextTick, VNode } from 'vue'
+import { RawProps, FormField, EnumComponent, FieldComponent, SELECTOR } from '../model'
+import { isHidden } from './dom'
 import { isObject, isPlainObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
@@ -61,4 +62,15 @@ function _normalizeClass(value: unknown){
 export function normalizeClass(value: unknown, o?: unknown){
   const klass = _normalizeClass(value)
   return isPlainObject(o) ? Object.assign(klass, o) : klass
+}
+
+// TODO: 判断滚动方向
+export function showSelectedField(instance: ComponentInternalInstance){
+  return nextTick(() => {
+    const scroll = getHtmlElement(instance.refs, 'scroll')
+    const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED) 
+    if(null == target) return
+
+    if(isHidden(target, scroll)) scroll.scrollTop = target.offsetTop
+  })
 }

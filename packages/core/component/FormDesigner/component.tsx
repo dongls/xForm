@@ -1,3 +1,4 @@
+import classes from './component.module.css'
 import useDragging from './dragging'
 
 import { 
@@ -6,7 +7,6 @@ import {
   getCurrentInstance,
   h,
   isVNode,
-  nextTick,
   provide,
   ref,
   toRef,
@@ -29,7 +29,6 @@ import {
   PROPS,
   RawProps,
   RenderOptions,
-  SELECTOR,
   UpdateFieldEvent,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_SCHEMA_PROVIDE_KEY,
@@ -38,11 +37,10 @@ import {
 import {
   fillComponentProps,
   getFieldComponent,
-  getHtmlElement,
   isFunction,
-  isHidden,
   normalizeWheel,
   toArray,
+  showSelectedField
 } from '../../util'
 
 import { 
@@ -59,16 +57,6 @@ import FormTip from '../../assets/img/xform-tip.png'
 const IS_BASE64 = /^\s*data:(?:[a-z]+\/[a-z0-9-+.]+(?:;[a-z-]+=[a-z0-9-]+)?)?(?:;base64)?,([a-z0-9!$&',()*+;=\-._~:@/?%\s]*?)\s*$/i
 const IS_SVG = /<svg(\s[^>]*)?>[\s\S]*<\/svg>/
 const SETTING_FORM_SLOT = 'setting_form'
-
-function showSelectedField(instance: ComponentInternalInstance){
-  return nextTick(() => {
-    const scroll = getHtmlElement(instance.refs, 'scroll')
-    const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED) 
-    if(null == target) return
-
-    if(isHidden(target, scroll)) scroll.scrollTop = target.offsetTop
-  })
-}
 
 /**
  * 字段图标支持以下几种：
@@ -246,26 +234,22 @@ function useRenderContext(instance: ComponentInternalInstance, schemaRef: Ref<Fo
   }
 
   function renderOperate(field: FormField){
+    const hasParent = field.parent !== null && !(field.parent instanceof FormSchema)
     const conf = field.conf
-    const defs = conf?.buttons == null ? [Field.BUTTON_COPY, Field.BUTTON_REMOVE] : conf.buttons
-    const buttons = defs.map(button => {
-      if(field.allowClone === false && button == Field.BUTTON_COPY) return null
-      if(field.allowRemove === false && button == Field.BUTTON_REMOVE) return null
-
+    const defs = conf?.buttons == null ? [Field.BUTTON_PICK_UP, Field.BUTTON_COPY, Field.BUTTON_REMOVE] : conf.buttons
+    const buttons = defs.filter(button => {
+      if(button == Field.BUTTON_COPY && field.allowClone === false) return false
+      if(button == Field.BUTTON_REMOVE && field.allowRemove === false) return false
+      if(button == Field.BUTTON_PICK_UP && !hasParent) return false
+      return true
+    }).map(button => {
       const handle = button.handle.bind(null, field, api, instance)
       const icon = renderIcon(button.icon, field.conf)
       return <button type="button" title={button.title} onClick={handle}>{icon}</button>
-    }).filter(b => b != null)
-  
-    return (
-      buttons.length > 0 
-        ? (
-          <div class="xform-preview-operate">
-            <div class="xform-preview-buttons">{buttons}</div>
-          </div>
-        ) 
-        : null
-    )
+    })
+
+    if(buttons.length == 0) return null
+    return <div class={classes.fieldOperate}><div class={classes.fieldOperateButtons}>{buttons}</div></div>
   }
 
   /**

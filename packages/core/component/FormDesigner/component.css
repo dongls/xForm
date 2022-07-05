@@ -157,10 +157,6 @@
   background-color: var(--xform-color-primary);
 }
 
-.xform-is-selected > .xform-preview-operate{
-  display: block;
-}
-
 .xform-preview-cover{
   position: absolute;
   top: 0;
@@ -172,44 +168,7 @@
   opacity: .175;
 }
 
-.xform-preview-operate{
-  display: none;
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  z-index: 10;
-}
 
-.xform-preview-buttons{
-  display: flex;
-  flex-flow: row nowrap;
-}
-
-.xform-preview-buttons > button{
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  margin: 0;
-
-  border: none;
-  background-color: var(--xform-color-primary);
-  color: #fff;
-  outline: none;
-  cursor: pointer;
-}
-
-.xform-preview-buttons .xform-icon-is-svg svg{
-  width: 16px;
-  height: 16px;
-  fill: #fff;
-  margin: 0 auto;
-}
-
-.xform-preview-buttons .xform-icon-is-img{
-  width: 16px;
-  height: 16px;
-}
-  
 .xform-designer-ghost{
   position: fixed;
   top: 0;
@@ -353,10 +312,6 @@
 
 .xform-is-silence .xform-designer-mark{
   display: block;
-}
-
-.xform-is-silence .xform-preview-operate{
-  display: none !important;
 }
 
 .xform-is-silence .xform-preview{

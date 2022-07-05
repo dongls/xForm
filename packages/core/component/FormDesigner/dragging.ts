@@ -16,6 +16,7 @@ import {
   findElementsFromPoint,
   getHtmlElement,
   getScope,
+  showSelectedField,
 } from '../../util'
 
 import { findField } from '../../api'
@@ -112,6 +113,14 @@ export default function useDragging(){
     cancelAutoScrollIfNeed
   } = useScroll()
 
+  // function findScrollElement(event: MouseEvent){
+  //   const root = getHtmlElement(GLOBAL.instance.refs, 'root')
+  //   const elements = findElementsFromPoint(event.clientX, event.clientY, SELECTOR.IS_SCROLL, root)
+  //   if(elements == null || elements.length == 0) return null
+
+  //   return elements[0] as HTMLElement
+  // }
+
   function getInternalInstance(){
     return GLOBAL.instance
   }
@@ -149,9 +158,10 @@ export default function useDragging(){
   }
 
   function resetDragStatus(){
+    showSelectedField(GLOBAL.instance)
     GLOBAL.context.reset(GLOBAL.instance)
-
     GLOBAL.context = null
+
     document.removeEventListener('mousemove', dragging)
     document.removeEventListener('mouseup', dragend)
   }
@@ -205,7 +215,10 @@ export default function useDragging(){
     if(null == path || path.length == 0){
       root.appendChild(mark)
       ghost.classList.add(CLASS.GHOST_NOT_ALLOW)
+      // TODO: 滚动模式改进
       return autoScrollIfNeed(event, context.dragElement.closest(SELECTOR.IS_SCROLL))
+
+      // return autoScrollIfNeed(event, findScrollElement(event))
     }
 
     cancelAutoScrollIfNeed()
@@ -228,6 +241,7 @@ export default function useDragging(){
     const path = findDropPath(mark, root)
     if(path.length == 0 && !context.isImmediateInsert) return resetDragStatus()
 
+    // 触发drop事件
     const dropEvent = context.createDropEvent(path, event, { ...utils })
     if(context.trigger(dropEvent).defaultPrevented) return
 

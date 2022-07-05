@@ -58,6 +58,10 @@ module.exports = {
             use: utils.genScssLoader(IS_PRODUCTION, false)
           },
           {
+            test: /\.module\.css$/,
+            use: utils.genCssLoader(IS_PRODUCTION, true)
+          },
+          {
             test: /\.css$/,
             resourceQuery: /module/,
             use: utils.genCssLoader(IS_PRODUCTION, true)

@@ -34,11 +34,21 @@
   </div>
 </template>
 
-<script lang="tsx">
-import { defineComponent, onBeforeUnmount, reactive, ref } from 'vue'
+<script lang="ts" setup>
+import { onBeforeUnmount, reactive, ref } from 'vue'
 import { version } from '@dongls/xform'
 import { usePreset } from './preset'
 import { useIsWide, IS_DEV, TIMESTAMP } from '../../util/common'
+
+const loading = ref(false)
+const preset = usePreset(loading)
+const isWide = useIsWide()
+
+const modalState = reactive({
+  show: false,
+  json: '',
+  title: null
+})
 
 function useToggleClass(){
   document.documentElement.classList.add('is-example')
@@ -48,36 +58,14 @@ function useToggleClass(){
   })
 }
 
-export default defineComponent({
-  name: 'example-view',
-  setup(){
-    const loading = ref(false)
-    const preset = usePreset(loading)
-    const modalState = reactive({
-      show: false,
-      json: null,
-      title: null
-    })
+function viewJson(event: any){
+  modalState.title = event.title
+  modalState.json = event.json
+  modalState.show = true
+}
 
-    preset.install()
-    useToggleClass()
-
-    return {
-      TIMESTAMP,
-      IS_DEV,
-      isWide: useIsWide(),
-      loading,
-      modalState,
-      preset,
-      version,
-      viewJson(event: any){
-        modalState.title = event.title
-        modalState.json = event.json
-        modalState.show = true
-      }
-    }
-  }
-})
+preset.install()
+useToggleClass()
 </script>
 
 <style lang="scss">
