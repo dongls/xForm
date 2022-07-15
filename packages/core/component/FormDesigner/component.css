@@ -28,7 +28,6 @@
 
 .xform-designer-responsive{
   height: 100%;
-  padding: 5px;
   background-color: #fff;
   box-shadow: 0 0 4px rgba(0,0,0,.05);
   margin: 0 auto;
@@ -47,6 +46,7 @@
   position: relative;
   min-height: 100%;
   background-color: #fff;
+  padding: 5px;
 }
 
 .xform-designer-field-group h3{

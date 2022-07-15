@@ -21,11 +21,13 @@ import {
 
 import { findField } from '../../api'
 
+const SCROLL_PX = 5
+
 function useScroll(){
   let requestID = null as number
 
   function doScroll(scroll: HTMLElement, c: number){
-    const r = scroll.scrollTop + c * 4
+    const r = scroll.scrollTop + c * SCROLL_PX
     scroll.scrollTop = r
 
     if(r < 0 || r > scroll.scrollHeight - scroll.offsetHeight){
@@ -37,7 +39,7 @@ function useScroll(){
   }
 
   function doHorizontalScroll(scroll: HTMLElement, c: number){
-    const r = scroll.scrollLeft + c * 4
+    const r = scroll.scrollLeft + c * SCROLL_PX
     scroll.scrollLeft = r
 
     if(r < 0 || r > scroll.scrollWidth - scroll.offsetWidth){
@@ -113,14 +115,6 @@ export default function useDragging(){
     cancelAutoScrollIfNeed
   } = useScroll()
 
-  // function findScrollElement(event: MouseEvent){
-  //   const root = getHtmlElement(GLOBAL.instance.refs, 'root')
-  //   const elements = findElementsFromPoint(event.clientX, event.clientY, SELECTOR.IS_SCROLL, root)
-  //   if(elements == null || elements.length == 0) return null
-
-  //   return elements[0] as HTMLElement
-  // }
-
   function getInternalInstance(){
     return GLOBAL.instance
   }
@@ -157,8 +151,8 @@ export default function useDragging(){
     null == reference ? scope.appendChild(mark) : scope.insertBefore(mark, reference)
   }
 
-  function resetDragStatus(){
-    showSelectedField(GLOBAL.instance)
+  function resetDragStatus(silence = false){
+    if(!silence) showSelectedField(GLOBAL.instance)
     GLOBAL.context.reset(GLOBAL.instance)
     GLOBAL.context = null
 
@@ -214,11 +208,8 @@ export default function useDragging(){
     // 如果target为null说明在容器外
     if(null == path || path.length == 0){
       root.appendChild(mark)
-      ghost.classList.add(CLASS.GHOST_NOT_ALLOW)
-      // TODO: 滚动模式改进
+      ghost.classList.add(CLASS.GHOST_NOT_ALLOW)      
       return autoScrollIfNeed(event, context.dragElement.closest(SELECTOR.IS_SCROLL))
-
-      // return autoScrollIfNeed(event, findScrollElement(event))
     }
 
     cancelAutoScrollIfNeed()
@@ -236,6 +227,8 @@ export default function useDragging(){
     cancelAutoScrollIfNeed()
 
     const { instance, context } = GLOBAL
+    if(!context.init && !context.isImmediateInsert) return resetDragStatus(true)
+
     const mark = getHtmlElement(instance.refs, 'mark')
     const root = getHtmlElement(instance.refs, 'root')
     const path = findDropPath(mark, root)

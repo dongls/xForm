@@ -26,7 +26,7 @@
 ## License
 [MIT](LICENSE)
 
-[vue]: https://github.com/vuejs/vue-next
+[vue]: https://github.com/vuejs/core
 [doc]: https://dongls.github.io/xForm/
 [example]: https://github.com/dongls/xForm/tree/master/document/views/example
 [test]: https://github.com/dongls/xForm/tree/master/packages/core/__test__

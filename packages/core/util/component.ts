@@ -1,6 +1,5 @@
 import { ComponentInternalInstance, ComponentOptions, nextTick, VNode } from 'vue'
 import { RawProps, FormField, EnumComponent, FieldComponent, SELECTOR } from '../model'
-import { isHidden } from './dom'
 import { isObject, isPlainObject, isString } from './lang'
 
 /** 获取字段配置的组件 */
@@ -64,13 +63,23 @@ export function normalizeClass(value: unknown, o?: unknown){
   return isPlainObject(o) ? Object.assign(klass, o) : klass
 }
 
-// TODO: 判断滚动方向
 export function showSelectedField(instance: ComponentInternalInstance){
   return nextTick(() => {
-    const scroll = getHtmlElement(instance.refs, 'scroll')
-    const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED) 
+    const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED)
     if(null == target) return
 
-    if(isHidden(target, scroll)) scroll.scrollTop = target.offsetTop
+    const scroll = target.closest(SELECTOR.IS_SCROLL) as HTMLElement
+    const tRect = target.getBoundingClientRect()
+    const sRect = scroll.getBoundingClientRect()
+    const space = 5
+
+    // 上侧出界
+    if(tRect.top < sRect.top) scroll.scrollTop = target.offsetTop - space
+    // 下侧出界
+    if(tRect.bottom > sRect.bottom) scroll.scrollTop = target.offsetTop + target.offsetHeight - scroll.offsetHeight + space
+    // 左侧出界
+    if(tRect.left < sRect.left) scroll.scrollLeft = target.offsetLeft - space
+    // 右侧出界
+    if(tRect.right > sRect.right) scroll.scrollLeft = target.offsetLeft + target.offsetWidth - scroll.offsetWidth + space
   })
 }

@@ -32,6 +32,7 @@ import {
   UpdateFieldEvent,
   XFORM_CONTEXT_PROVIDE_KEY,
   XFORM_SCHEMA_PROVIDE_KEY,
+  SELECTOR,
 } from '../../model'
 
 import {
@@ -396,9 +397,11 @@ export default defineComponent({
       cancelAutoScrollIfNeed()
 
       const { pixelY } = normalizeWheel(event)
-      const scroll = instance.refs.scroll as HTMLElement
-  
-      scroll.scrollTop += pixelY
+      const mark = (instance.refs.mark as HTMLElement)
+      const scroll = mark.closest(SELECTOR.IS_SCROLL)
+      const prop = scroll.matches(SELECTOR.IS_HORIZONTAL_SCROLL) ? 'scrollLeft' : 'scrollTop'
+      
+      scroll[prop] = scroll[prop] += pixelY
     }
 
     expose(rc.api)

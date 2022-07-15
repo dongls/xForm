@@ -7,20 +7,6 @@ import {
 import { isString } from './lang'
 
 /**
-* 判断元素是否不可见
-* @param el - 待判断的元素
-* @param container - 容器
-* @returns 不可见返回`true`
-*/
-export function isHidden(el: HTMLElement, container: HTMLElement){
-  const tRect = el.getBoundingClientRect()
-  const cRect = container.getBoundingClientRect()
-  const half = tRect.height / 2
-
-  return tRect.bottom - half < cRect.top || tRect.top + half > cRect.bottom
-}
-
-/**
  * 查找坐标点下第一个符合的元素
  * @param x - 坐标点的水平坐标值
  * @param y - 坐标点的垂向坐标值

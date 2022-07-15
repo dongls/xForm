@@ -1,6 +1,6 @@
 <template>
   <div :class="classes.picker">
-    <a href="https://github.com/vuejs/vue-next" target="_blank" class="example-with-slash">Vue@{{ VUE_VERSION }}</a>
+    <a href="https://github.com/vuejs/core" target="_blank" class="example-with-slash">Vue@{{ VUE_VERSION }}</a>
     <div :class="classes.preset">
       <a :href="preset.homepage" target="_blank">{{ preset.name }}@{{ preset.version }}</a>
       <ul :class="classes.panel">
