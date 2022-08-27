@@ -271,7 +271,11 @@ export default function useDragging(){
 
       // 在同一作用域下
       if(originScope == targetScope){
-        field.move(newIndex)
+        // 计算插入的位置
+        // 需要注意这里目标位置是mark的位置, 需要换算成字段的位置
+        const fieldIndex = targetScope.indexOf(field)
+        const targetIndex = newIndex > fieldIndex ? newIndex - 1 : newIndex
+        field.move(targetIndex)
       } else {
         originScope.remove(field)
         targetScope.insert(newIndex, field)

@@ -37,27 +37,28 @@ const setting = defineComponent({
       const field = props.field
       const tab = new FormField(pane)
       tab.title = `标签${props.field.fields.length + 1}`
-      field.fields.push(tab)
+      field.push(tab)
     }
 
     function removeTab(f: FormField) {
-      const fields = props.field.fields
-      if (fields.length <= 1) return
+      const field = props.field
+      if (field.fields.length <= 1) return
 
-      const index = fields.indexOf(f)
-      if (index >= 0) fields.splice(index, 1)
+      field.remove(f)
     }
 
     function up(index: number){
-      const fields = props.field.fields
-      const item = fields.splice(index, 1)[0]
-      fields.splice(index - 1, 0, item)
+      if(index <= 0) return
+
+      const target = props.field.fields[index]
+      target.move(index - 1)
     }
 
     function down(index: number){
-      const fields = props.field.fields
-      const item = fields.splice(index + 1, 1)[0]
-      fields.splice(index, 0, item)
+      if(index >= props.field.fields.length - 1) return
+
+      const target = props.field.fields[index]
+      target.move(index + 1)
     }
 
     return function () {

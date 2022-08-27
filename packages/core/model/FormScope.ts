@@ -74,14 +74,9 @@ export abstract class FormScope extends Serializable{
     const b = target
 
     if(a < 0 || b < 0 || a == b) return
-    
-    // 计算插入的位置
-    // 需要注意这里目标位置是mark的位置
-    const i = b > a ? b - 1 : b
-    if(a == i) return
 
     const item = parent.fields.splice(a, 1)[0]
-    parent.fields.splice(i, 0, item)
+    parent.fields.splice(b, 0, item)
 
     const action: FieldMoveAction = {
       type: 'field.move',
