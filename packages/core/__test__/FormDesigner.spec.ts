@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { mockOption, mockSchema } from './mock/index'
-import { createSchemaRef, findField, registerSlot, reset } from '../api'
+import { createReactiveSchema, findField, registerSlot, reset } from '../api'
 import { ModeGroup } from '../model'
 import { h } from 'vue'
 
@@ -15,7 +15,7 @@ describe('FormDesigner props: mode', () => {
     const wrapper = mount(FormDesigner as any, {
       props: {
         mode: null,
-        schema: createSchemaRef(mockSchema())
+        schema: createReactiveSchema(mockSchema())
       },
       global: {
         components: {
@@ -36,7 +36,7 @@ describe('FormDesigner props: mode', () => {
     const wrapper = mount(FormDesigner as any, {
       props: {
         mode: 'simple',
-        schema: createSchemaRef()
+        schema: createReactiveSchema()
       }
     })
 
@@ -50,10 +50,10 @@ describe('FormDesigner props: mode', () => {
     const option = mockOption()
     reset(option)
   
-    const wrapper = mount(FormDesigner as any, {
+    const wrapper = mount(FormDesigner, {
       props: {
         mode: 'group',
-        schema: createSchemaRef()
+        schema: createReactiveSchema()
       }
     })
 
@@ -84,7 +84,7 @@ describe('FormDesigner slots: setting_form', () => {
       `,
       setup(){
         return {
-          schema: createSchemaRef(mockSchema())
+          schema: createReactiveSchema(mockSchema())
         }
       }
     }
@@ -113,7 +113,7 @@ describe('FormDesigner slots: setting_form', () => {
       `,
       setup(){
         return {
-          schema: createSchemaRef(mockSchema())
+          schema: createReactiveSchema(mockSchema())
         }
       }
     }
@@ -152,7 +152,7 @@ describe('FormDesigner slots: setting_form', () => {
       `,
       setup(){
         return {
-          schema: createSchemaRef(mockSchema())
+          schema: createReactiveSchema(mockSchema())
         }
       }
     }
@@ -222,7 +222,7 @@ describe('FormDesigner slots: others', () => {
       `,
       setup(){
         return {
-          schema: createSchemaRef(mockSchema())
+          schema: createReactiveSchema(mockSchema())
         }
       }
     }

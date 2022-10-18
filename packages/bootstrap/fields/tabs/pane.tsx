@@ -49,7 +49,7 @@ export default Field.create({
             [CLASS.SCOPE]: inDesigner
           },
           ['.' + PROPS.FIELD]: inDesigner ? props.field : undefined,
-        }
+        } as any
 
         return <div {..._p}>{content}</div>
       }

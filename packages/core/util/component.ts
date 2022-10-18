@@ -66,20 +66,6 @@ export function normalizeClass(value: unknown, o?: unknown){
 export function showSelectedField(instance: ComponentInternalInstance){
   return nextTick(() => {
     const target = getHtmlElement(instance.refs, 'list').querySelector<HTMLElement>(SELECTOR.IS_SELECTED)
-    if(null == target) return
-
-    const scroll = target.closest(SELECTOR.IS_SCROLL) as HTMLElement
-    const tRect = target.getBoundingClientRect()
-    const sRect = scroll.getBoundingClientRect()
-    const space = 5
-
-    // 上侧出界
-    if(tRect.top < sRect.top) scroll.scrollTop = target.offsetTop - space
-    // 下侧出界
-    if(tRect.bottom > sRect.bottom) scroll.scrollTop = target.offsetTop + target.offsetHeight - scroll.offsetHeight + space
-    // 左侧出界
-    if(tRect.left < sRect.left) scroll.scrollLeft = target.offsetLeft - space
-    // 右侧出界
-    if(tRect.right > sRect.right) scroll.scrollLeft = target.offsetLeft + target.offsetWidth - scroll.offsetWidth + space
+    if(target) target.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   })
 }

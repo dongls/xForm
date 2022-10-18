@@ -2,6 +2,7 @@ import * as constant from '../model/constant'
 
 import { 
   inject,
+  reactive,
   ref,
   Ref,
 } from 'vue'
@@ -84,6 +85,10 @@ export function useRenderContext<T = FormRenderContext>(){
 export function createSchema(origin?: any, model?: any){
   const o = isObject(origin) ? origin : {}
   return FormSchema.create(o, model)
+}
+
+export function createReactiveSchema(origin?: any, model?: any){
+  return reactive(createSchema(origin, model)) as FormSchema
 }
 
 export function createSchemaRef(origin?: any, model?: any){

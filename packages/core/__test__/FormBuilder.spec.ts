@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { mockOption } from './mock/index'
-import { createSchemaRef, reset } from '../api'
+import { createReactiveSchema, reset } from '../api'
 import { ref } from 'vue'
 
 import FormBuilder from '../component/FormBuilder/component'
@@ -31,7 +31,7 @@ describe('FormBuilder props: tag', () => {
         return {
           event,
           onSubmit: (e: any) => event.value = e,
-          schema: createSchemaRef()
+          schema: createReactiveSchema()
         }
       },
       ...createGlobal()
@@ -60,7 +60,7 @@ describe('FormBuilder props: tag', () => {
         return {
           event,
           onSubmit: (e: any) => event.value = e,
-          schema: createSchemaRef()
+          schema: createReactiveSchema()
         }
       },
       ...createGlobal()
@@ -80,7 +80,7 @@ describe('FormBuilder render', () => {
     const option = mockOption()
     reset(option)
 
-    const schema = createSchemaRef({
+    const schema = createReactiveSchema({
       fields: [
         { type: 'text', name: 'field_01', title: '文本一', hidden: true },
         { type: 'textarea', name: 'field_02', title: '多行文本一' }
@@ -110,7 +110,7 @@ describe('FormBuilder validate', () => {
       `,
       setup(){
         const validate = ref(null)
-        const schema = createSchemaRef({
+        const schema = createReactiveSchema({
           fields: [
             { type: 'text', name: 'field_01', title: '文本一', required: true },
             { type: 'text', name: 'field_02', title: '文本二' },

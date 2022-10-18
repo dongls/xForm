@@ -1,22 +1,25 @@
 module.exports = {
   preset: "ts-jest",
-  globals: {
-    "ts-jest": {
-      babelConfig: true,
-    }
-  },
   transform: {
     "^.+\\.vue$": "@vue/vue3-jest",
     "^.+\\.js$": "babel-jest",
-    "^.+\\.(svg|png)$": "<rootDir>/scripts/jest/raw-loader.js"
+    "^.+\\.(svg|png)$": "<rootDir>/scripts/jest/raw-loader.js",
+    '^.+\\.tsx?$': ['ts-jest', { babelConfig: true }]
   },
   moduleFileExtensions: ["vue", "js", "jsx", "ts", "tsx"],
   moduleNameMapper: {
     "@common/(.*)": "<rootDir>/packages/common/$1",
-    "@dongls/xform": "<rootDir>/packages/core/index.ts"
+    "@dongls/xform": "<rootDir>/packages/core/index.ts",
+    "\\.module.css$": "identity-obj-proxy"
   },
   setupFiles: [
     '<rootDir>/scripts/jest/setup.js'
   ],
-  testEnvironment: "jsdom"
+  testEnvironment: "jsdom",
+  testEnvironmentOptions: {
+    customExportConditions: [
+      'node',
+      'node-addons'
+    ]
+  },
 }
