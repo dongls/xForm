@@ -89,3 +89,13 @@ export function toFalse(){
 export function toTrue(){
   return true
 }
+
+export function hideGlobalLoading(){
+  const loading = document.getElementById('loading')
+  loading.style.display = 'none'
+}
+
+export function showGlobalLoading(){
+  const loading = document.getElementById('loading')
+  loading.style.display = 'block'
+}

@@ -13,7 +13,7 @@ export default [
     group: true
   },
   {
-    name: '介绍',
+    name: '简介',
     path: '/doc/introduction',
     document: () => import('./introduction.md')
   },

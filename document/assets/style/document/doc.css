@@ -1,7 +1,7 @@
 .doc a {
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  
+
   transition: border-bottom-color ease .3s, background-color ease .3s;
 }
 
@@ -56,7 +56,8 @@
   top: 45px;
   max-height: calc(100vh - 85px);
   overflow-y: auto;
-  padding: 20px 0;
+  padding: 20px 0 20px 24px;
+  margin-left: -30px;
 }
 
 .doc-content{
@@ -92,9 +93,8 @@
 
 .doc-menu-item{
   position: relative;
-  line-height: 20px;
-  padding-right: 24px;
-  font-size: 15px;
+  line-height: 24px;
+  font-size: 13px;
   user-select: none;
 }
 
@@ -126,7 +126,7 @@
   height: 28px;
   line-height: 28px;
   margin: 0;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   margin-top: 15px;
 }
@@ -134,7 +134,7 @@
 .doc-menu-loading::after{
   content: '';
   position: absolute;
-  right: 4px;
+  left: -24px;
   top: 2px;
   width: 16px;
   height: 16px;
@@ -158,7 +158,7 @@
 } 
 
 .doc-logo > small{
-  font-size: 12px;
+  font-size: 13px;
   margin-left: 4px;
   color: #666;
 }
@@ -174,11 +174,20 @@
   line-height: 18px;
   display: inline-block;
   vertical-align: middle;
-}
-
-.doc-header-links a{
   font-weight: 500;
   color: var(--doc-text-color-primar);
+  font-size: 15px;
+}
+
+.doc-header-github{
+  position: relative;
+  margin-left: 40px !important;
+}
+
+.doc-header-links i{
+  position: absolute;
+  left: -20px;
+  top: 0;
 }
 
 .doc-header-links a:hover{
@@ -222,7 +231,18 @@
   width: 16px;
   height: 16px;
 
-  background: url('../../svg/outbound.svg') no-repeat;
+  background: url(../../svg/outbound-dark.svg) no-repeat;
+}
+
+.icon-github{
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  
+  background-image: url(../../svg/github-dark.svg);
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
 }
 
 is-link{

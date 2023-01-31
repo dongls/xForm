@@ -21,7 +21,7 @@ export default defineComponent({
   name: 'footer-guide',
   setup(){
     const route = useRoute()
-    const relation = computed(() => getMenuRelation(route.path) || {})
+    const relation = computed(() => getMenuRelation(route.path) || {}) as any
 
     return {
       relation

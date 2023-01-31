@@ -76,21 +76,34 @@ module.exports = {
       //   test: /\.less$/,
       //   use: utils.genLessLoader(IS_PRODUCTION)
       // },
-      { // 处理字体
+      {
         test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
-        loader: 'file-loader',
-        options: IS_PRODUCTION ? {
-          name: 'font/[name].[ext]'
-        } : undefined
+        type: 'asset',
+        generator: {
+          outputPath: IS_PRODUCTION ? 'font' : undefined
+        }
       },
       {
-        test: /\.(png|jpe?g|svg)(\?.*)?$/,
-        loader: 'url-loader',
-        options: IS_PRODUCTION ? {
-          limit: 4096,
-          path: '',
-          name: 'img/[name].[ext]',
-        } : undefined
+        test: /\.(png|jpe?g)(\?.*)?$/,
+        type: 'asset',
+        generator: {
+          outputPath: IS_PRODUCTION ? 'img' : undefined,
+        }
+      },
+      {
+        oneOf: [
+          {
+            resourceQuery: /raw-loader/,
+            type: 'asset/source',
+          },
+          {
+            test: /\.(svg)(\?.*)?$/,
+            type: 'asset',
+            generator: {
+              outputPath: IS_PRODUCTION ? 'img' : undefined,
+            }
+          }
+        ]
       }
     ]
   },

@@ -6,10 +6,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>xForm在线示例</title>
-  <style>#loading{position:fixed;top:24vh;left:calc(50% + 4ch);overflow:hidden;width:9ch;text-align:center;white-space:nowrap;font-size:16px;font-family:monospace;line-height:20px;animation:typing 1.5s steps(2) infinite}@keyframes typing{75%{width:11ch}to{width:11ch}}</style>
+  <style>#loading{position:fixed;padding-top: 32vh;padding-left: calc(50vw - 4ch);left: 0;right: 0;top: 0;bottom: 0;z-index: 99999;background-color: #fff;}.loading-text{overflow:hidden;width:9ch;text-align:center;white-space:nowrap;font-size:16px;font-family:monospace;line-height:20px;animation:typing 1.5s steps(2) infinite}@keyframes typing{75%{width:11ch}to{width:11ch}}</style>
 </head>
 <body>
-  <div id="loading">loading ...</div>
+  <div id="loading">
+    <div class="loading-text">loading ...</div>
+  </div>
   <div id="app"></div>
 </body>
 </html>

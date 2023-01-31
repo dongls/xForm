@@ -1,7 +1,7 @@
 <template>
   <article :key="path" :path="path" class="article" @click="proxy" v-html="content" />
   <div class="doc-affix">
-    <ul class="article-toc"/>
+    <ul class="article-toc" @click.prevent="scrollToSection"/>
   </div>
   <footer-guide/>
 </template>
@@ -21,8 +21,9 @@ async function loadDocument(route: RouteLocationNormalized, content: Ref<string>
   }
 
   if(menu.status == MenuStatusEnum.INIT) menu.status = MenuStatusEnum.LOADING
-  content.value = await load(route.path)
+  const value = await load(route.path)
   if(menu.status == MenuStatusEnum.LOADING) menu.status = MenuStatusEnum.LOADED
+  content.value = value
   document.title = menu.name
 
   if(typeof next == 'function') next()
@@ -45,16 +46,31 @@ function proxy(router: Router, event: Event){
   }
 }
 
+function scrollToSection(event: MouseEvent){
+  const target = event.target as HTMLElement
+  if(target.tagName != 'A') return
+
+  const hash = target.getAttribute('href').slice(1)
+  const element = document.getElementById(hash)
+  if(element == null) return
+
+  const section = element.closest('section')
+  const top = section.offsetTop
+
+  document.documentElement.scrollTop = top
+}
+
 export default defineComponent({
   name: 'doc',
-  setup(){
-    const content = ref('')
-
+  emits: ['loaded'],
+  setup(props, { emit }){
+    const content = ref('')    
     const route = useRoute()
     const router = useRouter()
 
-    onBeforeMount(() => {
-      loadDocument(route, content, router)
+    onBeforeMount(async () => {
+      await loadDocument(route, content, router)
+      emit('loaded')
     })
 
     onBeforeRouteUpdate((to, from, next) => {
@@ -66,6 +82,7 @@ export default defineComponent({
 
     return { 
       content,
+      scrollToSection,
       path: computed(() => route.path),
       proxy: proxy.bind(null, router)
     }

@@ -35,7 +35,7 @@ export function load(path: string){
 }
 
 export function getMenu(path: string){
-  return MENUS_DATA.find(m => m.path == path)
+  return menus.find(m => m.path == path)
 }
 
 export function getMenuRelation(path: string){

@@ -1,6 +1,7 @@
 import { getCurrentInstance, inject, provide, Ref } from 'vue'
 import { useNotification } from '@document/component'
 import { TYPE, config, DEAFULT_TARGET, ConfirmFunc, NotifyFunc, Config } from './config'
+import { hideGlobalLoading } from '@document/util/common'
 
 const LOCAL_PRESET_NAME_KEY = 'preset_name'
 const UI_LIBARY_PROVIDE_KEY = 'ui-libary-target'
@@ -97,8 +98,8 @@ export function usePreset(loading: Ref<boolean>){
     const preset = await current.factory()
     current.install(preset, instance)
 
-    document.querySelector('#loading')?.remove()
     loading.value = false
+    hideGlobalLoading()
   }
 
   provide(UI_LIBARY_PROVIDE_KEY, target)

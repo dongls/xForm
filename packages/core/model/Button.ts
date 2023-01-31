@@ -6,10 +6,7 @@ import { isFunction } from '../util/lang'
 import { getField } from '../util/dom'
 
 import { Button } from './common'
-
-import IconClone from '!!raw-loader!@common/svg/clone.svg'
-import IconRemove from '!!raw-loader!@common/svg/remove.svg'
-import IconPickUp from '!!raw-loader!@common/svg/pickup.svg'
+import { IconClone, IconRemove, IconPickUp } from '@common/svg/raw'
 
 export const BUTTON_COPY: Button = {
   icon: IconClone,

@@ -4,13 +4,15 @@
       <div class="doc-header-main">
         <div class="doc-logo">
           <strong>xForm</strong>
-          <small v-if="version">v{{ version }}</small>
+          <small v-if="version">v{{ version }}-{{ TIMESTAMP }}</small>
         </div>
         <div class="doc-header-links">
           <router-link to="/example">示例</router-link>
-          <i class="icon-outbound"/>
-          <a href="https://github.com/dongls/xForm" target="_blank">GitHub</a>
-          <i class="icon-outbound"/>
+          
+          <a href="https://github.com/dongls/xForm" target="_blank" class="doc-header-github">
+            <i class="icon-github"/>
+            <span>GitHub</span>
+          </a>
         </div>
       </div>
     </header>
@@ -27,7 +29,7 @@
         </ul>
       </nav>
       <div class="doc-content">
-        <main class="doc-main"><router-view/></main>
+        <main class="doc-main"><router-view @loaded="onLoaded"/></main>
       </div>
     </div>
     <footer class="doc-footer">
@@ -40,6 +42,7 @@
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, ref } from 'vue'
 import { menus } from './menus'
+import { showGlobalLoading, hideGlobalLoading, TIMESTAMP } from '@document/util/common'
 
 // eslint-disable-next-line no-undef
 const VERSION = __VERSION__
@@ -54,7 +57,14 @@ export default defineComponent({
       document.documentElement.classList.remove('is-doc')
     })
 
+    function onLoaded(){
+      hideGlobalLoading()
+    }
+
+    showGlobalLoading()
+
     return { 
+      TIMESTAMP,
       menus,
       isOpen,
       showNav(){
@@ -70,7 +80,8 @@ export default defineComponent({
           'doc-menu-loading': menu.status == 1
         }
       },
-      version: VERSION
+      version: VERSION,
+      onLoaded
     }
   }
 })
